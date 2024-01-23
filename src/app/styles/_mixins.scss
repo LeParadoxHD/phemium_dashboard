@@ -1,0 +1,5 @@
+@mixin dark {
+  html.dark :host & {
+    @content;
+  }
+}

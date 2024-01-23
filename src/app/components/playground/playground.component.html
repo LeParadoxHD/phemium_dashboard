@@ -1,0 +1,66 @@
+<nz-tabset
+  nzHideAdd
+  [nzTabPosition]="mode"
+  nzType="editable-card"
+  [nzTabBarExtraContent]="closeAllTmpl"
+  [nzSelectedIndex]="tabIndex$ | async"
+  (nzSelectedIndexChange)="onTabIndexChange($event)"
+  (nzClose)="closeTab($event)"
+>
+  <nz-tab *ngFor="let tab of tabs$ | async; trackBy: trackById" nzClosable [nzTitle]="title">
+    <ng-template #title>
+      <nz-breadcrumb nzSeparator=">">
+        <nz-breadcrumb-item>{{ tab.api.group.normalized }}</nz-breadcrumb-item>
+        <nz-breadcrumb-item>{{ tab.api.normalized }}</nz-breadcrumb-item>
+      </nz-breadcrumb>
+    </ng-template>
+    <ng-template nz-tab>
+      <div class="parameters-container">
+        <app-parameters [api]="tab.api"></app-parameters>
+      </div>
+      <div
+        class="xhr-panel"
+        nz-resizable
+        [nzMaxHeight]="2000"
+        [nzMinHeight]="50"
+        [style.height.px]="xhrHeight"
+        (nzResize)="onResizeXhr($event)"
+      >
+        <nz-resize-handle nzDirection="top">
+          <div class="top-wrap resize-vertical">
+            <span class="top" nz-icon nzType="more" nzTheme="outline"></span>
+          </div>
+        </nz-resize-handle>
+        <nz-layout style="max-height: calc(100vh - var(--debug-panel-height))">
+          <nz-sider
+            #requestPanel
+            class="request-panel"
+            [style.width.px]="layout.requestPanelWidth$ | async"
+            nz-resizable
+            [nzMinWidth]="50"
+            [nzMaxWidth]="layout.maxRequestPanelWidth$ | async"
+            (nzResize)="onRequestPanelResize($event, false)"
+            (nzResizeEnd)="onRequestPanelResize($event, true)"
+          >
+            <nz-resize-handle nzDirection="right">
+              <div class="right-wrap resize-horizontal">
+                <span class="right" nz-icon nzType="more" nzTheme="outline"></span>
+              </div>
+            </nz-resize-handle>
+            <app-request [request]="tab?.result?.request"></app-request>
+          </nz-sider>
+          <nz-content class="response">
+            <app-response [response]="tab?.result?.response" [api]="tab.api"></app-response>
+          </nz-content>
+        </nz-layout>
+      </div>
+    </ng-template>
+  </nz-tab>
+</nz-tabset>
+<ng-template #closeAllTmpl>
+  <nz-select class="select-mode" [(ngModel)]="mode">
+    <nz-option nzValue="top" nzLabel="Horizontal"></nz-option>
+    <nz-option nzValue="left" nzLabel="Vertical"></nz-option>
+  </nz-select>
+  <button nz-button>Close all</button>
+</ng-template>

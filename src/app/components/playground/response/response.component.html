@@ -1,0 +1,7 @@
+<nz-spin *ngIf="loading$ | async"></nz-spin>
+<ngx-monaco-editor [options]="editorOptions$ | async" [ngModel]="code$ | async"></ngx-monaco-editor>
+<div class="banner" [class.ok]="response?.ok" [class.nok]="response?.ok === false">
+  Response
+  <span *ngIf="response?.status as status"> • Status: {{ status }}</span>
+  <span *ngIf="response?.responseTime as time"> • Time: {{ time }}ms</span>
+</div>

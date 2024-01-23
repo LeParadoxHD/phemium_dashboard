@@ -1,0 +1,41 @@
+<nz-layout>
+  <nz-layout style="max-height: calc(100vh - var(--debug-panel-height))">
+    <nz-sider
+      #menuPanel
+      class="menu-panel"
+      [nzWidth]="layout.menuPanelWidth$ | async"
+      nz-resizable
+      [nzMinWidth]="200"
+      [nzMaxWidth]="500"
+      (nzResize)="onMenuResize($event, false)"
+      (nzResizeEnd)="onMenuResize($event, true)"
+    >
+      <nz-resize-handle nzDirection="right">
+        <div class="right-wrap resize-horizontal">
+          <span class="right" nz-icon nzType="more" nzTheme="outline"></span>
+        </div>
+      </nz-resize-handle>
+      <app-menu></app-menu>
+    </nz-sider>
+    <nz-content class="space-between">
+      <app-banner></app-banner>
+      <router-outlet></router-outlet>
+    </nz-content>
+  </nz-layout>
+  <div
+    nz-resizable
+    class="resizable-box footer"
+    [style.height.px]="layout.debugPanelHeight$ | async"
+    [nzMaxHeight]="400"
+    [nzMinHeight]="30"
+    (nzResize)="onDebugPanelResize($event, false)"
+    (nzResizeEnd)="onDebugPanelResize($event, true)"
+  >
+    <nz-resize-handle nzDirection="top">
+      <div class="top-wrap resize-vertical">
+        <span class="top" nz-icon nzType="more" nzTheme="outline"></span>
+      </div>
+    </nz-resize-handle>
+    DEBUG
+  </div>
+</nz-layout>

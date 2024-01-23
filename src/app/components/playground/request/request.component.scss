@@ -1,0 +1,33 @@
+:host::ng-deep {
+  display: block;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  ngx-monaco-editor {
+    display: block;
+    height: 100%;
+    width: 100%;
+    * {
+      font-family: "Roboto Mono Medium Regular";
+    }
+  }
+}
+
+.banner {
+  position: absolute;
+  top: -28px;
+  left: 0;
+  background-color: grey;
+  color: white;
+  padding: 3px 10px;
+  border-top-right-radius: 5px;
+  font-size: 0.85rem;
+  font-weight: normal;
+  box-sizing: border-box;
+  &.ok {
+    background-color: #1890ff;
+  }
+  &.nok {
+    background-color: red;
+  }
+}

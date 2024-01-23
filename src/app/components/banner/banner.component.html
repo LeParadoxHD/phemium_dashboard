@@ -1,0 +1,28 @@
+<div class="left">
+  <ul nz-menu nzMode="horizontal">
+    <a nz-menu-item nzMatchRouter routerLink="/playground">
+      <span nz-icon nzType="function" nzTheme="outline"></span>
+      Playground
+    </a>
+    <a nz-menu-item nzMatchRouter routerLink="/environments">
+      <span nz-icon nzType="database" nzTheme="outline"></span>
+      Environments
+      <nz-badge nzShowZero class="environment-count" nzStandalone [nzCount]="environmentsLength$ | async"></nz-badge>
+    </a>
+    <a nz-menu-item nzMatchRouter routerLink="/settings">
+      <span nz-icon nzType="setting" nzTheme="outline"></span>
+      Settings
+    </a>
+    <a nz-menu-item nzMatchRouter routerLink="/about">
+      <span nz-icon nzType="info-circle" nzTheme="outline"></span>
+      About
+    </a>
+  </ul>
+</div>
+<div class="right">
+  <div class="theme-switch">
+    <span>Dark</span>
+    <nz-switch [formControl]="darkTheme"></nz-switch>
+    <span>Light</span>
+  </div>
+</div>

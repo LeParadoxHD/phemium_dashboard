@@ -1,0 +1,67 @@
+<form nz-form *ngIf="parametersForm as form" [formGroup]="form">
+  <nz-form-item formArraryName="parameters" *ngFor="let control of form.get('parameters')['controls']; let i = index">
+    <nz-form-label [title]="api.params[i].normalized" [nzSpan]="3">{{ api.params[i].normalized }}</nz-form-label>
+    <ng-container *ngIf="api.params[i].type.length > 1; else simpleField">
+      <nz-form-control class="type-selector" [nzSpan]="3">
+        <nz-select [formControl]="multipleTypes.controls?.[api.params[i].name]">
+          <nz-option *ngFor="let type of api.params[i].type" [nzValue]="type" [nzLabel]="type | titlecase"></nz-option>
+        </nz-select>
+      </nz-form-control>
+      <nz-form-control *ngLet="multipleTypes.get(api.params[i].name).value as type" [nzSpan]="24">
+        <ng-container *ngTemplateOutlet="field; context: { $implicit: control, type, def: api.params[i] }"></ng-container>
+      </nz-form-control>
+    </ng-container>
+    <ng-template #simpleField>
+      <nz-form-control [nzSpan]="24">
+        <ng-container
+          *ngTemplateOutlet="
+            field;
+            context: {
+              $implicit: control,
+              type: api.params[i].type[0],
+              def: api.params[i]
+            }
+          "
+        ></ng-container>
+      </nz-form-control>
+    </ng-template>
+  </nz-form-item>
+  <button [disabled]="form.invalid" nzType="primary" [nzLoading]="loading$ | async" nz-button (click)="send()">
+    <span nz-icon nzType="send"></span>Send
+  </button>
+</form>
+<ng-template #field let-control let-type="type" let-def="def">
+  <ng-container [ngSwitch]="type">
+    <!-- Number field -->
+    <ng-container *ngSwitchCase="'integer'">
+      <nz-input-number
+        class="numeric-field"
+        nz-input
+        [formControl]="control"
+        [nzMin]="0"
+        [nzMax]="999999999999"
+        [nzStep]="1"
+      ></nz-input-number>
+    </ng-container>
+    <!-- Datetime field -->
+    <ng-container *ngSwitchCase="'datetime'">
+      <app-datetime-field name="datetime" [formControl]="control"></app-datetime-field>
+    </ng-container>
+    <!-- String field -->
+    <ng-container *ngSwitchCase="'string'">
+      <input nz-input [formControl]="control" spellcheck="false" autocomplete="off" name="successValid" />
+    </ng-container>
+    <!-- Boolean field -->
+    <ng-container *ngSwitchCase="'boolean'">
+      <nz-switch [formControl]="control"></nz-switch>
+    </ng-container>
+    <!-- List options field -->
+    <ng-container *ngSwitchCase="'list_options'">
+      <app-field-list-options [formControl]="control"></app-field-list-options>
+    </ng-container>
+    <!-- Default field -->
+    <ng-container *ngSwitchDefault>
+      <app-editor-field [formControl]="control"></app-editor-field>
+    </ng-container>
+  </ng-container>
+</ng-template>

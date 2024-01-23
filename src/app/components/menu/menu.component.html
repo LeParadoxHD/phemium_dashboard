@@ -1,0 +1,63 @@
+<ng-container *ngLet="environments$ | async as environments">
+  <div class="header">
+    <i class="logo"></i>
+    <div class="web-name">API Dashboard</div>
+    <nz-select
+      #envSelector
+      class="select-environment"
+      nzShowSearch
+      nzPlaceHolder="Select environment"
+      (ngModelChange)="selectedEnvironment($event)"
+      [formControl]="envControl"
+      [nzDropdownRender]="renderTemplate"
+      [nzCustomTemplate]="defaultTemplate"
+      [nzBackdrop]="true"
+      [nzOptionOverflowSize]="20"
+    >
+      <ng-container *ngFor="let api of availableApis">
+        <ng-container *ngIf="environments[api.id]?.length > 0">
+          <nz-option-group [nzLabel]="api.name">
+            <nz-option *ngFor="let env of environments[api.id]" [nzValue]="env.slug" [nzLabel]="env.name"></nz-option>
+          </nz-option-group>
+        </ng-container>
+      </ng-container>
+    </nz-select>
+    <ng-template #defaultTemplate let-selected>
+      Environment:
+      {{ selected.nzLabel }}
+    </ng-template>
+    <ng-template #renderTemplate>
+      <nz-divider class="select-environment-divider"></nz-divider>
+      <a class="add-new-environment" routerLink="/environments" (click)="closeSelector()">
+        <span nz-icon nzType="plus"></span>
+        Create new environment
+      </a>
+    </ng-template>
+  </div>
+
+  <cdk-virtual-scroll-viewport *ngIf="selectedEnvironment$ | async" itemSize="50">
+    <div class="loading" *ngIf="(loginInfo$ | async).loading; else api">
+      <nz-spin nzSimple></nz-spin>
+    </div>
+    <ng-template #api>
+      <ul nz-menu nzMode="inline" class="methods">
+        <li
+          *ngFor="let entity of methods$ | async"
+          nz-submenu
+          [nzTitle]="entity.normalized"
+          [nzIcon]="openMap[entity.name] ? 'folder-open' : 'folder'"
+          nzTheme="twotone"
+          [(nzOpen)]="openMap[entity.name]"
+          (nzOpenChange)="openHandler(entity.name)"
+        >
+          <ul *ngIf="openMap[entity.name]">
+            <li *ngFor="let method of entity.methods" routerLink="/playground" (click)="addMethodToView(method)" nz-menu-item>
+              <span class="method-icon" nz-icon [nzType]="method.icon" nzTheme="outline"></span>
+              {{ method.normalized }}
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </ng-template>
+  </cdk-virtual-scroll-viewport>
+</ng-container>

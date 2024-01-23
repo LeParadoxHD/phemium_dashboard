@@ -1,0 +1,78 @@
+:host {
+  display: block;
+  width: 100%;
+  min-height: 200px;
+  border: 1px solid rgba(black, 0.05);
+  border-radius: 10px;
+  padding: 15px;
+  background-color: rgba(black, 0.015);
+}
+
+:host::ng-deep .page-options {
+  display: flex;
+  flex-wrap: wrap;
+  .ant-form-item {
+    flex: initial;
+    display: flex;
+    .ant-form-item-label {
+      min-width: 50px;
+      label {
+        color: rgba(black, 0.65);
+      }
+    }
+    .ant-form-item-control {
+      flex: 0 60%;
+      .ant-input-number {
+        width: 80px;
+      }
+      .ant-input {
+        width: 120px;
+      }
+      .ant-select {
+        width: 150px;
+      }
+    }
+  }
+}
+
+:host::ng-deep .filters {
+  margin-top: 20px;
+  color: rgba(black, 0.65);
+  .ant-table {
+    margin-top: 10px;
+    tbody tr td {
+      width: 33.33333333%;
+    }
+    input {
+      color: rgba(black, 0.6);
+    }
+    .ant-input {
+      width: 100%;
+      input {
+        width: 100%;
+      }
+    }
+    .ant-select {
+      width: 100%;
+      input {
+        text-transform: uppercase;
+      }
+    }
+    .ant-table-placeholder {
+      display: none;
+    }
+    .actions {
+      display: flex;
+      .ant-btn:not(:last-child) {
+        margin-right: 10px;
+      }
+    }
+  }
+  .add-filter {
+    color: rgba(black, 0.65);
+    margin-top: 15px;
+    .anticon {
+      color: rgba(black, 0.4);
+    }
+  }
+}

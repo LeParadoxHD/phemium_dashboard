@@ -1,0 +1,9 @@
+{
+  "exportall.config.folderListener": [
+    "/src/app/state/actions",
+    "/src/app/state/store",
+    "/src/app/state/interfaces",
+    "/src/app/config",
+    "/src/app/utilities"
+  ]
+}

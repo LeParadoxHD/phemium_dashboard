@@ -1,0 +1,75 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+nz-layout {
+  display: flex;
+  height: 100%;
+  background-color: white;
+}
+
+:host::ng-deep .ant-tabs-tab {
+  * {
+    transition: none;
+  }
+  .ant-tabs-tab-btn {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    .ant-breadcrumb {
+      nz-breadcrumb-item:first-child * {
+        color: rgba(black, 0.25) !important;
+      }
+      nz-breadcrumb-item:last-child * {
+        color: rgba(black, 0.5);
+      }
+    }
+  }
+  &.ant-tabs-tab-active {
+    .ant-breadcrumb {
+      nz-breadcrumb-item:last-child * {
+        color: #1890ff;
+      }
+    }
+  }
+}
+
+:host::ng-deep .ant-tabs {
+  height: 100%;
+  .ant-tabs-content {
+    height: 100%;
+    .ant-tabs-tabpane {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+  }
+}
+
+.xhr-panel {
+  border-top: 1px solid rgba(black, 0.1);
+}
+
+.parameters-container {
+  overflow: auto;
+  padding: 20px;
+  padding-bottom: 50px;
+}
+
+:host::ng-deep.request-panel {
+  display: block;
+  height: 100%;
+  transition: none;
+  width: var(--request-panel-width) !important;
+  flex: 0 0 var(--request-panel-width) !important;
+  min-width: 100px !important;
+  max-width: calc(100vw - var(--menu-panel-width) - 100px) !important;
+  background-color: white;
+  border-right: 1px solid rgba(black, 0.1);
+}
+
+.response {
+  display: flex;
+}

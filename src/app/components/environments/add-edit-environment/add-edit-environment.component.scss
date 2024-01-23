@@ -1,0 +1,31 @@
+:host {
+  display: block;
+  padding: 20px;
+  color: var(--text-color);
+}
+
+form {
+  margin: 20px 0;
+  input {
+    color: rgba(black, 0.7);
+  }
+  nz-input-number {
+    margin-right: 10px;
+  }
+  button + button {
+    margin-left: 20px;
+  }
+}
+
+.env {
+  color: var(--primary-color);
+}
+
+.tip {
+  display: inline-block;
+  color: rgba(black, 0.5);
+}
+
+.connection-test {
+  margin-top: 20px;
+}

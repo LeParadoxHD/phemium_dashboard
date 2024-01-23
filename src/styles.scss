@@ -1,0 +1,98 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "~node_modules/ng-zorro-antd/resizable/style/index.css";
+
+// Fonts
+@import "./app/styles/fonts/ProductSans";
+@import "./app/styles/fonts/RobotoMono";
+
+* {
+  user-select: none;
+  font-family: "Product Sans Medium Regular";
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  color: unset;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+:root {
+  --debug-panel-height: 30px;
+  --menu-panel-width: 300px;
+  --primary-color: #1890ff;
+  --text-color: rgba(0, 0, 0, 0.7);
+  --request-panel-width: calc((100vw - var(--menu-panel-width)) / 2);
+}
+
+::-webkit-scrollbar {
+  height: 7px;
+  width: 7px;
+  background: white;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  &:hover {
+    background: rgba(0, 0, 0, 0.2);
+  }
+}
+
+.cdk-overlay-backdrop + .cdk-overlay-connected-position-bounding-box {
+  background-color: rgba(black, 0.2);
+}
+
+.ant-tabs-left > .ant-tabs-content-holder > .ant-tabs-content > .ant-tabs-tabpane {
+  padding-left: 0;
+}
+
+nz-layout {
+  .full-height {
+    height: 100%;
+  }
+  .full-width {
+    width: 100%;
+  }
+}
+
+.ant-select-item {
+  font-weight: 500 !important;
+}
+
+.ant-form-item {
+  padding-bottom: 5px;
+}
+.ant-form-item-with-help .ant-form-item-explain {
+  position: relative;
+  top: 5px;
+  font-size: 13px;
+}
+
+html:not(.dark) {
+  body {
+    background-color: white;
+  }
+}
+
+html.dark {
+  --text-color: rgba(255, 255, 255, 0.8);
+  body {
+    background-color: #212121;
+    color: rgba(255, 255, 255, 0.8);
+  }
+  nz-sider,
+  .ant-layout,
+  nz-content {
+    background: transparent !important;
+  }
+}
