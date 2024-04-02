@@ -68,8 +68,31 @@ export class ViewState implements NgxsOnInit {
     }
   }
 
+  @Action(ViewActions.RemoveViewExceptThisOne)
+  removeTabExceptThisOne(
+    { setState, getState }: StateContext<IViewState>,
+    { index }: ViewActions.RemoveViewExceptThisOne
+  ) {
+    const tab = getState().tabs?.[index];
+    if (tab) {
+      switch (typeof index) {
+        case 'number':
+          setState(
+            patch<IViewState>({
+              tabs: [tab]
+            })
+          );
+          return;
+        default:
+      }
+    }
+  }
+
   @Action(ViewActions.UpdateViewParameters)
-  updateViewParameters({ setState }: StateContext<IViewState>, { method, parameters }: ViewActions.UpdateViewParameters) {
+  updateViewParameters(
+    { setState }: StateContext<IViewState>,
+    { method, parameters }: ViewActions.UpdateViewParameters
+  ) {
     setState(
       patch<IViewState>({
         tabs: updateItem<IView>((item) => item.api.id === method, patch({ parameters }))
@@ -78,7 +101,10 @@ export class ViewState implements NgxsOnInit {
   }
 
   @Action(ViewActions.UpdateViewVirtualParameters)
-  updateViewVirtualParameters({ setState }: StateContext<IViewState>, { method, parameters }: ViewActions.UpdateViewVirtualParameters) {
+  updateViewVirtualParameters(
+    { setState }: StateContext<IViewState>,
+    { method, parameters }: ViewActions.UpdateViewVirtualParameters
+  ) {
     setState(
       patch<IViewState>({
         tabs: updateItem<IView>((item) => item.api.id === method, patch({ virtualParameters: parameters }))
@@ -96,7 +122,10 @@ export class ViewState implements NgxsOnInit {
   }
 
   @Action(ViewActions.PerformRequest)
-  performRequest({ setState, getState }: StateContext<IViewState>, { entity, method, parameters }: ViewActions.PerformRequest) {
+  performRequest(
+    { setState, getState }: StateContext<IViewState>,
+    { entity, method, parameters }: ViewActions.PerformRequest
+  ) {
     const tabId = `${entity}-${method}`;
     const myTabIndex = getState().tabs.findIndex((tab) => tab.api.id === tabId);
     setState(
@@ -142,11 +171,17 @@ export class ViewState implements NgxsOnInit {
   }
 
   static GetTabVirtualParameters(tabId: string) {
-    return createSelector([ViewState], (viewsState: IViewState) => viewsState.tabs.find((tab) => tab.api.id === tabId)?.virtualParameters);
+    return createSelector(
+      [ViewState],
+      (viewsState: IViewState) => viewsState.tabs.find((tab) => tab.api.id === tabId)?.virtualParameters
+    );
   }
 
   static GetTabLoadingStatus(tabId: string) {
-    return createSelector([ViewState], (viewsState: IViewState) => viewsState.tabs.find((tab) => tab.api.id === tabId)?.loading || false);
+    return createSelector(
+      [ViewState],
+      (viewsState: IViewState) => viewsState.tabs.find((tab) => tab.api.id === tabId)?.loading || false
+    );
   }
 
   @Selector()
@@ -155,6 +190,9 @@ export class ViewState implements NgxsOnInit {
   }
 
   static GetTabParametersValue(methodId: string) {
-    return createSelector([ViewState], (viewState: IViewState) => viewState?.tabs?.find((tab) => tab?.api?.id === methodId)?.parameters);
+    return createSelector(
+      [ViewState],
+      (viewState: IViewState) => viewState?.tabs?.find((tab) => tab?.api?.id === methodId)?.parameters
+    );
   }
 }

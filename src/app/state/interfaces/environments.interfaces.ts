@@ -1,4 +1,5 @@
 import { Environments } from 'src/app/config';
+import { ILogin } from './logins.interfaces';
 
 export interface IEnvironment {
   env: Environments;
@@ -12,4 +13,8 @@ export interface IEnvironment {
 
 export type IEnvironmentsState = {
   [env in Environments]?: IEnvironment[];
+};
+
+export type IEnvironmentsWithLoginInfo = {
+  [env in Environments]?: (IEnvironment & ILogin)[];
 };

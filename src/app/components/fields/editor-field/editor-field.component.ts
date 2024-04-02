@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, Optional, Self } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  Optional,
+  Self
+} from '@angular/core';
 import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 import { MonacoEditorConstructionOptions } from '@materia-ui/ngx-monaco-editor';
 import { Observable, Subscription } from 'rxjs';
@@ -46,7 +54,12 @@ export class EditorFieldComponent implements ControlValueAccessor, OnDestroy, On
 
   sub: Subscription;
   ngOnInit() {
-    this.sub = this.control.valueChanges.subscribe((val) => (this.value = val));
+    this.sub = this.control.valueChanges.subscribe((val) => {
+      if (typeof val === 'string') {
+        val = JSON.parse(val.replace(/\r|\n|\t/g, ''));
+      }
+      this.value = val;
+    });
   }
 
   ngOnDestroy() {

@@ -1,5 +1,12 @@
 <nz-layout class="full-height" *ngIf="environments$ | async as envs">
-  <nz-sider class="env-manager" [nzWidth]="layout.environmentsPanelWidth$ | async" nz-resizable [nzMinWidth]="200" [nzMaxWidth]="400" (nzResize)="onPanelResize($event)">
+  <nz-sider
+    class="env-manager"
+    [nzWidth]="layout.environmentsPanelWidth$ | async"
+    nz-resizable
+    [nzMinWidth]="200"
+    [nzMaxWidth]="400"
+    (nzResize)="onPanelResize($event)"
+  >
     <nz-resize-handle nzDirection="right">
       <div class="right-wrap resize-horizontal">
         <span class="right" nz-icon nzType="more" nzTheme="outline"></span>
@@ -13,19 +20,48 @@
             {{ type.name }}
           </span>
           <div class="options">
-            <nz-badge nzShowZero class="environment-count" nzStandalone [nzCount]="envs?.[type.id]?.length || 0"></nz-badge>
+            <nz-badge
+              nzShowZero
+              class="environment-count"
+              nzStandalone
+              [nzCount]="envs?.[type.id]?.length || 0"
+            ></nz-badge>
             <button (click)="add(type)" nz-button nzType="default" nzShape="circle">
               <span nz-icon nzType="plus"></span>
             </button>
           </div>
         </div>
         <div class="list" *ngIf="envs[type.id]">
-          <div class="environment-item" (click)="edit(env, type.id)" *ngFor="let env of envs[type.id]"><i nz-icon nzType="right"></i>{{ env.name }}</div>
+          <div
+            class="environment-item"
+            (contextmenu)="contextMenu($event, menu)"
+            (click)="edit(env, type.id)"
+            *ngFor="let env of envs[type.id]"
+          >
+            <i nz-icon nzType="right"></i>
+            {{ env.name }}
+            <nz-dropdown-menu #menu="nzDropdownMenu">
+              <ul nz-menu>
+                <li nz-menu-item>
+                  <span nz-icon nzType="reload"></span>
+                  Refresh token
+                </li>
+                <li nz-menu-item (click)="copyToClipboard(env.token)" [nzDisabled]="!env.token">
+                  <span nz-icon nzType="copy"></span>
+                  Copy token
+                </li>
+              </ul>
+            </nz-dropdown-menu>
+          </div>
         </div>
       </div>
     </div>
   </nz-sider>
   <nz-content class="space-between">
-    <app-add-edit-environment *ngIf="edit$ | async as edit" [mode]="edit.mode" [data]="edit.item"></app-add-edit-environment>
+    <app-add-edit-environment
+      *ngIf="edit$ | async as edit"
+      [mode]="edit.mode"
+      [data]="edit.item"
+    ></app-add-edit-environment>
   </nz-content>
 </nz-layout>

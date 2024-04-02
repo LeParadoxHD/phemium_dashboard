@@ -5,7 +5,7 @@ import { IApi, IEnvironment, IEnvironmentsState } from '../state/interfaces';
 import memo from 'memo-decorator';
 import { Actions, ofActionSuccessful, Store } from '@ngxs/store';
 import { EnvironmentsState, LoginsState, SettingsState } from '../state/store';
-import { EMPTY, Observable, of, switchMap } from 'rxjs';
+import { EMPTY, NEVER, Observable, catchError, of, switchMap } from 'rxjs';
 import { LoginActions } from '../state/actions';
 import { HttpHeaderToRecord } from '../utilities';
 import { CustomHttpResponse } from '../interfaces';
@@ -45,13 +45,21 @@ export class ApiService {
     entity: string,
     method: string,
     parameters: any[] = [],
-    environmentType?: Environments
+    environmentType?: Environments,
+    retry: number = 0
   ): Observable<CustomHttpResponse> {
+    if (retry > 3) {
+      alert('Unable to perform request');
+      return NEVER;
+    }
     let token: string = null;
     environmentType ||= this._store.selectSnapshot(SettingsState.GetCurrentEnvironmentType);
-    if (entity !== 'login') {
-      token = this._store.selectSnapshot(LoginsState.GetCurrentToken()).token;
+    console.log('EnvironmentType:', environmentType);
+    token = this._store.selectSnapshot(LoginsState.GetCurrentToken()).token;
+    if (entity === 'login' && method.startsWith('login')) {
+      token = null;
     }
+    console.log('Token:', token);
     const formData = new FormData();
     formData.append('transaction_id', 'faye_' + new Date().getTime());
     if (token) formData.append('token', token);
@@ -67,17 +75,21 @@ export class ApiService {
         observe: 'response'
       })
       .pipe(
+        catchError((error) => of(error)),
         switchMap((response) => {
           // Handle errors of session
           if (response.body && typeof response.body === 'object') {
             const json = response.body as any;
             if (json.error && json.message === 'No session found for token') {
               // Relogin if session is lost and retry request
-              const currentEnvironment = this._store.selectSnapshot<string>(SettingsState.GetProperty('selected_environment'));
+              const currentEnvironment = this._store.selectSnapshot<string>(
+                SettingsState.GetProperty('selected_environment')
+              );
+              console.log('CurrentEnvironment:', currentEnvironment);
               this._store.dispatch(new LoginActions.LoginCustomer(currentEnvironment, true));
               return this._actions$.pipe(
                 ofActionSuccessful(LoginActions.LoginCustomer),
-                switchMap(() => this.request(entity, method, parameters, environmentType))
+                switchMap(() => this.request(entity, method, parameters, environmentType, retry + 1))
               );
             }
           }
@@ -95,7 +107,6 @@ export class ApiService {
   constructParameters(parameters: any[]) {
     const params = [];
     for (const [_, param] of parameters.entries()) {
-      console.log(param);
       if (/\[\[.*?\]\]/.test(param)) {
         params.push(param);
       } else {

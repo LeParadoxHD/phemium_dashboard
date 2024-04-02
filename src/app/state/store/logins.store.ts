@@ -26,7 +26,10 @@ export class LoginsState {
   }
 
   @Action(LoginActions.InitializeEnvironment)
-  initializeEnvironment({ getState, setState, dispatch }: StateContext<ILoginsState>, { environment }: LoginActions.InitializeEnvironment) {
+  initializeEnvironment(
+    { getState, setState, dispatch }: StateContext<ILoginsState>,
+    { environment }: LoginActions.InitializeEnvironment
+  ) {
     const ctx = getState();
     if (!(environment in ctx)) {
       setState(patch<ILoginsState>({ [environment]: {} }));
@@ -36,7 +39,10 @@ export class LoginsState {
   }
 
   @Action(LoginActions.LoginCustomer)
-  loginCustomer({ getState, setState, dispatch }: StateContext<ILoginsState>, { environment, force }: LoginActions.LoginCustomer) {
+  loginCustomer(
+    { getState, setState, dispatch }: StateContext<ILoginsState>,
+    { environment, force }: LoginActions.LoginCustomer
+  ) {
     const ctx = getState();
     let token: string = null;
     if (environment in ctx) {
@@ -50,18 +56,17 @@ export class LoginsState {
     if (token && !force) {
       // Validate the token and re-login if necessary
       return of(null);
-    } else {
-      // Perform Login as Customer
-      setState(patch<ILoginsState>({ [environment]: patch<ILogin>({ loading: true }) }));
-      return this._api.loginCustomer(environment).pipe(
-        tap((response) => {
-          if (response.ok && response.body && response.body) {
-            const token = response.body as string;
-            setState(patch<ILoginsState>({ [environment]: patch<ILogin>({ loading: false, token, valid: true }) }));
-          }
-        })
-      );
     }
+    // Perform Login as Customer
+    setState(patch<ILoginsState>({ [environment]: patch<ILogin>({ loading: true }) }));
+    return this._api.loginCustomer(environment).pipe(
+      tap((response) => {
+        if (response.ok && response.body) {
+          const token = response.body as string;
+          setState(patch<ILoginsState>({ [environment]: patch<ILogin>({ loading: false, token, valid: true }) }));
+        }
+      })
+    );
   }
 
   @Action(LoginActions.SetToken)
@@ -79,6 +84,7 @@ export class LoginsState {
       if (!settingsState.selected_environment) {
         return null;
       }
+      console.log('GetCurrentToken:', loginState[settingsState?.selected_environment]);
       return loginState[settingsState.selected_environment];
     });
   }

@@ -8,7 +8,9 @@
         </nz-select>
       </nz-form-control>
       <nz-form-control *ngLet="multipleTypes.get(api.params[i].name).value as type" [nzSpan]="24">
-        <ng-container *ngTemplateOutlet="field; context: { $implicit: control, type, def: api.params[i] }"></ng-container>
+        <ng-container
+          *ngTemplateOutlet="field; context: { $implicit: control, type, def: api.params[i] }"
+        ></ng-container>
       </nz-form-control>
     </ng-container>
     <ng-template #simpleField>

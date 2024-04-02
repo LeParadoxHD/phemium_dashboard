@@ -6,8 +6,11 @@ import { ApisConfig, Environments } from 'src/app/config';
 import { AddEdit, IApiConfig } from 'src/app/interfaces';
 import { LayoutService } from 'src/app/services/layout.service';
 import { EnvironmentActions } from 'src/app/state/actions';
-import { IEnvironment, IEnvironmentsState } from 'src/app/state/interfaces';
-import { EnvironmentsState } from 'src/app/state/store';
+import { IEnvironment, IEnvironmentsWithLoginInfo } from 'src/app/state/interfaces';
+import { NzContextMenuService, NzDropdownMenuComponent } from 'ng-zorro-antd/dropdown';
+import { EnvironmentsWithToken } from 'src/app/utilities';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-environments',
@@ -16,12 +19,18 @@ import { EnvironmentsState } from 'src/app/state/store';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EnvironmentsComponent implements OnInit {
-  @Select(EnvironmentsState) environments$: Observable<IEnvironmentsState>;
+  @Select(EnvironmentsWithToken()) environments$: Observable<IEnvironmentsWithLoginInfo>;
   _envPanelId = -1;
 
   environmentTypes = ApisConfig;
 
-  constructor(public layout: LayoutService, private _actions: Actions) {}
+  constructor(
+    public layout: LayoutService,
+    private _actions: Actions,
+    private nzContextMenuService: NzContextMenuService,
+    private clipboard: Clipboard,
+    private message: NzMessageService
+  ) {}
 
   ngOnInit() {
     this._actions
@@ -45,6 +54,21 @@ export class EnvironmentsComponent implements OnInit {
         ...environment,
         env: envType
       }
+    });
+  }
+
+  contextMenu($event: MouseEvent, menu: NzDropdownMenuComponent): void {
+    this.nzContextMenuService.create($event, menu);
+  }
+
+  closeMenu(): void {
+    this.nzContextMenuService.close();
+  }
+
+  copyToClipboard(text: string) {
+    this.clipboard.copy(text);
+    this.message.success('Token copied to clipboard!', {
+      nzDuration: 2000
     });
   }
 

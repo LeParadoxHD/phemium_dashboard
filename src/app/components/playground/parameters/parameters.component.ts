@@ -6,7 +6,6 @@ import { Store } from '@ngxs/store';
 import { ViewActions } from 'src/app/state/actions';
 import { ViewState } from 'src/app/state/store';
 import { SubSinkAdapter } from 'src/app/utilities';
-import { MonacoEditorConstructionOptions } from '@materia-ui/ngx-monaco-editor';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -47,7 +46,9 @@ export class ParametersComponent extends SubSinkAdapter implements OnInit {
       .subscribe();
     // Analyze if some parameter has multiple types,
     // in that case create an object storing the type
-    const values = this._store.selectSnapshot<Record<string, any> | null>(ViewState.GetTabVirtualParameters(this.api.id));
+    const values = this._store.selectSnapshot<Record<string, any> | null>(
+      ViewState.GetTabVirtualParameters(this.api.id)
+    );
     for (const param of this.api.params) {
       if (param.type.length > 1) {
         if (!this.multipleTypes.contains(param.name)) {
@@ -60,7 +61,9 @@ export class ParametersComponent extends SubSinkAdapter implements OnInit {
     this.sink = this.multipleTypes.valueChanges
       .pipe(
         debounceTime(100),
-        switchMap((parameters) => this._store.dispatch(new ViewActions.UpdateViewVirtualParameters(this.api.id, parameters)))
+        switchMap((parameters) =>
+          this._store.dispatch(new ViewActions.UpdateViewVirtualParameters(this.api.id, parameters))
+        )
       )
       .subscribe();
   }

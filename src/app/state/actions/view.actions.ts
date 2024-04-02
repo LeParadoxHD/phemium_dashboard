@@ -9,6 +9,10 @@ export namespace ViewActions {
     static readonly type = '[View] Remove';
     constructor(public index: number | string) {}
   }
+  export class RemoveViewExceptThisOne {
+    static readonly type = '[View] Remove all except this one';
+    constructor(public index: number | string) {}
+  }
   export class UpdateViewParameters {
     static readonly type = '[View] Update parameters';
     constructor(public method: string, public parameters: any[]) {}

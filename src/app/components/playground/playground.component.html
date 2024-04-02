@@ -7,13 +7,29 @@
   (nzSelectedIndexChange)="onTabIndexChange($event)"
   (nzClose)="closeTab($event)"
 >
-  <nz-tab *ngFor="let tab of tabs$ | async; trackBy: trackById" nzClosable [nzTitle]="title">
+  <nz-tab *ngFor="let tab of tabs$ | async; let i = index; trackBy: trackById" nzClosable [nzTitle]="title">
     <ng-template #title>
-      <nz-breadcrumb nzSeparator=">">
+      <nz-breadcrumb (contextmenu)="contextMenu($event, menu)" nzSeparator=">">
         <nz-breadcrumb-item>{{ tab.api.group.normalized }}</nz-breadcrumb-item>
         <nz-breadcrumb-item>{{ tab.api.normalized }}</nz-breadcrumb-item>
       </nz-breadcrumb>
     </ng-template>
+    <nz-dropdown-menu #menu="nzDropdownMenu">
+      <ul nz-menu>
+        <li (click)="closeTab({ index: i })" nz-menu-item>
+          <span nz-icon nzType="close"></span>
+          Close tab
+        </li>
+        <li (click)="closeTabExceptThisOne({ index: i })" nz-menu-item>
+          <span nz-icon nzType="close"></span>
+          Close all tabs except this one
+        </li>
+        <li nz-menu-item>
+          <span nz-icon nzType="copy"></span>
+          Duplicate
+        </li>
+      </ul>
+    </nz-dropdown-menu>
     <ng-template nz-tab>
       <div class="parameters-container">
         <app-parameters [api]="tab.api"></app-parameters>

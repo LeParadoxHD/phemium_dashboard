@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, TrackByFunction } from '@angular/core';
 import { Select, Store } from '@ngxs/store';
+import { NzContextMenuService, NzDropdownMenuComponent } from 'ng-zorro-antd/dropdown';
 import { NzResizeEvent } from 'ng-zorro-antd/resizable';
 import { Observable } from 'rxjs';
 import { IView } from 'src/app/interfaces';
@@ -25,7 +26,16 @@ export class PlaygroundComponent {
   @Select(ViewState.GetTabs) tabs$: Observable<IView[]>;
   @Select(ViewState.GetCurrentTabIndex) tabIndex$: Observable<number>;
 
-  constructor(private _cdr: ChangeDetectorRef, public layout: LayoutService, private _store: Store) {}
+  constructor(
+    private _cdr: ChangeDetectorRef,
+    public layout: LayoutService,
+    private _store: Store,
+    private nzContextMenuService: NzContextMenuService
+  ) {}
+
+  contextMenu($event: MouseEvent, menu: NzDropdownMenuComponent): void {
+    this.nzContextMenuService.create($event, menu);
+  }
 
   onResizeXhr({ height }: NzResizeEvent): void {
     console.log(height);
@@ -47,6 +57,10 @@ export class PlaygroundComponent {
 
   closeTab({ index }: { index: number }) {
     this._store.dispatch(new ViewActions.RemoveView(index));
+  }
+
+  closeTabExceptThisOne({ index }: { index: number }) {
+    this._store.dispatch(new ViewActions.RemoveViewExceptThisOne(index));
   }
 
   onTabIndexChange(index: number) {

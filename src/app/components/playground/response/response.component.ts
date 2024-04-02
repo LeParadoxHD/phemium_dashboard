@@ -1,4 +1,6 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { MonacoEditorConstructionOptions } from '@materia-ui/ngx-monaco-editor';
 import { Store } from '@ngxs/store';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -22,15 +24,25 @@ export class ResponseComponent implements OnChanges, OnInit {
 
   code$ = new BehaviorSubject<string>('');
 
-  constructor(private _store: Store, private layout: LayoutService) {
+  html$ = new BehaviorSubject<SafeHtml>('');
+
+  constructor(private _store: Store, private layout: LayoutService, private _sanitizer: DomSanitizer) {
     this.editorOptions$ = this.layout.getEditorOptions();
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes?.['response']?.currentValue) {
       // const previousResponse = (changes['response'].previousValue as IHttpResponse).body;
-      const currentResponse = (changes['response'].currentValue as CustomHttpResponse).body;
-      this.code$.next(typeof currentResponse === 'object' ? JSON.stringify(currentResponse, null, 2) : currentResponse);
+      const response = changes['response'].currentValue as CustomHttpResponse & HttpErrorResponse;
+      const body = response.body;
+      const html = response.error;
+      if (body) {
+        this.code$.next(typeof body === 'object' ? JSON.stringify(body, null, 2) : body);
+        this.html$.next('');
+      } else if (html) {
+        this.code$.next('');
+        this.html$.next(this._sanitizer.bypassSecurityTrustHtml(html));
+      }
     }
   }
 

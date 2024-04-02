@@ -25,6 +25,7 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
@@ -50,6 +51,7 @@ import { RequestComponent } from './components/playground/request/request.compon
 import { ResponseComponent } from './components/playground/response/response.component';
 import { EditorFieldComponent } from './components/fields/editor-field/editor-field.component';
 import { DatetimeFieldComponent } from './components/fields/datetime-field/datetime-field.component';
+import { NzMessageModule } from 'ng-zorro-antd/message';
 
 registerLocaleData(es);
 
@@ -81,8 +83,10 @@ registerLocaleData(es);
     NzIconModule,
     NzMenuModule,
     NzResizableModule,
+    NzDropDownModule,
     NzBadgeModule,
     NzSelectModule,
+    NzMessageModule,
     NzDividerModule,
     NzTabsModule,
     NzTableModule,
