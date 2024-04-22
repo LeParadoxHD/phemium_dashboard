@@ -1,0 +1,40 @@
+:host,
+::ng-deep app-rule-block-multiple {
+  display: block;
+  &:not(:first-child) {
+    border-top: 1px solid rgba(black, 0.05);
+  }
+}
+
+::ng-deep app-rule-block {
+  padding: 20px;
+  box-sizing: border-box;
+  &:hover,
+  &:focus-within {
+    background-color: rgba(aliceblue, 0.7);
+  }
+}
+
+.header,
+::ng-deep app-rule-block-multiple .header {
+  color: rgba(black, 0.75);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+::ng-deep app-rule-block-multiple {
+  display: grid !important;
+  .block {
+    padding: 20px;
+    box-sizing: border-box;
+    &:hover,
+    &:focus-within {
+      background-color: rgba(aliceblue, 0.7);
+    }
+  }
+  .block:not(:first-child) {
+    padding-left: 20px;
+    box-sizing: border-box;
+    border-left: 1px solid rgba(black, 0.05);
+  }
+}

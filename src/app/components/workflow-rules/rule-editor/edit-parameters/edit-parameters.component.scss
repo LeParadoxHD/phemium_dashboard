@@ -1,0 +1,17 @@
+:host {
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: 15px;
+}
+
+input {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  box-shadow: none !important;
+}
+
+:host::ng-deep .ant-input-group-addon {
+  font-weight: 500;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}

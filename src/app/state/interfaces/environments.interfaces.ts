@@ -1,8 +1,8 @@
-import { Environments } from 'src/app/config';
+import { Servers } from 'src/app/config';
 import { ILogin } from './logins.interfaces';
 
 export interface IEnvironment {
-  env: Environments;
+  server: Servers;
   normalized: string;
   name: string;
   slug?: string;
@@ -12,9 +12,9 @@ export interface IEnvironment {
 }
 
 export type IEnvironmentsState = {
-  [env in Environments]?: IEnvironment[];
+  [server in Servers]?: IEnvironment[];
 };
 
 export type IEnvironmentsWithLoginInfo = {
-  [env in Environments]?: (IEnvironment & ILogin)[];
+  [server in Servers]?: (IEnvironment & ILogin)[];
 };

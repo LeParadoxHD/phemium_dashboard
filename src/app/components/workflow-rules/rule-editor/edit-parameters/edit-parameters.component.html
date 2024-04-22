@@ -1,0 +1,5 @@
+@for (parameter of parametersForm.controls; let i = $index; track i) {
+<nz-input-group [nzAddOnBefore]="'Parameter ' + (i + 1)">
+  <input type="text" nz-input spellcheck="false" autocomplete="off" />
+</nz-input-group>
+}

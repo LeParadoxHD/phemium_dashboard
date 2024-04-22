@@ -22,9 +22,11 @@
       <router-outlet></router-outlet>
     </nz-content>
   </nz-layout>
+  @if (logPanelMinHeight$ | async; as minHeight) {
   <div
     nz-resizable
     class="resizable-box footer"
+    [style.minHeight.px]="minHeight"
     [style.height.px]="layout.debugPanelHeight$ | async"
     [nzMaxHeight]="400"
     [nzMinHeight]="30"
@@ -36,6 +38,7 @@
         <span class="top" nz-icon nzType="more" nzTheme="outline"></span>
       </div>
     </nz-resize-handle>
-    DEBUG
+    <app-logs></app-logs>
   </div>
+  }
 </nz-layout>

@@ -1,13 +1,17 @@
 :host {
   display: block;
   width: 100%;
-  height: 100%;
+  height: calc(100vh - var(--debug-panel-height) - 46px);
 }
 
 nz-layout {
   display: flex;
   height: 100%;
   background-color: white;
+}
+
+:host::ng-deep nz-tabs-nav {
+  margin: 0 !important;
 }
 
 :host::ng-deep .ant-tabs-tab {

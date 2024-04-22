@@ -1,0 +1,75 @@
+:host {
+  display: flex;
+  flex-direction: column-reverse;
+  overflow-x: hidden;
+  align-items: flex-start;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(black, 0.02);
+  border-top: 1px solid #1890ff;
+}
+
+.log {
+  display: flex;
+  height: 35px;
+  line-height: 35px;
+  font-size: 13px;
+  width: 100%;
+  opacity: 0.8;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  &:hover {
+    opacity: 1;
+    background-color: rgba(black, 0.02);
+  }
+  align-items: center;
+  &:not(:last-child) {
+    border-top: 1px solid rgba(black, 0.1);
+  }
+  & * {
+    font-family: "Roboto Mono";
+  }
+  & > div {
+    min-width: 15px;
+    padding: 0 10px;
+    box-sizing: border-box;
+    flex: initial;
+    position: relative;
+    &:not(:first-child)::before {
+      content: "";
+      height: 15px;
+      width: 1px;
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      background-color: rgba(black, 0.15);
+    }
+  }
+  .url a {
+    color: #1890ff;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  .status {
+    display: block;
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    padding: 0;
+    margin: 0 10px;
+    background-color: #1890ff;
+  }
+  &.success .status {
+    background-color: green;
+  }
+  &.error .status {
+    background-color: red;
+  }
+  &.warning .status {
+    background-color: orange;
+  }
+}

@@ -1,6 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Action, createSelector, NgxsOnChanges, NgxsOnInit, NgxsSimpleChange, Selector, State, StateContext, Store } from '@ngxs/store';
-import { Environments } from 'src/app/config';
+import {
+  Action,
+  createSelector,
+  NgxsOnChanges,
+  NgxsOnInit,
+  NgxsSimpleChange,
+  Selector,
+  State,
+  StateContext,
+  Store
+} from '@ngxs/store';
+import { Servers } from 'src/app/config';
 import { LoginActions, SettingsActions } from '../actions';
 import { ISettingsState } from '../interfaces';
 
@@ -33,10 +43,18 @@ export class SettingsState implements NgxsOnChanges, NgxsOnInit {
   }
 
   ngxsOnChanges(change: NgxsSimpleChange<ISettingsState>) {
-    if (change.currentValue?.selected_environment && change.previousValue?.selected_environment !== change.currentValue?.selected_environment) {
+    if (
+      change.currentValue?.selected_environment &&
+      change.previousValue?.selected_environment !== change.currentValue?.selected_environment
+    ) {
       // Get Api and login_customer
       this._store.dispatch(new LoginActions.InitializeEnvironment(change.currentValue.selected_environment));
     }
+  }
+
+  @Selector()
+  static GetCurrentEnvironment(ctx: ISettingsState) {
+    return ctx.selected_environment;
   }
 
   static GetProperty(property: keyof ISettingsState) {
@@ -44,9 +62,9 @@ export class SettingsState implements NgxsOnChanges, NgxsOnInit {
   }
 
   @Selector()
-  static GetCurrentEnvironmentType(ctx: ISettingsState) {
+  static GetCurrentEnvironmentServer(ctx: ISettingsState) {
     if (typeof ctx.selected_environment === 'string') {
-      return ctx.selected_environment.split('|')[0] as Environments;
+      return ctx.selected_environment.split('|')[0] as Servers;
     }
     return null;
   }

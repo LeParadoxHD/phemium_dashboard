@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, SimpleChanges } from '@angular/core';
-import { MonacoEditorConstructionOptions } from '@materia-ui/ngx-monaco-editor';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { IViewRequest } from 'src/app/interfaces';
-import { LayoutService } from 'src/app/services/layout.service';
+import { LayoutService, MonacoEditorOptions } from 'src/app/services/layout.service';
 
 @Component({
   selector: 'app-request',
@@ -13,7 +12,7 @@ import { LayoutService } from 'src/app/services/layout.service';
 export class RequestComponent {
   @Input() request: IViewRequest;
 
-  editorOptions$: Observable<MonacoEditorConstructionOptions>;
+  editorOptions$: Observable<MonacoEditorOptions>;
 
   constructor(private layoutService: LayoutService) {
     this.editorOptions$ = this.layoutService.getEditorOptions();

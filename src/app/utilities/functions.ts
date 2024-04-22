@@ -1,5 +1,6 @@
 import { HttpHeaders } from '@angular/common/http';
 import { IApiMethodGroup, IApiMethodParams, IViewResponse } from '../interfaces';
+import { Servers } from '../config';
 
 export function NormalizeMethodGroupName(name: string) {
   const parts = name.split('_');
@@ -28,7 +29,12 @@ export function NormalizeMethodParamName(name: string) {
 
 export function GetMethodIcon(name: string) {
   name = name.toLowerCase().trim();
-  if (name.startsWith('create_') || name.startsWith('generate_') || name.startsWith('add_') || name.startsWith('register_')) {
+  if (
+    name.startsWith('create_') ||
+    name.startsWith('generate_') ||
+    name.startsWith('add_') ||
+    name.startsWith('register_')
+  ) {
     return 'plus';
   }
   if (
@@ -107,24 +113,45 @@ export function GetMethodIcon(name: string) {
   return 'api';
 }
 
-export function TransformApiMethodGroups(methodGroups: IApiMethodGroup[]) {
-  return methodGroups.map((methodGroup) => {
-    methodGroup.normalized = NormalizeMethodGroupName(methodGroup.name);
-    methodGroup.methods = methodGroup.methods.map((method) => {
-      method.id = methodGroup.name + '-' + method.name;
-      method.normalized = NormalizeMethodName(method.name);
-      method.icon = GetMethodIcon(method.name);
-      const { methods, ...group } = methodGroup;
-      method.group = group;
-      method.params = method.params.map((param) => ({
-        ...param,
-        type: getParameterType(param),
-        normalized: NormalizeMethodParamName(param.name)
-      }));
-      return method;
+export function TransformApiMethodGroups(
+  methodGroups: IApiMethodGroup[],
+  server: Servers
+): IApiMethodGroup[] {
+  return [...methodGroups]
+    .filter((group) => {
+      if (group.name === 'consultants' && group.methods.length < 5) {
+        return false;
+      }
+      return true;
+    })
+    .map((methodGroup) => {
+      const normalizedGroupName = NormalizeMethodGroupName(methodGroup.name);
+      return {
+        ...methodGroup,
+        normalized: normalizedGroupName,
+        server,
+        methods: methodGroup.methods.map((method) => {
+          const { methods, ...group } = methodGroup;
+          return {
+            id: methodGroup.name + '-' + method.name,
+            name: method.name,
+            auth: method.auth,
+            server,
+            normalized: NormalizeMethodName(method.name),
+            icon: GetMethodIcon(method.name),
+            group: {
+              ...group,
+              normalized: normalizedGroupName
+            },
+            params: method.params.map((param) => ({
+              ...param,
+              type: getParameterType(param),
+              normalized: NormalizeMethodParamName(param.name)
+            }))
+          };
+        })
+      };
     });
-    return methodGroup;
-  });
 }
 
 export function getParameterType(param: IApiMethodParams) {

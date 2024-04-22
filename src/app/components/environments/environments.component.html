@@ -1,4 +1,5 @@
-<nz-layout class="full-height" *ngIf="environments$ | async as envs">
+@if (environments$ | async; as envs) {
+<nz-layout class="full-height">
   <nz-sider
     class="env-manager"
     [nzWidth]="layout.environmentsPanelWidth$ | async"
@@ -13,7 +14,8 @@
       </div>
     </nz-resize-handle>
     <div class="environment-types">
-      <div class="type" *ngFor="let type of environmentTypes">
+      @for (type of environmentTypes; track type.id) {
+      <div class="type">
         <div class="title">
           <span>
             <span nz-icon nzType="database" style="margin-right: 10px"></span>
@@ -31,12 +33,13 @@
             </button>
           </div>
         </div>
-        <div class="list" *ngIf="envs[type.id]">
+        @if (envs[type.id]) {
+        <div class="list">
+          @for (env of envs[type.id]; track env.name) {
           <div
             class="environment-item"
             (contextmenu)="contextMenu($event, menu)"
-            (click)="edit(env, type.id)"
-            *ngFor="let env of envs[type.id]"
+            (click)="Edit(env, type.id)"
           >
             <i nz-icon nzType="right"></i>
             {{ env.name }}
@@ -53,15 +56,17 @@
               </ul>
             </nz-dropdown-menu>
           </div>
+          }
         </div>
+        }
       </div>
+      }
     </div>
   </nz-sider>
   <nz-content class="space-between">
-    <app-add-edit-environment
-      *ngIf="edit$ | async as edit"
-      [mode]="edit.mode"
-      [data]="edit.item"
-    ></app-add-edit-environment>
+    @if (edit(); as _edit) {
+    <app-add-edit-environment [mode]="_edit.mode" [data]="_edit.item"></app-add-edit-environment>
+    }
   </nz-content>
 </nz-layout>
+}

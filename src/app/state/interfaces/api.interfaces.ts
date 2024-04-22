@@ -1,17 +1,18 @@
-import { IApiEntity, IApiMethod, IApiMethodGroup } from 'src/app/interfaces';
-import { Environments } from 'src/app/config';
+import { Servers } from 'src/app/config';
+import { IApiEntity, IApiMethodGroup } from 'src/app/interfaces';
 
 export type IApiState = {
-  [env in Environments]?: IApi;
+  [server in Servers]?: IApi;
 };
 
 export interface IApi {
   version?: string;
   endpoint?: string;
   loading?: boolean;
-  lastUpdate?: number;
+  lastUpdate: number;
   entities?: IApiEntity[];
   apis?: IApiMethodGroup[];
+  server: Servers;
 }
 
-export type IApiEnvironments = 'integra' | 'prerelease' | 'live' | 'aws';
+export type IApiServers = 'integra' | 'prerelease' | 'live' | 'aws';

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, TrackByFunction } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
 import { Select, Store } from '@ngxs/store';
 import { NzContextMenuService, NzDropdownMenuComponent } from 'ng-zorro-antd/dropdown';
 import { NzResizeEvent } from 'ng-zorro-antd/resizable';
@@ -21,8 +21,6 @@ export class PlaygroundComponent {
   requestPanelId = -1;
   xhrHeight = 400;
 
-  public readonly trackById: TrackByFunction<IView> = (idx, { api }) => api.id;
-
   @Select(ViewState.GetTabs) tabs$: Observable<IView[]>;
   @Select(ViewState.GetCurrentTabIndex) tabIndex$: Observable<number>;
 
@@ -38,20 +36,20 @@ export class PlaygroundComponent {
   }
 
   onResizeXhr({ height }: NzResizeEvent): void {
-    console.log(height);
     cancelAnimationFrame(this.xhrPanelId);
     this.xhrPanelId = requestAnimationFrame(() => {
       this.xhrHeight = height!;
       this._cdr.markForCheck();
+      window.dispatchEvent(new Event('resize'));
     });
   }
 
   onRequestPanelResize({ width }: NzResizeEvent, end: boolean): void {
-    console.log(width, end);
     cancelAnimationFrame(this.requestPanelId);
     this.requestPanelId = requestAnimationFrame(() => {
-      if (end) this.layout.debugPanelHeight$.next(width!);
+      if (end) this.layout.requestPanelWidth$.next(width!);
       document.documentElement.style.setProperty('--request-panel-width', `${width}px`);
+      window.dispatchEvent(new Event('resize'));
     });
   }
 

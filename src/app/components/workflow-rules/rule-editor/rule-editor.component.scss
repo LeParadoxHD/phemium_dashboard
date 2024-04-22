@@ -1,0 +1,26 @@
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
+textarea {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: none !important;
+  color: rgba(black, 0.7);
+  border-radius: 8px;
+  padding: 10px;
+  box-sizing: border-box;
+  font-weight: 500;
+  &.autosize {
+    min-height: 55px;
+    max-height: 200px;
+    @supports (field-sizing: content) {
+      field-sizing: content;
+      resize: none;
+    }
+    @supports not (field-sizing: content) {
+      field-sizing: content;
+      resize: vertical;
+    }
+  }
+}

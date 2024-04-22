@@ -1,11 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ApisConfig, Environments } from '../config';
+import { ApisConfig, Servers } from '../config';
 import { IApi, IEnvironment, IEnvironmentsState } from '../state/interfaces';
-import memo from 'memo-decorator';
 import { Actions, ofActionSuccessful, Store } from '@ngxs/store';
 import { EnvironmentsState, LoginsState, SettingsState } from '../state/store';
-import { EMPTY, NEVER, Observable, catchError, of, switchMap } from 'rxjs';
+import { EMPTY, NEVER, Observable, catchError, filter, of, switchMap, take } from 'rxjs';
 import { LoginActions } from '../state/actions';
 import { HttpHeaderToRecord } from '../utilities';
 import { CustomHttpResponse } from '../interfaces';
@@ -16,36 +15,33 @@ import { CustomHttpResponse } from '../interfaces';
 export class ApiService {
   constructor(private _http: HttpClient, private _store: Store, private _actions$: Actions) {}
 
-  @memo()
-  private getEnvironment(environment: Environments) {
-    return ApisConfig.find((config) => config.id === environment);
+  private getServer(server: Servers) {
+    return ApisConfig.find((config) => config.id === server);
   }
 
-  @memo()
-  private getDomainUrl(environment: Environments) {
-    const config = this.getEnvironment(environment);
+  private getDomainUrl(server: Servers) {
+    const config = this.getServer(server);
     if (!config) {
       throw new Error('Unable to retrieve current environment config');
     }
     return `${config.secure ? 'https' : 'http'}://${config.domain}`;
   }
 
-  @memo()
-  private getApiUrl(environment: Environments) {
-    const domainUrl = this.getDomainUrl(environment);
-    const config = this.getEnvironment(environment);
+  private getApiUrl(server: Servers) {
+    const domainUrl = this.getDomainUrl(server);
+    const config = this.getServer(server);
     return domainUrl + config.path;
   }
 
-  retrieveMethods(environment: Environments) {
-    return this._http.get<IApi>(`${this.getDomainUrl(environment)}/api.json`);
+  retrieveMethods(server: Servers) {
+    return this._http.get<IApi>(`${this.getDomainUrl(server)}/api.json`);
   }
 
   request(
     entity: string,
     method: string,
     parameters: any[] = [],
-    environmentType?: Environments,
+    server?: Servers,
     retry: number = 0
   ): Observable<CustomHttpResponse> {
     if (retry > 3) {
@@ -53,13 +49,11 @@ export class ApiService {
       return NEVER;
     }
     let token: string = null;
-    environmentType ||= this._store.selectSnapshot(SettingsState.GetCurrentEnvironmentType);
-    console.log('EnvironmentType:', environmentType);
-    token = this._store.selectSnapshot(LoginsState.GetCurrentToken()).token;
+    server ||= this._store.selectSnapshot(SettingsState.GetCurrentEnvironmentServer);
+    token = this._store.selectSnapshot(LoginsState.GetCurrentToken())?.token;
     if (entity === 'login' && method.startsWith('login')) {
       token = null;
     }
-    console.log('Token:', token);
     const formData = new FormData();
     formData.append('transaction_id', 'faye_' + new Date().getTime());
     if (token) formData.append('token', token);
@@ -67,11 +61,10 @@ export class ApiService {
     formData.append('method', method);
     formData.append('format', 'json');
     const _parameters = this.constructParameters(parameters);
-    console.log({ _parameters });
     formData.append('arguments', _parameters);
     const start = new Date().getTime();
     return this._http
-      .post(this.getApiUrl(environmentType), formData, {
+      .post(this.getApiUrl(server), formData, {
         observe: 'response'
       })
       .pipe(
@@ -85,11 +78,14 @@ export class ApiService {
               const currentEnvironment = this._store.selectSnapshot<string>(
                 SettingsState.GetProperty('selected_environment')
               );
-              console.log('CurrentEnvironment:', currentEnvironment);
               this._store.dispatch(new LoginActions.LoginCustomer(currentEnvironment, true));
               return this._actions$.pipe(
                 ofActionSuccessful(LoginActions.LoginCustomer),
-                switchMap(() => this.request(entity, method, parameters, environmentType, retry + 1))
+                // Ensure token exists before proceeding to retry request
+                switchMap(() => this._store.select(LoginsState.GetCurrentToken())),
+                filter((login) => login.token !== null),
+                take(1),
+                switchMap(() => this.request(entity, method, parameters, server, retry + 1))
               );
             }
           }

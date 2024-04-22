@@ -1,0 +1,14 @@
+.variable-name {
+  margin-bottom: 10px;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+app-select-method {
+  &:not(:last-child) {
+    margin-bottom: 20px;
+  }
+}

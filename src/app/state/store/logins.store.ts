@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Action, createSelector, State, StateContext } from '@ngxs/store';
 import { patch } from '@ngxs/store/operators';
-import { Environments } from 'src/app/config';
 import { ApiService } from 'src/app/services/api.service';
 import { LoginActions, MethodActions } from '../actions';
 import { ILogin, ILoginsState, ISettingsState } from '../interfaces';
 import { SettingsState } from './settings.store';
 import { tap } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { Servers } from 'src/app/config';
 
 @State<ILoginsState>({
   name: 'logins',
@@ -34,8 +34,8 @@ export class LoginsState {
     if (!(environment in ctx)) {
       setState(patch<ILoginsState>({ [environment]: {} }));
     }
-    const [env, _] = environment.split('|') as [Environments, string];
-    dispatch([new MethodActions.GetMethods(env), new LoginActions.LoginCustomer(environment)]);
+    const [server, _] = environment.split('|') as [Servers, string];
+    dispatch([new MethodActions.GetMethods(server), new LoginActions.LoginCustomer(environment)]);
   }
 
   @Action(LoginActions.LoginCustomer)
@@ -50,8 +50,8 @@ export class LoginsState {
     } else {
       setState(patch<ILoginsState>({ [environment]: {} }));
     }
-    const [env, name] = environment.split('|') as [Environments, string];
-    dispatch(new MethodActions.GetMethods(env));
+    const [server, name] = environment.split('|') as [Servers, string];
+    dispatch(new MethodActions.GetMethods(server));
 
     if (token && !force) {
       // Validate the token and re-login if necessary
@@ -63,30 +63,39 @@ export class LoginsState {
       tap((response) => {
         if (response.ok && response.body) {
           const token = response.body as string;
-          setState(patch<ILoginsState>({ [environment]: patch<ILogin>({ loading: false, token, valid: true }) }));
+          setState(
+            patch<ILoginsState>({
+              [environment]: patch<ILogin>({ loading: false, token, valid: true })
+            })
+          );
         }
       })
     );
   }
 
   @Action(LoginActions.SetToken)
-  setToken({ getState, setState, dispatch }: StateContext<ILoginsState>, { environment }: LoginActions.SetToken) {
+  setToken(
+    { getState, setState, dispatch }: StateContext<ILoginsState>,
+    { environment }: LoginActions.SetToken
+  ) {
     const ctx = getState();
     if (!(environment in ctx)) {
       setState(patch<ILoginsState>({ [environment]: {} }));
     }
-    const [env, _] = environment.split('|') as [Environments, string];
-    dispatch([new MethodActions.GetMethods(env), new LoginActions.LoginCustomer(environment)]);
+    const [server, _] = environment.split('|') as [Servers, string];
+    dispatch([new MethodActions.GetMethods(server), new LoginActions.LoginCustomer(environment)]);
   }
 
   static GetCurrentToken() {
-    return createSelector([LoginsState, SettingsState], (loginState: ILoginsState, settingsState: ISettingsState) => {
-      if (!settingsState.selected_environment) {
-        return null;
+    return createSelector(
+      [LoginsState, SettingsState],
+      (loginState: ILoginsState, settingsState: ISettingsState) => {
+        if (!settingsState.selected_environment) {
+          return null;
+        }
+        return loginState[settingsState.selected_environment];
       }
-      console.log('GetCurrentToken:', loginState[settingsState?.selected_environment]);
-      return loginState[settingsState.selected_environment];
-    });
+    );
   }
 
   static GetCurrentLoginInfo() {
@@ -94,6 +103,15 @@ export class LoginsState {
       [SettingsState.GetProperty('selected_environment'), LoginsState],
       (selectedEnvironment: string, loginsState: ILoginsState) => {
         return loginsState[selectedEnvironment];
+      }
+    );
+  }
+
+  static GetLoginLoadingState() {
+    return createSelector(
+      [SettingsState.GetProperty('selected_environment'), LoginsState],
+      (selectedEnvironment: string, loginsState: ILoginsState) => {
+        return loginsState?.[selectedEnvironment]?.loading || false;
       }
     );
   }

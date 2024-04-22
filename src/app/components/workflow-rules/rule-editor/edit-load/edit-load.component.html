@@ -1,0 +1,10 @@
+@for (control of loadForm.controls | keyvalue; track control.key) {
+<div class="variable-name">
+  Variable name: <code>{{ control.key }}</code>
+</div>
+<app-select-method
+  [composeAsString]="false"
+  [enableParameters]="true"
+  [formControl]="control.value"
+></app-select-method>
+}

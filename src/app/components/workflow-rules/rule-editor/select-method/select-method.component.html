@@ -1,0 +1,59 @@
+<ng-container [formGroup]="triggerForm">
+  <div class="select-method-container">
+    <ng-template #selectedApiTemplate let-selected>
+      <span nz-icon class="api-icon" nzType="folder"></span>
+      {{ selected.nzLabel }}
+    </ng-template>
+    <nz-select
+      [nzDropdownClassName]="['select-with-icons', 'colors', 'rules-editor']"
+      [nzCustomTemplate]="selectedApiTemplate"
+      [nzBackdrop]="true"
+      [nzOptionHeightPx]="40"
+      formControlName="api"
+      nzShowSearch
+      nzPlaceHolder="Select API"
+    >
+      @for (api of apis$ | async; track api.name) {
+      <nz-option nzCustomContent [nzValue]="api.name" [nzLabel]="api.normalized">
+        <span nz-icon nzType="folder"></span>
+        {{ api.normalized }}
+      </nz-option>
+      }
+    </nz-select>
+
+    <ng-template #selectedMethodTemplate let-selected>
+      <span
+        class="method-icon"
+        nz-icon
+        [nzType]="(triggerForm.get('api').value | getMethod : selected.nzValue | async).icon"
+        nzTheme="outline"
+      ></span>
+      {{ selected.nzLabel }}
+    </ng-template>
+    <nz-select
+      [nzDropdownClassName]="['select-with-icons', 'rules-editor']"
+      [nzCustomTemplate]="selectedMethodTemplate"
+      [nzBackdrop]="true"
+      [nzOptionHeightPx]="40"
+      formControlName="method"
+      nzShowSearch
+      nzPlaceHolder="Select method"
+    >
+      @for (method of triggerForm.get('api').value | methodsByApi | async; track method.name) {
+      <nz-option nzCustomContent [nzValue]="method.name" [nzLabel]="method.normalized">
+        <span class="method-icon" nz-icon [nzType]="method.icon" nzTheme="outline"></span>
+        {{ method.normalized }}
+      </nz-option>
+      }
+    </nz-select>
+  </div>
+  @if (enableParameters) {
+  <app-edit-parameters
+    [slots]="
+      (triggerForm.get('api').value | getMethod : triggerForm.get('method').value | async).params
+        .length
+    "
+    formControlName="parameters"
+  ></app-edit-parameters>
+  }
+</ng-container>

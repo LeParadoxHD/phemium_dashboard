@@ -2,13 +2,25 @@
   <nz-form-item>
     <nz-form-label>Page</nz-form-label>
     <nz-form-control>
-      <nz-input-number nz-input formControlName="page" [nzMin]="0" [nzMax]="999999999999" [nzStep]="1"></nz-input-number>
+      <nz-input-number
+        nz-input
+        formControlName="page"
+        [nzMin]="0"
+        [nzMax]="999999999999"
+        [nzStep]="1"
+      ></nz-input-number>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
     <nz-form-label>Rows per page</nz-form-label>
     <nz-form-control>
-      <nz-input-number nz-input formControlName="rows_per_page" [nzMin]="0" [nzMax]="999999999999" [nzStep]="1"></nz-input-number>
+      <nz-input-number
+        nz-input
+        formControlName="rows_per_page"
+        [nzMin]="0"
+        [nzMax]="999999999999"
+        [nzStep]="1"
+      ></nz-input-number>
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
@@ -41,7 +53,8 @@
       </tr>
     </thead>
     <tbody formArrayName="filters">
-      <tr [formGroup]="form.get('filters')['controls'][i]" *ngFor="let filter of form.get('filters')['controls']; let i = index">
+      @for (filter of form.get('filters')['controls']; let i = $index; track i) {
+      <tr [formGroup]="form.get('filters')['controls'][i]">
         <td>
           <nz-form-control>
             <input nz-input spellcheck="false" autocomplete="off" formControlName="column" />
@@ -50,11 +63,9 @@
         <td>
           <nz-form-control>
             <nz-select formControlName="operator" nzShowSearch>
-              <nz-option
-                *ngFor="let operator of listOptionsOperators | keyvalue"
-                [nzValue]="operator.value"
-                [nzLabel]="operator.key"
-              ></nz-option>
+              @for (operator of listOptionsOperators | keyvalue; track operator.key) {
+              <nz-option [nzValue]="operator.value" [nzLabel]="operator.key"></nz-option>
+              }
             </nz-select>
           </nz-form-control>
         </td>
@@ -74,7 +85,10 @@
           </div>
         </td>
       </tr>
+      }
     </tbody>
   </nz-table>
-  <button class="add-filter" nz-button (click)="addFilter()"><span nz-icon nzType="plus"></span>Add</button>
+  <button class="add-filter" nz-button (click)="addFilter()">
+    <span nz-icon nzType="plus"></span>Add
+  </button>
 </form>

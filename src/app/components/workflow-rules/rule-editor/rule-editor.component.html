@@ -1,0 +1,21 @@
+<ng-container [formGroup]="ruleForm">
+  <app-rule-block-multiple [blocks]="[description, trigger]"></app-rule-block-multiple>
+  <ng-template #description>
+    <div class="header">Description:</div>
+    <textarea
+      class="autosize"
+      nz-input
+      formControlName="description"
+      placeholder="Description"
+      spellcheck="false"
+      autocomplete="off"
+    ></textarea>
+  </ng-template>
+  <ng-template #trigger>
+    <div class="header">Trigger:</div>
+    <app-select-method formControlName="action"></app-select-method>
+  </ng-template>
+  <app-rule-block header="Load">
+    <app-edit-load formControlName="load"></app-edit-load>
+  </app-rule-block>
+</ng-container>

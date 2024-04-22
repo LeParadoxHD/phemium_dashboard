@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 @Injectable()
 export class SubSinkAdapter implements OnDestroy {
   /**The subscription sink object that stores all subscriptions */
-  subs = new Subscription();
+  private subs = new Subscription();
 
   set sink(sub: Subscription) {
     this.subs.add(sub);

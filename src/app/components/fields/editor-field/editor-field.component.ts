@@ -1,16 +1,7 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit,
-  Optional,
-  Self
-} from '@angular/core';
-import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
-import { MonacoEditorConstructionOptions } from '@materia-ui/ngx-monaco-editor';
-import { Observable, Subscription } from 'rxjs';
-import { LayoutService } from 'src/app/services/layout.service';
+import { ChangeDetectionStrategy, Component, Optional, Self, signal } from '@angular/core';
+import { ControlValueAccessor, NgControl } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { LayoutService, MonacoEditorOptions } from 'src/app/services/layout.service';
 
 @Component({
   selector: 'app-editor-field',
@@ -18,9 +9,9 @@ import { LayoutService } from 'src/app/services/layout.service';
   styleUrls: ['./editor-field.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EditorFieldComponent implements ControlValueAccessor, OnDestroy, OnInit {
-  control = new FormControl('');
-  disabled: boolean = false;
+export class EditorFieldComponent implements ControlValueAccessor {
+  control = signal('');
+  disabled = signal(false);
   _value: string;
 
   onChange: any = () => {};
@@ -38,11 +29,7 @@ export class EditorFieldComponent implements ControlValueAccessor, OnDestroy, On
     this.onTouch(value);
   }
 
-  constructor(
-    @Optional() @Self() public ngControl: NgControl,
-    private _cdr: ChangeDetectorRef,
-    private _layoutService: LayoutService
-  ) {
+  constructor(@Optional() @Self() public ngControl: NgControl, private _layoutService: LayoutService) {
     // Setting the value accessor directly (instead of using
     // the providers) to avoid running into a circular import.
     this.ngControl.valueAccessor = this;
@@ -52,18 +39,11 @@ export class EditorFieldComponent implements ControlValueAccessor, OnDestroy, On
     });
   }
 
-  sub: Subscription;
-  ngOnInit() {
-    this.sub = this.control.valueChanges.subscribe((val) => {
-      if (typeof val === 'string') {
-        val = JSON.parse(val.replace(/\r|\n|\t/g, ''));
-      }
-      this.value = val;
-    });
-  }
-
-  ngOnDestroy() {
-    this.sub?.unsubscribe?.();
+  onCodeChange(value: string) {
+    try {
+      value = JSON.parse(value.replace(/\r|\n|\t/g, ''));
+    } catch (err) {}
+    this.value = value;
   }
 
   writeValue(value: any) {
@@ -71,7 +51,11 @@ export class EditorFieldComponent implements ControlValueAccessor, OnDestroy, On
     this.value = value;
     this.onTouch();
     this.onChange(this.value);
-    this.control.setValue(value, { emitEvent: false });
+    if (typeof value !== 'string') {
+      this.control.set(JSON.stringify(value, null, 2));
+    } else {
+      this.control.set(value);
+    }
   }
   registerOnChange(fn: any): void {
     this.onChange = fn;
@@ -81,9 +65,8 @@ export class EditorFieldComponent implements ControlValueAccessor, OnDestroy, On
   }
 
   setDisabledState(isDisabled: boolean) {
-    this.disabled = isDisabled;
-    this._cdr.markForCheck();
+    this.disabled.set(isDisabled);
   }
 
-  editorOptions$: Observable<MonacoEditorConstructionOptions>;
+  editorOptions$: Observable<MonacoEditorOptions>;
 }

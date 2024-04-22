@@ -1,13 +1,24 @@
 <div class="left">
   <ul nz-menu nzMode="horizontal">
-    <a nz-menu-item nzMatchRouter routerLink="/playground">
-      <span nz-icon nzType="function" nzTheme="outline"></span>
-      Playground
+    @if (isSelectedEnvironment$ | async) {
+    <a nz-menu-item nzMatchRouter routerLink="/api">
+      <span nz-icon nzType="code-sandbox" nzTheme="outline"></span>
+      API
     </a>
+    <a nz-menu-item nzMatchRouter routerLink="/workflow-rules">
+      <span nz-icon nzType="node-index" nzTheme="outline"></span>
+      Workflow Rules
+    </a>
+    }
     <a nz-menu-item nzMatchRouter routerLink="/environments">
       <span nz-icon nzType="database" nzTheme="outline"></span>
       Environments
-      <nz-badge nzShowZero class="environment-count" nzStandalone [nzCount]="environmentsLength$ | async"></nz-badge>
+      <nz-badge
+        nzShowZero
+        class="environment-count"
+        nzStandalone
+        [nzCount]="environmentsLength$ | async"
+      ></nz-badge>
     </a>
     <a nz-menu-item nzMatchRouter routerLink="/settings">
       <span nz-icon nzType="setting" nzTheme="outline"></span>
@@ -20,6 +31,7 @@
   </ul>
 </div>
 <div class="right">
+  <div class="version">v{{ version }}</div>
   <div class="theme-switch">
     <span>Dark</span>
     <nz-switch [formControl]="darkTheme"></nz-switch>

@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, Optional, Self } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  Optional,
+  Self
+} from '@angular/core';
 import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { format } from 'date-fns';
@@ -57,6 +65,7 @@ export class DatetimeFieldComponent implements ControlValueAccessor, OnDestroy, 
       const unix = value * 1000;
       const date = new Date(unix);
       this.control.setValue(format(date, "yyyy-MM-dd'T'HH:mm"), { emitEvent: false });
+      this.control.updateValueAndValidity();
     }
   }
   registerOnChange(fn: any): void {

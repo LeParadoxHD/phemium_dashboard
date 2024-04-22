@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
-import { MonacoEditorConstructionOptions } from '@materia-ui/ngx-monaco-editor';
+import { editor } from 'monaco-editor';
 import { Store } from '@ngxs/store';
 import { BehaviorSubject, combineLatest, fromEvent, map, Observable, shareReplay, startWith } from 'rxjs';
 import { SettingsState } from '../state/store';
+
+export type MonacoEditorOptions = editor.IEditorOptions;
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +40,7 @@ export class LayoutService {
     );
   }
 
-  getEditorOptions(options: MonacoEditorConstructionOptions = {}): Observable<MonacoEditorConstructionOptions> {
+  getEditorOptions(options: MonacoEditorOptions = {}): Observable<MonacoEditorOptions> {
     return this._store.select<boolean>(SettingsState.GetProperty('dark_theme')).pipe(
       map((darkTheme) => {
         return {
@@ -46,17 +48,18 @@ export class LayoutService {
           language: 'json',
           lineNumbers: 'off',
           readOnly: true,
-          tabSize: 2,
+          cursorBlinking: 'smooth',
           renderWhitespace: 'none',
-          fontFamily: 'Roboto Mono Medium Regular',
+          fontFamily: 'Roboto Mono',
+          fontWeight: 500,
           minimap: {
             enabled: false
           },
           guides: {
-            indentation: false
+            indentation: true
           },
           ...options
-        };
+        } as MonacoEditorOptions;
       })
     );
   }

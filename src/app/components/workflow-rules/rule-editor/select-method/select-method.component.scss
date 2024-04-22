@@ -1,0 +1,38 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.select-method-container {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  column-gap: 20px;
+}
+
+:host::ng-deep .api-icon {
+  color: var(--primary-color);
+}
+
+:host::ng-deep .method-icon,
+:host::ng-deep .api-icon {
+  margin-right: 8px;
+}
+
+:host {
+  &.parameters-mode {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    .select-method-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      row-gap: 15px;
+      grid-auto-rows: min-content;
+      padding-right: 20px;
+      box-sizing: border-box;
+    }
+    app-edit-parameters {
+      padding-left: 20px;
+      box-sizing: border-box;
+    }
+  }
+}

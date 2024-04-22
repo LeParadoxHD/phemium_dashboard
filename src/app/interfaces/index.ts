@@ -1,5 +1,5 @@
 import { HttpResponse } from '@angular/common/http';
-import { Environments } from '../config';
+import { Servers } from '../config';
 
 export interface IApiMethodGroup {
   name: string;
@@ -8,6 +8,8 @@ export interface IApiMethodGroup {
   methods: IApiMethod[];
   /* Normalized method name [Calculated] */
   normalized: string;
+  /* Used for @memoization */
+  server: Servers;
 }
 
 export interface IApiMethod {
@@ -22,9 +24,11 @@ export interface IApiMethod {
   id: string;
   /* Normalized method name [Calculated] */
   normalized: string;
+  /* Used for @memoization */
+  server: Servers;
 }
 
-export type IParamType = 'integer' | 'int' | 'string' | 'boolean' | 'list_options';
+export type IParamType = 'integer' | 'int' | 'string' | 'boolean' | 'bool' | 'list_options';
 
 export interface IApiMethodParams {
   name: string;
@@ -63,7 +67,7 @@ export interface IApiConfigs {
 }
 
 export interface IApiConfig {
-  id: Environments;
+  id: Servers;
   name: string;
   secure: boolean;
   domain: string;

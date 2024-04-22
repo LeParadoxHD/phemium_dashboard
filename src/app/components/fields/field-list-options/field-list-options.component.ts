@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, Optional, Self } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  Optional,
+  Self
+} from '@angular/core';
 import { ControlValueAccessor, FormArray, FormBuilder, FormGroup, NgControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { ListOptionsOperators } from 'src/app/config';
@@ -30,7 +38,11 @@ export class FieldListOptionsComponent implements ControlValueAccessor, OnDestro
     this.onTouch(value);
   }
 
-  constructor(@Optional() @Self() public ngControl: NgControl, private _fb: FormBuilder, private _cdr: ChangeDetectorRef) {
+  constructor(
+    @Optional() @Self() public ngControl: NgControl,
+    private _fb: FormBuilder,
+    private _cdr: ChangeDetectorRef
+  ) {
     // Setting the value accessor directly (instead of using
     // the providers) to avoid running into a circular import.
     this.ngControl.valueAccessor = this;
@@ -72,6 +84,7 @@ export class FieldListOptionsComponent implements ControlValueAccessor, OnDestro
     this.onTouch();
     this.onChange(this.value);
     this.form.patchValue(value, { emitEvent: false });
+    this.form.updateValueAndValidity();
   }
   registerOnChange(fn: any): void {
     this.onChange = fn;

@@ -1,7 +1,17 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, OnInit, OnDestroy } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  OnInit,
+  OnDestroy
+} from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Store } from '@ngxs/store';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, tap } from 'rxjs';
 import { AddEdit } from 'src/app/interfaces';
 import { ApiService } from 'src/app/services/api.service';
 import { EnvironmentActions } from 'src/app/state/actions';
@@ -26,7 +36,7 @@ export class AddEditEnvironmentComponent implements OnChanges, OnInit, OnDestroy
   constructor(private _fb: FormBuilder, private _store: Store, private _api: ApiService) {
     this.form = this._fb.group(
       {
-        env: ['', Validators.required],
+        server: ['', Validators.required],
         name: ['', Validators.compose([Validators.required, Validators.pattern(/^[a-zA-Z0-9_-\s]+$/)])],
         token_expiration: [0, Validators.required],
         login_user: ['', Validators.required],
@@ -38,16 +48,16 @@ export class AddEditEnvironmentComponent implements OnChanges, OnInit, OnDestroy
 
   formSub: Subscription;
   ngOnInit() {
-    this.formSub = this.form.valueChanges.subscribe((_) => this.connectionTest$.next(null));
+    this.formSub = this.form.valueChanges.pipe(tap(console.log)).subscribe((_) => this.connectionTest$.next(null));
   }
 
   environmentValidator(): ValidatorFn {
     return (group: FormGroup): ValidationErrors => {
       const name = (group.get('name').value as string).toLowerCase();
       const login_user = (group.get('login_user').value as string).toLowerCase();
-      const envType = group.get('env').value;
-      if ((name || login_user) && envType) {
-        const environments = this._store.selectSnapshot(EnvironmentsState)[envType] as IEnvironment[];
+      const server = group.get('server').value;
+      if ((name || login_user) && server) {
+        const environments = this._store.selectSnapshot(EnvironmentsState)[server] as IEnvironment[];
         if (Array.isArray(environments)) {
           if (name && environments.find((env) => env.name.toLowerCase() === name && this.mode === 'add')) {
             group.get('name').setErrors({ name: true });
@@ -79,7 +89,7 @@ export class AddEditEnvironmentComponent implements OnChanges, OnInit, OnDestroy
   ngOnChanges(changes: SimpleChanges) {
     if (changes['mode']?.previousValue === 'edit' && changes['mode']?.currentValue === 'add') {
       this.form.patchValue({
-        env: '',
+        server: '',
         name: '',
         token_expiration: 0,
         login_user: '',
@@ -106,24 +116,26 @@ export class AddEditEnvironmentComponent implements OnChanges, OnInit, OnDestroy
       this.connectionTestLoading$.next(true);
     }
     const values = this.form.getRawValue();
-    values.slug = slugify(values.env) + '|' + slugify(values.name);
+    values.slug = slugify(values.server) + '|' + slugify(values.name);
     const { login_user, login_password, token_expiration } = values;
 
     if (test) {
-      this._api.request('login', 'login_customer', [login_user, login_password, token_expiration], values.env).subscribe((response) => {
-        if (response.ok && response.body) {
-          if (typeof response.body === 'string') {
-            // Token retrieved
-            this.connectionTest$.next({ success: true });
-          } else if (typeof response.body === 'object') {
-            const json = response.body as any;
-            if (json.error) {
-              this.connectionTest$.next({ success: false, error: json.message });
+      this._api
+        .request('login', 'login_customer', [login_user, login_password, token_expiration], values.server)
+        .subscribe((response) => {
+          if (response.ok && response.body) {
+            if (typeof response.body === 'string') {
+              // Token retrieved
+              this.connectionTest$.next({ success: true });
+            } else if (typeof response.body === 'object') {
+              const json = response.body as any;
+              if (json.error) {
+                this.connectionTest$.next({ success: false, error: json.message });
+              }
             }
           }
-        }
-        this.connectionTestLoading$.next(false);
-      });
+          this.connectionTestLoading$.next(false);
+        });
     } else {
       this._store.dispatch(new EnvironmentActions.AddEnvironment(values));
     }

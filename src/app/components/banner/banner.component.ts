@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Select, Store } from '@ngxs/store';
-import { Observable, startWith } from 'rxjs';
+import { Store } from '@ngxs/store';
+import { Observable, map, startWith } from 'rxjs';
+import { CommonService } from 'src/app/services/common.service';
 import { SettingsActions } from 'src/app/state/actions';
-import { ConfigState, EnvironmentsState, SettingsState } from 'src/app/state/store';
+import { ConfigState, SettingsState } from 'src/app/state/store';
 
 @Component({
   selector: 'app-banner',
@@ -15,12 +16,15 @@ export class BannerComponent implements OnInit {
   version: string;
   darkTheme: FormControl;
 
-  @Select(EnvironmentsState.GetCount) environmentsLength$: Observable<number>;
+  environmentsLength$: Observable<number>;
+  isSelectedEnvironment$: Observable<boolean>;
 
-  constructor(private _store: Store) {
+  constructor(private _store: Store, private commonService: CommonService) {
     this.version = this._store.selectSnapshot(ConfigState.GetProperty('version'));
     const darkTheme = this._store.selectSnapshot<boolean>(SettingsState.GetProperty('dark_theme'));
     this.darkTheme = new FormControl(!darkTheme);
+    this.environmentsLength$ = this.commonService.environmentsCount$;
+    this.isSelectedEnvironment$ = this.commonService.currentEnvironment$.pipe(map(() => true));
   }
 
   ngOnInit() {

@@ -1,17 +1,11 @@
 import { Injectable } from '@angular/core';
-import {
-  Action,
-  createSelector,
-  Selector,
-  State,
-  StateContext
-} from '@ngxs/store';
+import { Action, createSelector, State, StateContext } from '@ngxs/store';
 import { tap } from 'rxjs/operators';
-import { Environments } from 'src/app/config';
+import { Servers } from 'src/app/config';
 import { ApiService } from 'src/app/services/api.service';
 import { TransformApiMethodGroups } from 'src/app/utilities';
 import { MethodActions } from '../actions';
-import { IApiState } from '../interfaces';
+import { IApi, IApiState } from '../interfaces';
 
 @State<IApiState>({
   name: 'apis',
@@ -24,21 +18,26 @@ export class ApisState {
   @Action(MethodActions.GetMethods)
   getMethods(
     { patchState, getState }: StateContext<IApiState>,
-    { environment, force }: MethodActions.GetMethods
+    { server, force }: MethodActions.GetMethods
   ) {
     const ctx = getState();
-    if (ctx[environment] && !force) {
+    if (ctx[server] && !force) {
       return null;
     }
-    return this.apiService.retrieveMethods(environment).pipe(
+    return this.apiService.retrieveMethods(server).pipe(
       tap((apis) => {
-        apis.apis = TransformApiMethodGroups(apis.apis);
-        patchState({ [environment]: apis });
+        const apiDef: IApi = {
+          ...apis,
+          lastUpdate: Math.trunc(Date.now() / 1000),
+          apis: TransformApiMethodGroups(apis.apis, server),
+          server
+        };
+        patchState({ [server]: apiDef });
       })
     );
   }
 
-  static GetApi(env: Environments) {
-    return createSelector([ApisState], (apiState) => apiState[env]);
+  static GetApi(server: Servers) {
+    return createSelector([ApisState], (apiState: IApiState) => apiState[server]);
   }
 }

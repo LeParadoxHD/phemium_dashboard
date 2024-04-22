@@ -35,7 +35,7 @@ export const ApisConfig: IApiConfig[] = [
   }
 ];
 
-export type Environments = 'integra' | 'prerelease' | 'live' | 'aws';
+export type Servers = 'integra' | 'prerelease' | 'live' | 'aws';
 
 export enum ListOptionsOperators {
   FL_BEGINS = 'begins',

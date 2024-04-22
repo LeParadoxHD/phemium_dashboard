@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
 import { Actions, ofActionSuccessful, Select } from '@ngxs/store';
 import { NzResizeEvent } from 'ng-zorro-antd/resizable';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { ApisConfig, Environments } from 'src/app/config';
+import { Observable } from 'rxjs';
+import { ApisConfig, Servers } from 'src/app/config';
 import { AddEdit, IApiConfig } from 'src/app/interfaces';
 import { LayoutService } from 'src/app/services/layout.service';
 import { EnvironmentActions } from 'src/app/state/actions';
@@ -34,25 +34,27 @@ export class EnvironmentsComponent implements OnInit {
 
   ngOnInit() {
     this._actions
-      .pipe(ofActionSuccessful(EnvironmentActions.AddEnvironment, EnvironmentActions.EditEnvironment))
-      .subscribe(() => this.edit$.next(null));
+      .pipe(
+        ofActionSuccessful(EnvironmentActions.AddEnvironment, EnvironmentActions.EditEnvironment)
+      )
+      .subscribe(() => this.edit.set(null));
   }
 
-  edit$ = new BehaviorSubject<{ mode: AddEdit; item?: Partial<IEnvironment> }>(null);
+  edit = signal<{ mode: AddEdit; item?: Partial<IEnvironment> }>(null);
 
   add(apiConfig: IApiConfig) {
-    this.edit$.next({
+    this.edit.set({
       mode: 'add',
-      item: { env: apiConfig.id, normalized: apiConfig.name }
+      item: { server: apiConfig.id, normalized: apiConfig.name }
     });
   }
 
-  edit(environment: IEnvironment, envType: Environments) {
-    this.edit$.next({
+  Edit(environment: IEnvironment, server: Servers) {
+    this.edit.set({
       mode: 'edit',
       item: {
         ...environment,
-        env: envType
+        server: server
       }
     });
   }

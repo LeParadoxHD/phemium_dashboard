@@ -1,0 +1,131 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(0, 0, 0, 0.02);
+  height: 100%;
+  padding: 30px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  .actions,
+  .data {
+    margin-bottom: 20px;
+  }
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 100px 100px 90px;
+    column-gap: 30px;
+    .ant-input {
+      height: 35px;
+      border-radius: 8px;
+      box-shadow: none !important;
+      font-weight: 500;
+    }
+    button {
+      border-radius: 5px;
+      height: 35px;
+    }
+  }
+  .data {
+    display: flex;
+    color: rgba(black, 0.6);
+  }
+}
+
+:host::ng-deep .ant-select-selector {
+  border-radius: 8px;
+}
+
+:host::ng-deep .ant-collapse {
+  border: 0;
+  .ant-collapse-item {
+    &:not(:last-child) {
+      margin-bottom: 20px;
+    }
+    &.ant-collapse-item-active {
+      &:hover,
+      &:focus-within {
+        &,
+        app-rule-block,
+        app-rule-block-multiple .block,
+        .ant-collapse-content {
+          border-color: rgba(#40a9ff, 0.5);
+        }
+      }
+    }
+    overflow: hidden;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    .ant-collapse-header {
+      background-color: transparent;
+      height: 55px;
+      align-items: center;
+      display: flex;
+      .name {
+        min-width: 0;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        color: rgba(black, 0.75);
+      }
+      .ant-collapse-extra {
+        margin-right: 15px;
+        color: var(--primary-color);
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        .action-count {
+          margin-left: 20px;
+        }
+        .actions {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          column-gap: 10px;
+          margin-left: 20px;
+        }
+      }
+    }
+    .ant-collapse-content {
+      background-color: transparent;
+      .ant-collapse-content-box {
+        padding: 0;
+      }
+    }
+    &.ant-collapse-item-active {
+      .ant-collapse-header {
+        background-color: var(--primary-color);
+        color: white;
+        border-color: white;
+        .name {
+          color: white;
+        }
+        .ant-collapse-extra {
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+:host::ng-deep .ant-pagination {
+  margin-top: 30px;
+  text-align: center;
+}
+
+:host::ng-deep {
+  textarea,
+  input,
+  .ant-select-selection-item {
+    color: rgba(black, 0.7) !important;
+    font-weight: 500 !important;
+  }
+  .ant-select-selector {
+    border-radius: 8px !important;
+    box-shadow: none !important;
+  }
+}

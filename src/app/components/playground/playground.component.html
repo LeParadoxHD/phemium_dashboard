@@ -7,7 +7,8 @@
   (nzSelectedIndexChange)="onTabIndexChange($event)"
   (nzClose)="closeTab($event)"
 >
-  <nz-tab *ngFor="let tab of tabs$ | async; let i = index; trackBy: trackById" nzClosable [nzTitle]="title">
+  @for (tab of tabs$ | async; let i = $index; track tab.api.id ) {
+  <nz-tab nzClosable [nzTitle]="title">
     <ng-template #title>
       <nz-breadcrumb (contextmenu)="contextMenu($event, menu)" nzSeparator=">">
         <nz-breadcrumb-item>{{ tab.api.group.normalized }}</nz-breadcrumb-item>
@@ -72,6 +73,7 @@
       </div>
     </ng-template>
   </nz-tab>
+  }
 </nz-tabset>
 <ng-template #closeAllTmpl>
   <nz-select class="select-mode" [(ngModel)]="mode">

@@ -1,12 +1,14 @@
-<nz-spin *ngIf="loading$ | async"></nz-spin>
-<ngx-monaco-editor
-  *ngIf="code$ | async as code"
-  [options]="editorOptions$ | async"
-  [ngModel]="code"
-></ngx-monaco-editor>
-<iframe *ngIf="html$ | async as html" [srcdoc]="html"></iframe>
+@if (loading$ | async) {
+<nz-spin></nz-spin>
+} @if (code$ | async; as code) {
+<ngx-monaco-editor [options]="editorOptions$ | async" [ngModel]="code"></ngx-monaco-editor>
+} @if (html$ | async; as html) {
+<iframe [srcdoc]="html"></iframe>
+}
 <div class="banner" [class.ok]="response?.ok" [class.nok]="response?.ok === false">
-  Response
-  <span *ngIf="response?.status as status"> • Status: {{ status }}</span>
-  <span *ngIf="response?.responseTime as time"> • Time: {{ time }}ms</span>
+  Response @if (response?.status; as status) {
+  <span> • Status: {{ status }}</span>
+  } @if (response?.responseTime; as time) {
+  <span> • Time: {{ time }}ms</span>
+  }
 </div>

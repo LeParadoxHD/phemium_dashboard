@@ -106,11 +106,19 @@ nz-content.space-between {
 }
 
 :host::ng-deep .resize-vertical {
-  cursor: ns-resize;
+  cursor: n-resize;
+  transform: rotate(0deg);
+  .anticon-more {
+    transform: rotate(90deg);
+  }
 }
 
 :host::ng-deep .resize-horizontal {
-  cursor: ew-resize;
+  cursor: e-resize;
+  transform: rotate(0deg);
+  .anticon-more {
+    transform: rotate(0deg);
+  }
 }
 
 :host::ng-deep .nz-resizable-preview {

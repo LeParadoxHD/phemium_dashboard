@@ -1,14 +1,15 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, Signal, ViewChild } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl } from '@angular/forms';
 import { Select, Store } from '@ngxs/store';
 import { NzSelectComponent } from 'ng-zorro-antd/select';
 import { Observable } from 'rxjs';
-import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { ApisConfig } from 'src/app/config';
 import { IApiMethod, IApiMethodGroup } from 'src/app/interfaces';
+import { CommonService } from 'src/app/services/common.service';
 import { MethodActions, SettingsActions, ViewActions } from 'src/app/state/actions';
-import { IApi, IEnvironmentsState, ILogin } from 'src/app/state/interfaces';
-import { ApisState, EnvironmentsState, LoginsState, SettingsState } from 'src/app/state/store';
+import { IEnvironmentsState } from 'src/app/state/interfaces';
+import { LoginsState, SettingsState } from 'src/app/state/store';
 
 @Component({
   selector: 'app-menu',
@@ -17,7 +18,6 @@ import { ApisState, EnvironmentsState, LoginsState, SettingsState } from 'src/ap
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MenuComponent implements OnInit {
-  api$: Observable<IApi>;
   selectedEnvironment$: Observable<string>;
   methods$: Observable<IApiMethodGroup[]>;
 
@@ -26,18 +26,15 @@ export class MenuComponent implements OnInit {
   environment;
   availableApis = ApisConfig;
 
-  @Select(EnvironmentsState) environments$: Observable<IEnvironmentsState>;
-  @Select(LoginsState.GetCurrentLoginInfo()) loginInfo$: Observable<ILogin>;
+  environments: Signal<IEnvironmentsState>;
+  @Select(LoginsState.GetLoginLoadingState()) loginLoading$: Observable<boolean>;
 
   @ViewChild('envSelector') envSelector: NzSelectComponent;
 
-  constructor(private _store: Store) {
-    this.api$ = this._store.select(ApisState.GetApi('prerelease'));
-    this.selectedEnvironment$ = this._store.select(SettingsState.GetProperty('selected_environment')).pipe(distinctUntilChanged());
-    this.methods$ = this.api$.pipe(
-      filter(Boolean),
-      map((api) => api.apis)
-    );
+  constructor(private _store: Store, private commonService: CommonService) {
+    this.selectedEnvironment$ = this.commonService.currentEnvironment$;
+    this.methods$ = this.commonService.currentApiItems$;
+    this.environments = toSignal(this.commonService.environments$);
   }
 
   selectedEnvironment(envSlug: string) {
@@ -58,7 +55,9 @@ export class MenuComponent implements OnInit {
 
   ngOnInit() {
     this._store.dispatch(new MethodActions.GetMethods('prerelease'));
-    const currentEnvironment = this._store.selectSnapshot(SettingsState.GetProperty('selected_environment'));
+    const currentEnvironment = this._store.selectSnapshot(
+      SettingsState.GetProperty('selected_environment')
+    );
     if (currentEnvironment) {
       this.envControl.setValue(currentEnvironment);
     }

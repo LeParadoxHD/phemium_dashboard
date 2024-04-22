@@ -8,10 +8,13 @@
 
 * {
   user-select: none;
-  font-family: "Product Sans Medium Regular";
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+ngx-monaco-editor {
+  display: block;
 }
 
 a {
@@ -25,10 +28,13 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  font-family: "Product Sans";
+  font-weight: 500;
 }
 
 :root {
-  --debug-panel-height: 30px;
+  --debug-panel-height: 0px;
+  --log-row-height: 35px;
   --menu-panel-width: 300px;
   --primary-color: #1890ff;
   --text-color: rgba(0, 0, 0, 0.7);
@@ -99,4 +105,99 @@ html.dark {
 
 .ant-dropdown-menu .ant-dropdown-menu-item .anticon {
   margin-right: 10px;
+}
+
+.editor-container {
+  height: 100% !important;
+}
+
+code {
+  background-color: rgba(black, 0.05);
+  font-family: "Roboto Mono";
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 5px;
+  border-radius: 5px;
+  display: inline-block;
+  letter-spacing: 0.5px;
+}
+
+.ant-select-selection-item,
+.ant-breadcrumb,
+.ant-btn {
+  font-weight: 500;
+}
+
+.select-with-icons {
+  &.colors .anticon {
+    color: var(--primary-color);
+  }
+  .ant-select-item-option-content {
+    color: rgba(black, 0.7);
+    .anticon {
+      margin-right: 8px;
+    }
+  }
+}
+
+.rules-editor .ant-select-dropdown {
+  border-radius: 8px !important;
+  .ant-select-item {
+    height: 40px;
+    align-items: center;
+  }
+  .ant-select-item:not(:last-child) {
+    border-bottom: 1px solid rgba(black, 0.08);
+  }
+}
+
+.method-icon {
+  &.anticon-delete,
+  &.anticon-close,
+  &.anticon-stop {
+    color: #c62828;
+  }
+  &.anticon-ordered-list,
+  &.anticon-filter,
+  &.anticon-reload,
+  &.anticon-sync {
+    color: #1890ff;
+  }
+  &.anticon-plus {
+    color: #2e7d32;
+  }
+  &.anticon-minus-square {
+    color: #fbc02d;
+  }
+  &.anticon-plus-square,
+  &.anticon-check,
+  &.anticon-share-alt {
+    color: #689f38;
+  }
+  &.anticon-edit,
+  &.anticon-save {
+    color: #fb8c00;
+  }
+  &.anticon-question,
+  &.anticon-comment {
+    color: #512da8;
+  }
+  &.anticon-send,
+  &.anticon-swap {
+    color: #3949ab;
+  }
+  &.anticon-api {
+    color: #546e7a;
+  }
+  &.anticon-login {
+    color: #00796b;
+  }
+  &.anticon-logout {
+    color: #01579b;
+  }
+  &.anticon-download,
+  &.anticon-upload,
+  &.anticon-export {
+    color: #00838f;
+  }
 }

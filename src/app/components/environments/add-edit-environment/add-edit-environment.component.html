@@ -1,28 +1,57 @@
-<ng-container *ngIf="mode === 'add'; else editing"
-  >Add new environment for: <span class="env">{{ data?.normalized }}</span>
-</ng-container>
-<ng-template #editing>
-  Editing environment: <span class="env">{{ data?.name }}</span>
-</ng-template>
+@if (mode === 'add') {
+<!---->
+Add new environment for: <span class="env">{{ data?.normalized }}</span>
+<!---->
+} @else {
+<!---->
+Editing environment: <span class="env">{{ data?.name }}</span>
+}
 
 <form nz-form [formGroup]="form">
   <nz-form-item>
     <nz-form-label [nzSpan]="5" nzRequired>Name</nz-form-label>
-    <nz-form-control [nzSpan]="24" nzHasFeedback nzErrorTip="Environment name must be unique for {{ data?.normalized }}">
-      <input nz-input formControlName="name" spellcheck="false" autocomplete="off" name="successValid" />
+    <nz-form-control
+      [nzSpan]="24"
+      nzHasFeedback
+      nzErrorTip="Environment name must be unique for {{ data?.normalized }}"
+    >
+      <input
+        nz-input
+        formControlName="name"
+        spellcheck="false"
+        autocomplete="off"
+        name="successValid"
+      />
     </nz-form-control>
   </nz-form-item>
   Login information
   <nz-form-item>
     <nz-form-label [nzSpan]="5" nzRequired>User</nz-form-label>
-    <nz-form-control [nzSpan]="24" nzHasFeedback nzErrorTip="Customer name must be unique for {{ data?.normalized }}">
-      <input nz-input formControlName="login_user" autocomplete="off" spellcheck="false" name="successValid" />
+    <nz-form-control
+      [nzSpan]="24"
+      nzHasFeedback
+      nzErrorTip="Customer name must be unique for {{ data?.normalized }}"
+    >
+      <input
+        nz-input
+        formControlName="login_user"
+        autocomplete="off"
+        spellcheck="false"
+        name="successValid"
+      />
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
     <nz-form-label [nzSpan]="5" nzRequired>Password</nz-form-label>
     <nz-form-control [nzSpan]="24" nzHasFeedback>
-      <input nz-input type="password" formControlName="login_password" autocomplete="off" spellcheck="false" name="successValid" />
+      <input
+        nz-input
+        type="password"
+        formControlName="login_password"
+        autocomplete="off"
+        spellcheck="false"
+        name="successValid"
+      />
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
@@ -39,13 +68,20 @@
       <div class="tip">Unlimited = 0</div>
     </nz-form-control>
   </nz-form-item>
-  <button [nzLoading]="connectionTestLoading$ | async" [disabled]="form.invalid" (click)="add(true)" nzType="primary" nz-button type="button">
+  <button
+    [nzLoading]="connectionTestLoading$ | async"
+    [disabled]="form.invalid"
+    (click)="add(true)"
+    nzType="primary"
+    nz-button
+    type="button"
+  >
     <span nz-icon nzType="play-circle"></span>Test connection
   </button>
   <ng-container *ngLet="connectionTest$ | async as test">
+    @if (mode === 'add') {
     <button
       [disabled]="form.invalid || !test?.success"
-      *ngIf="mode === 'add'; else editTmpl"
       (click)="add(false)"
       nzType="primary"
       nz-button
@@ -53,12 +89,18 @@
     >
       <span nz-icon nzType="plus"></span>Add
     </button>
-    <ng-template #editTmpl>
-      <button [disabled]="form.invalid || !test?.success" (click)="edit()" nzType="primary" nz-button type="submit">
-        <span nz-icon nzType="edit"></span>Edit
-      </button>
-    </ng-template>
-    <div class="connection-test" *ngIf="test">
+    } @else {
+    <button
+      [disabled]="form.invalid || !test?.success"
+      (click)="edit()"
+      nzType="primary"
+      nz-button
+      type="submit"
+    >
+      <span nz-icon nzType="edit"></span>Edit
+    </button>
+    } @if (test) {
+    <div class="connection-test">
       <nz-alert
         [nzType]="test.success ? 'success' : 'error'"
         [nzMessage]="test.success ? 'Success' : 'Error'"
@@ -66,5 +108,6 @@
         nzShowIcon
       ></nz-alert>
     </div>
+    }
   </ng-container>
 </form>
