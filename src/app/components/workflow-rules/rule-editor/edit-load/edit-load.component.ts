@@ -3,15 +3,27 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   ControlValueAccessor,
+  FormArray,
   FormBuilder,
   FormControl,
   FormGroup,
   NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
   ValidationErrors,
-  Validator
+  Validator,
+  Validators
 } from '@angular/forms';
 import { Typed } from 'src/app/state/interfaces';
+
+interface ArrayItem {
+  key: FormControl<string>;
+  value: FormControl<any>;
+}
+
+interface Item {
+  key: string;
+  value: any;
+}
 
 @Component({
   selector: 'app-edit-load',
@@ -32,23 +44,30 @@ import { Typed } from 'src/app/state/interfaces';
   ]
 })
 export class EditLoadComponent implements ControlValueAccessor, Validator {
-  loadForm: FormGroup<Record<string, FormControl>>;
+  loadForm: FormArray<FormGroup<ArrayItem>>;
 
   constructor(private formBuild: FormBuilder, private cdr: ChangeDetectorRef) {
-    this.loadForm = this.formBuild.group<Record<string, FormControl>>({});
-    this.loadForm.valueChanges.pipe(takeUntilDestroyed()).subscribe((load) => {
-      this.onUiChange(load);
+    this.loadForm = this.formBuild.array<FormGroup<ArrayItem>>([]);
+    this.loadForm.valueChanges.pipe(takeUntilDestroyed()).subscribe((values: Item[]) => {
+      const obj = values.reduce((r, a) => {
+        r[a.key] = a.value;
+        return r;
+      }, {});
+      this.onUiChange(obj);
     });
   }
 
   writeValue(load: Typed<Record<string, any>>) {
+    const controls: FormGroup<ArrayItem>[] = [];
     for (const key in load) {
-      if (this.loadForm.controls[key]) {
-        this.loadForm.controls[key].patchValue(load[key]);
-      } else {
-        this.loadForm.addControl(key, this.formBuild.control(load[key]));
-      }
+      controls.push(
+        this.formBuild.group<ArrayItem>({
+          key: this.formBuild.control(key),
+          value: this.formBuild.control(load[key])
+        })
+      );
     }
+    this.loadForm = this.formBuild.array(controls);
     this.loadForm.updateValueAndValidity();
     this.cdr.markForCheck();
   }
@@ -71,6 +90,19 @@ export class EditLoadComponent implements ControlValueAccessor, Validator {
     } else {
       this.loadForm.enable();
     }
+  }
+
+  add() {
+    this.loadForm.push(
+      this.formBuild.group({
+        key: this.formBuild.control(''),
+        value: this.formBuild.control({})
+      })
+    );
+  }
+
+  remove(index: number) {
+    this.loadForm.removeAt(index);
   }
 
   validate(control: AbstractControl): ValidationErrors | null {

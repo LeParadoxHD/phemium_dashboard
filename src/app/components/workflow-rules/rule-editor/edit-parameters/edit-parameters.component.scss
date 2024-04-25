@@ -1,17 +1,48 @@
 :host {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   row-gap: 15px;
+  align-items: flex-start;
+  border-left: 1px solid rgba(black, 0.1);
 }
 
 input {
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
   box-shadow: none !important;
+  font-family: "Roboto Mono";
 }
 
-:host::ng-deep .ant-input-group-addon {
+:host::ng-deep .ant-input-group-addon:first-child {
   font-weight: 500;
   border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;
+}
+
+:host::ng-deep .ant-input-group-addon:last-child {
+  font-weight: 500;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  .ant-select-selector {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-top-right-radius: 8px !important;
+    border-bottom-right-radius: 8px !important;
+  }
+}
+
+.parameter {
+  display: grid;
+  grid-template-columns: 1fr repeat(2, minmax(0, auto));
+  column-gap: 25px;
+  align-items: center;
+  width: 100%;
+}
+
+[nz-checkbox] {
+  font-family: "Roboto Mono";
+  white-space: nowrap;
+  &.null {
+    margin-right: -20px;
+  }
 }

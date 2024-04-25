@@ -55,7 +55,7 @@
     [nzExpandedIcon]="expandedIcon"
     [nzExtra]="extraTemplate"
   >
-    @defer (on interaction(panel)) { hola
+    @defer (on interaction(panel)) {
     <app-rule-editor [formControl]="rule"></app-rule-editor>
     } @placeholder { Loading... }
     <ng-template #expandedIcon let-active>

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { Actions, ofActionSuccessful, Select } from '@ngxs/store';
 import { NzResizeEvent } from 'ng-zorro-antd/resizable';
 import { Observable } from 'rxjs';
@@ -11,6 +11,7 @@ import { NzContextMenuService, NzDropdownMenuComponent } from 'ng-zorro-antd/dro
 import { EnvironmentsWithToken } from 'src/app/utilities';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-environments',
@@ -18,7 +19,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
   styleUrls: ['./environments.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EnvironmentsComponent implements OnInit {
+export class EnvironmentsComponent {
   @Select(EnvironmentsWithToken()) environments$: Observable<IEnvironmentsWithLoginInfo>;
   _envPanelId = -1;
 
@@ -30,12 +31,11 @@ export class EnvironmentsComponent implements OnInit {
     private nzContextMenuService: NzContextMenuService,
     private clipboard: Clipboard,
     private message: NzMessageService
-  ) {}
-
-  ngOnInit() {
+  ) {
     this._actions
       .pipe(
-        ofActionSuccessful(EnvironmentActions.AddEnvironment, EnvironmentActions.EditEnvironment)
+        ofActionSuccessful(EnvironmentActions.AddEnvironment, EnvironmentActions.EditEnvironment),
+        takeUntilDestroyed()
       )
       .subscribe(() => this.edit.set(null));
   }

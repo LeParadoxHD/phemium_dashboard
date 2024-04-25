@@ -21,7 +21,7 @@
 :host {
   &.parameters-mode {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: minmax(0, 400px) 1fr;
     .select-method-container {
       display: grid;
       grid-template-columns: 1fr;
@@ -34,5 +34,20 @@
       padding-left: 20px;
       box-sizing: border-box;
     }
+  }
+}
+
+.method-selector {
+  margin-bottom: 20px;
+}
+
+:host::ng-deep .ant-input-wrapper.ant-input-group {
+  span {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+  }
+  input {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
   }
 }

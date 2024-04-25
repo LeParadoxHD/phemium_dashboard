@@ -3,6 +3,24 @@
   flex-direction: column;
 }
 
+.rule-editor {
+  display: block;
+  padding: 10px 20px 20px;
+  box-sizing: border-box;
+}
+
+:host::ng-deep app-select-method.trigger .api .ant-select-arrow {
+  margin-top: -15px;
+}
+
+:host::ng-deep .ant-tabs-tab-btn {
+  font-weight: 500;
+}
+
+:host::ng-deep input {
+  box-shadow: none !important;
+}
+
 textarea {
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: none !important;
@@ -23,4 +41,23 @@ textarea {
       resize: vertical;
     }
   }
+}
+
+.intro {
+  color: rgba(black, 0.6);
+  margin-top: 5px;
+  margin-bottom: 25px;
+}
+
+.block-reference {
+  background-color: var(--primary-color);
+  color: white;
+  font-family: "Roboto Mono";
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 1px 5px;
+  border-radius: 5px;
+  display: inline-block;
+  letter-spacing: 0.5px;
 }

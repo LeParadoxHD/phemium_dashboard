@@ -2,13 +2,11 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  OnDestroy,
-  OnInit,
   Optional,
   Self
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlValueAccessor, FormArray, FormBuilder, FormGroup, NgControl } from '@angular/forms';
-import { Subscription } from 'rxjs';
 import { ListOptionsOperators } from 'src/app/config';
 
 @Component({
@@ -17,7 +15,7 @@ import { ListOptionsOperators } from 'src/app/config';
   styleUrls: ['./field-list-options.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FieldListOptionsComponent implements ControlValueAccessor, OnDestroy, OnInit {
+export class FieldListOptionsComponent implements ControlValueAccessor {
   form: FormGroup;
   disabled: boolean = false;
   listOptionsOperators = ListOptionsOperators;
@@ -55,27 +53,25 @@ export class FieldListOptionsComponent implements ControlValueAccessor, OnDestro
       filters: this._fb.array([this.getFilterTemplate()])
     });
     this.form.get('sort_type').disable();
-  }
-
-  sub: Subscription;
-  sub2: Subscription;
-  ngOnInit() {
-    this.sub = this.form.valueChanges.subscribe((values) => (this.value = values));
-    this.sub2 = this.form.get('sort_column').valueChanges.subscribe((val) => {
-      if (val) {
-        this.form.get('sort_type').enable();
-        this.form.get('sort_type').setValue('DESC');
-      } else {
-        this.form.get('sort_type').disable();
-        this.form.get('sort_type').setValue(null);
-      }
-      this.form.updateValueAndValidity();
-    });
-  }
-
-  ngOnDestroy() {
-    this.sub?.unsubscribe?.();
-    this.sub2?.unsubscribe?.();
+    this.form.valueChanges
+      .pipe(
+        //
+        takeUntilDestroyed()
+      )
+      .subscribe((values) => (this.value = values));
+    this.form
+      .get('sort_column')
+      .valueChanges.pipe(takeUntilDestroyed())
+      .subscribe((val) => {
+        if (val) {
+          this.form.get('sort_type').enable();
+          this.form.get('sort_type').setValue('DESC');
+        } else {
+          this.form.get('sort_type').disable();
+          this.form.get('sort_type').setValue(null);
+        }
+        this.form.updateValueAndValidity();
+      });
   }
 
   writeValue(value: any) {

@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Injector,
+  OnInit,
+  runInInjectionContext
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl } from '@angular/forms';
 import { Store } from '@ngxs/store';
 import { Observable, map, startWith } from 'rxjs';
@@ -19,7 +26,11 @@ export class BannerComponent implements OnInit {
   environmentsLength$: Observable<number>;
   isSelectedEnvironment$: Observable<boolean>;
 
-  constructor(private _store: Store, private commonService: CommonService) {
+  constructor(
+    private _store: Store,
+    private commonService: CommonService,
+    private injector: Injector
+  ) {
     this.version = this._store.selectSnapshot(ConfigState.GetProperty('version'));
     const darkTheme = this._store.selectSnapshot<boolean>(SettingsState.GetProperty('dark_theme'));
     this.darkTheme = new FormControl(!darkTheme);
@@ -28,14 +39,18 @@ export class BannerComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.darkTheme.valueChanges.pipe(startWith(this.darkTheme.value)).subscribe((light) => {
-      const isDark = !light;
-      if (isDark) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-      this._store.dispatch(new SettingsActions.SetProperty('dark_theme', isDark));
+    runInInjectionContext(this.injector, () => {
+      this.darkTheme.valueChanges
+        .pipe(startWith(this.darkTheme.value), takeUntilDestroyed())
+        .subscribe((light) => {
+          const isDark = !light;
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+          this._store.dispatch(new SettingsActions.SetProperty('dark_theme', isDark));
+        });
     });
   }
 }

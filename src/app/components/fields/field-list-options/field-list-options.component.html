@@ -3,6 +3,8 @@
     <nz-form-label>Page</nz-form-label>
     <nz-form-control>
       <nz-input-number
+        nz-tooltip
+        nzTooltipTitle="Page number to retrieve"
         nz-input
         formControlName="page"
         [nzMin]="0"
@@ -15,6 +17,8 @@
     <nz-form-label>Rows per page</nz-form-label>
     <nz-form-control>
       <nz-input-number
+        nz-tooltip
+        nzTooltipTitle="How many rows to retrieve per page"
         nz-input
         formControlName="rows_per_page"
         [nzMin]="0"
@@ -25,13 +29,13 @@
   </nz-form-item>
   <nz-form-item>
     <nz-form-label>Sort column</nz-form-label>
-    <nz-form-control>
+    <nz-form-control nz-tooltip nzTooltipTitle="Type a column name to sort">
       <input nz-input autocomplete="off" spellcheck="false" formControlName="sort_column" />
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
     <nz-form-label>Sort order</nz-form-label>
-    <nz-form-control>
+    <nz-form-control nz-tooltip nzTooltipTitle="Ascending or Descending?">
       <nz-select [nzDisabled]="form.get('sort_type').disabled" formControlName="sort_column">
         <nz-option nzValue="ASC" nzLabel="Ascending"></nz-option>
         <nz-option nzValue="DESC" nzLabel="Descending"></nz-option>
@@ -76,10 +80,25 @@
         </td>
         <td>
           <div class="actions">
-            <button nz-button nzType="default" nzShape="circle" (click)="duplicateFilter(i)">
+            <button
+              nz-tooltip
+              nzTooltipTitle="Duplicate"
+              nz-button
+              nzType="default"
+              nzShape="circle"
+              (click)="duplicateFilter(i)"
+            >
               <span nz-icon nzType="copy"></span>
             </button>
-            <button nz-button nzType="default" nzDanger nzShape="circle" (click)="deleteFilter(i)">
+            <button
+              nz-tooltip
+              nzTooltipTitle="Delete"
+              nz-button
+              nzType="default"
+              nzDanger
+              nzShape="circle"
+              (click)="deleteFilter(i)"
+            >
               <span nz-icon nzType="delete"></span>
             </button>
           </div>

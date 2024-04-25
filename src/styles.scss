@@ -122,6 +122,15 @@ code {
   letter-spacing: 0.5px;
 }
 
+button.round,
+input.round {
+  border-radius: 5px;
+}
+
+input.code {
+  font-family: "Roboto Mono";
+}
+
 .ant-select-selection-item,
 .ant-breadcrumb,
 .ant-btn {
@@ -200,4 +209,9 @@ code {
   &.anticon-export {
     color: #00838f;
   }
+}
+
+.no-items {
+  color: rgba(black, 0.4);
+  font-size: 13px;
 }

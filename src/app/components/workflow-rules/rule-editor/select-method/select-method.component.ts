@@ -13,6 +13,7 @@ import {
   AbstractControl,
   ControlValueAccessor,
   FormBuilder,
+  FormControl,
   FormGroup,
   NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
@@ -20,7 +21,7 @@ import {
   Validator,
   Validators
 } from '@angular/forms';
-import { Observable, distinctUntilChanged, map, pairwise, skip, tap } from 'rxjs';
+import { Observable, distinctUntilChanged, map, pairwise, tap } from 'rxjs';
 import { IApiMethodGroup } from 'src/app/interfaces';
 import { CommonService } from 'src/app/services/common.service';
 import { Typed } from 'src/app/state/interfaces';
@@ -51,6 +52,7 @@ interface ITrigger {
 })
 export class SelectMethodComponent implements ControlValueAccessor, Validator, OnChanges {
   @Input() composeAsString = true;
+  @Input() name?: FormControl<string>;
   @Input() @HostBinding('class.parameters-mode') enableParameters = false;
 
   triggerForm: FormGroup<Typed<ITrigger>>;
@@ -105,14 +107,21 @@ export class SelectMethodComponent implements ControlValueAccessor, Validator, O
     if (_method) {
       let api: string = null;
       let method: string = null;
+      let parameters: any[] = [];
       if (this.composeAsString && typeof _method === 'string') {
         [api, method] = _method.split('__');
       } else if (!this.composeAsString && typeof _method === 'object') {
         api = _method.api;
         method = _method.method;
+        if (this.enableParameters) {
+          parameters = _method.parameters;
+        }
       }
       if (api && method) {
         this.triggerForm.patchValue({ api, method }, { emitEvent: false });
+        if (this.enableParameters) {
+          this.triggerForm.patchValue({ parameters }, { emitEvent: false });
+        }
         this.triggerForm.updateValueAndValidity();
         this.cdr.markForCheck();
       }

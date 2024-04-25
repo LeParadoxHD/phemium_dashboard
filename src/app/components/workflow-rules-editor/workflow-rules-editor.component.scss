@@ -98,14 +98,14 @@
     }
     &.ant-collapse-item-active {
       .ant-collapse-header {
-        background-color: var(--primary-color);
-        color: white;
+        background-color: aliceblue;
+        //color: white;
         border-color: white;
         .name {
-          color: white;
+          //color: white;
         }
         .ant-collapse-extra {
-          color: white;
+          //color: white;
         }
       }
     }
