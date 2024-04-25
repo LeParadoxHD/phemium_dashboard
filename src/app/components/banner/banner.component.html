@@ -1,16 +1,28 @@
 <div class="left">
   <ul nz-menu nzMode="horizontal">
     @if (isSelectedEnvironment$ | async) {
-    <a nz-menu-item nzMatchRouter routerLink="/api">
+    <a nz-menu-item nzMatchRouter routerLink="/api" nz-tooltip nzTooltipTitle="Manage API requests">
       <span nz-icon nzType="code-sandbox" nzTheme="outline"></span>
       API
     </a>
-    <a nz-menu-item nzMatchRouter routerLink="/workflow-rules">
+    <a
+      nz-menu-item
+      nzMatchRouter
+      routerLink="/workflow-rules"
+      nz-tooltip
+      nzTooltipTitle="Manage Workflow Rules"
+    >
       <span nz-icon nzType="node-index" nzTheme="outline"></span>
       Workflow Rules
     </a>
     }
-    <a nz-menu-item nzMatchRouter routerLink="/environments">
+    <a
+      nz-menu-item
+      nzMatchRouter
+      routerLink="/environments"
+      nz-tooltip
+      nzTooltipTitle="Add, edit or delete environments"
+    >
       <span nz-icon nzType="database" nzTheme="outline"></span>
       Environments
       <nz-badge
@@ -20,11 +32,23 @@
         [nzCount]="environmentsLength$ | async"
       ></nz-badge>
     </a>
-    <a nz-menu-item nzMatchRouter routerLink="/settings">
+    <a
+      nz-menu-item
+      nzMatchRouter
+      routerLink="/settings"
+      nz-tooltip
+      nzTooltipTitle="Manage your preferences"
+    >
       <span nz-icon nzType="setting" nzTheme="outline"></span>
       Settings
     </a>
-    <a nz-menu-item nzMatchRouter routerLink="/about">
+    <a
+      nz-menu-item
+      nzMatchRouter
+      routerLink="/about"
+      nz-tooltip
+      nzTooltipTitle="Anything else you wanna know huh?"
+    >
       <span nz-icon nzType="info-circle" nzTheme="outline"></span>
       About
     </a>
@@ -32,7 +56,11 @@
 </div>
 <div class="right">
   <div class="version">v{{ version }}</div>
-  <div class="theme-switch">
+  <div
+    class="theme-switch"
+    nz-tooltip
+    [nzTooltipTitle]="darkTheme.value ? 'Switch to dark theme' : 'Switch to light theme'"
+  >
     <span>Dark</span>
     <nz-switch [formControl]="darkTheme"></nz-switch>
     <span>Light</span>

@@ -82,6 +82,8 @@ import { EditLoadComponent } from './components/workflow-rules/rule-editor/edit-
 import { EditParametersComponent } from './components/workflow-rules/rule-editor/edit-parameters/edit-parameters.component';
 import { MethodsByApiPipe } from './pipes/methods-by-api.pipe';
 import { GetMethodPipe } from './pipes/get-method.pipe';
+import { EditObjectComponent } from './components/workflow-rules/rule-editor/edit-object/edit-object.component';
+import { EditActionsComponent } from './components/workflow-rules/rule-editor/edit-actions/edit-actions.component';
 
 registerLocaleData(es);
 
@@ -119,7 +121,9 @@ registerLocaleData(es);
     EditParametersComponent,
     EditParametersComponent,
     MethodsByApiPipe,
-    GetMethodPipe
+    GetMethodPipe,
+    EditObjectComponent,
+    EditActionsComponent
   ],
   imports: [
     BrowserModule,

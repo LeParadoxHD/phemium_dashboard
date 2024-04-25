@@ -1,0 +1,20 @@
+@for (control of setForm.controls; let i = $index; track i) {
+<div class="set-item" [formGroup]="control">
+  <input nz-input class="round" placeholder="Key" formControlName="key" />
+  <input nz-input class="round" placeholder="Value" formControlName="value" />
+  <button
+    nz-button
+    nzType="default"
+    nz-tooltip
+    nzTooltipTitle="Delete"
+    (click)="deleteItem(i)"
+    nzDanger
+    nzShape="circle"
+  >
+    <span nz-icon nzType="delete"></span>
+  </button>
+</div>
+}
+<button class="round" (click)="add()" nzType="primary" nz-button type="button">
+  <span nz-icon nzType="plus"></span>Add
+</button>

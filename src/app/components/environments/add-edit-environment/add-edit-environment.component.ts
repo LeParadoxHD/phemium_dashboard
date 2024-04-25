@@ -5,13 +5,12 @@ import {
   Input,
   OnChanges,
   Output,
-  SimpleChanges,
-  OnInit,
-  OnDestroy
+  SimpleChanges
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Store } from '@ngxs/store';
-import { BehaviorSubject, Subscription, tap } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { AddEdit } from 'src/app/interfaces';
 import { ApiService } from 'src/app/services/api.service';
 import { EnvironmentActions } from 'src/app/state/actions';
@@ -25,7 +24,7 @@ import { slugify } from 'src/app/utilities';
   styleUrls: ['./add-edit-environment.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AddEditEnvironmentComponent implements OnChanges, OnInit, OnDestroy {
+export class AddEditEnvironmentComponent implements OnChanges {
   @Input() mode: AddEdit = 'add';
   @Input() data: Partial<IEnvironment> = null;
 
@@ -37,18 +36,19 @@ export class AddEditEnvironmentComponent implements OnChanges, OnInit, OnDestroy
     this.form = this._fb.group(
       {
         server: ['', Validators.required],
-        name: ['', Validators.compose([Validators.required, Validators.pattern(/^[a-zA-Z0-9_-\s]+$/)])],
+        name: [
+          '',
+          Validators.compose([Validators.required, Validators.pattern(/^[a-zA-Z0-9_-\s]+$/)])
+        ],
         token_expiration: [0, Validators.required],
         login_user: ['', Validators.required],
         login_password: ['', Validators.required]
       },
       { validators: this.environmentValidator() }
     );
-  }
-
-  formSub: Subscription;
-  ngOnInit() {
-    this.formSub = this.form.valueChanges.pipe(tap(console.log)).subscribe((_) => this.connectionTest$.next(null));
+    this.form.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((_) => this.connectionTest$.next(null));
   }
 
   environmentValidator(): ValidatorFn {
@@ -57,15 +57,23 @@ export class AddEditEnvironmentComponent implements OnChanges, OnInit, OnDestroy
       const login_user = (group.get('login_user').value as string).toLowerCase();
       const server = group.get('server').value;
       if ((name || login_user) && server) {
-        const environments = this._store.selectSnapshot(EnvironmentsState)[server] as IEnvironment[];
+        const environments = this._store.selectSnapshot(EnvironmentsState)[
+          server
+        ] as IEnvironment[];
         if (Array.isArray(environments)) {
-          if (name && environments.find((env) => env.name.toLowerCase() === name && this.mode === 'add')) {
+          if (
+            name &&
+            environments.find((env) => env.name.toLowerCase() === name && this.mode === 'add')
+          ) {
             group.get('name').setErrors({ name: true });
           } else {
             group.get('name').setErrors(null);
           }
           const env = environments.find((env) => env.login_user.toLowerCase() === login_user);
-          if (env && (this.mode === 'add' || (this.mode === 'edit' && env.name !== this.data.name))) {
+          if (
+            env &&
+            (this.mode === 'add' || (this.mode === 'edit' && env.name !== this.data.name))
+          ) {
             group.get('login_user').setErrors({ login_user: true });
           } else {
             group.get('login_user').setErrors(null);
@@ -80,10 +88,6 @@ export class AddEditEnvironmentComponent implements OnChanges, OnInit, OnDestroy
       }
       return null;
     };
-  }
-
-  ngOnDestroy() {
-    this.formSub?.unsubscribe?.();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -121,7 +125,12 @@ export class AddEditEnvironmentComponent implements OnChanges, OnInit, OnDestroy
 
     if (test) {
       this._api
-        .request('login', 'login_customer', [login_user, login_password, token_expiration], values.server)
+        .request(
+          'login',
+          'login_customer',
+          [login_user, login_password, token_expiration],
+          values.server
+        )
         .subscribe((response) => {
           if (response.ok && response.body) {
             if (typeof response.body === 'string') {

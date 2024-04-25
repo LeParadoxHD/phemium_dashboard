@@ -1,10 +1,9 @@
-@for (control of loadForm.controls; let i = $index; track i) {
-<div class="load-item" [formGroup]="control">
+@for (control of actionsForm.controls; let i = $index; track i) {
+<div class="action-item">
   <app-select-method
-    [name]="$any(control.get('key'))"
     [composeAsString]="false"
     [enableParameters]="true"
-    formControlName="value"
+    [formControl]="control"
   ></app-select-method>
   <div class="actions">
     <button (click)="remove(i)" nzType="primary" nzDanger nz-button type="button">
@@ -14,5 +13,5 @@
 </div>
 }
 <button class="round" (click)="add()" nzType="primary" nz-button type="button">
-  <span nz-icon nzType="plus"></span>Add load rule
+  <span nz-icon nzType="plus"></span>Add action
 </button>

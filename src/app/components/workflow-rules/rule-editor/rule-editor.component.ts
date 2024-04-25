@@ -1,6 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ControlValueAccessor, FormBuilder, FormGroup, NG_VALUE_ACCESSOR, Validators } from '@angular/forms';
+import {
+  ControlValueAccessor,
+  FormBuilder,
+  FormGroup,
+  NG_VALUE_ACCESSOR,
+  Validators
+} from '@angular/forms';
 import { asapScheduler } from 'rxjs';
 import { IWorkflowRule, Typed } from 'src/app/state/interfaces';
 
@@ -33,7 +39,9 @@ export class RuleEditorComponent implements ControlValueAccessor {
       where: this.formBuild.control({})
     });
     // Subcribe to UI form and update internal value
-    this.ruleForm.valueChanges.pipe(takeUntilDestroyed()).subscribe((rule) => this.onUiChange(rule));
+    this.ruleForm.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((rule) => this.onUiChange(rule));
   }
 
   writeValue(rule: IWorkflowRule) {

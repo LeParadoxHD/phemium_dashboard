@@ -1,5 +1,40 @@
 @for (parameter of parametersForm.controls; let i = $index; track i) {
-<nz-input-group [nzAddOnBefore]="'Parameter ' + (i + 1)">
-  <input type="text" nz-input spellcheck="false" autocomplete="off" />
-</nz-input-group>
+<div class="parameter" [formGroup]="parameter">
+  @if (params?.[i]) {
+  <nz-input-group [nzAddOnBefore]="params[i].name" [nzAddOnAfter]="addOnAfterTemplate">
+    <input type="text" nz-input formControlName="value" spellcheck="false" autocomplete="off" />
+  </nz-input-group>
+  <ng-template #addOnAfterTemplate>
+    @if (params[i].type.length > 1) {
+    <nz-select formControlName="type">
+      @for (type of params[i].type; track type) {
+      <nz-option [nzLabel]="type" [nzValue]="type"></nz-option>
+      }
+    </nz-select>
+    } @else {
+    {{ params[i].type[0] }}
+    }
+  </ng-template>
+  <label
+    class="null"
+    nz-checkbox
+    nz-tooltip
+    nzTooltipPlacement="top"
+    nzTooltipTitle="Mark the parameter as null, it will be included in the parameters array"
+    formControlName="null"
+    (ngModelChange)="onNullChange($event, i)"
+    >null</label
+  >
+  <label
+    class="undefined"
+    nz-checkbox
+    nz-tooltip
+    nzTooltipPlacement="top"
+    nzTooltipTitle="Mark the parameter as undefined, it won't be included in the parameters array"
+    formControlName="undefined"
+    (ngModelChange)="onUndefinedChange($event, i)"
+    >undefined</label
+  >
+  }
+</div>
 }

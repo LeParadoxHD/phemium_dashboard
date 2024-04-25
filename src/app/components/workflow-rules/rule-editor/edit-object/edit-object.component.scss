@@ -1,0 +1,10 @@
+.set-item {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr) 32px;
+  column-gap: 20px;
+  margin-bottom: 20px;
+}
+
+input {
+  font-family: "Roboto Mono";
+}

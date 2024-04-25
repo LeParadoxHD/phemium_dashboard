@@ -2,14 +2,12 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  OnDestroy,
-  OnInit,
   Optional,
   Self
 } from '@angular/core';
 import { ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
-import { Subscription } from 'rxjs';
 import { format } from 'date-fns';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-datetime-field',
@@ -17,7 +15,7 @@ import { format } from 'date-fns';
   styleUrls: ['./datetime-field.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DatetimeFieldComponent implements ControlValueAccessor, OnDestroy, OnInit {
+export class DatetimeFieldComponent implements ControlValueAccessor {
   control = new FormControl('');
   disabled: boolean = false;
   _value: number;
@@ -43,17 +41,9 @@ export class DatetimeFieldComponent implements ControlValueAccessor, OnDestroy, 
     if (this.ngControl != null) {
       this.ngControl.valueAccessor = this;
     }
-  }
-
-  sub: Subscription;
-  ngOnInit() {
-    this.sub = this.control.valueChanges.subscribe((val) => {
+    this.control.valueChanges.pipe(takeUntilDestroyed()).subscribe((val) => {
       this.value = Math.trunc(new Date(val).getTime() / 1000);
     });
-  }
-
-  ngOnDestroy() {
-    this.sub?.unsubscribe?.();
   }
 
   writeValue(value: any) {
