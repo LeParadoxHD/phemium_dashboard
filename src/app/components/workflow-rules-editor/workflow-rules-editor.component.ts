@@ -1,13 +1,15 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormArray, FormControl } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl } from '@angular/forms';
 import { Store } from '@ngxs/store';
 import {
   BehaviorSubject,
   combineLatest,
   debounceTime,
+  distinctUntilChanged,
   filter,
   map,
+  pairwise,
   startWith,
   switchMap,
   tap
@@ -23,7 +25,7 @@ import { SettingsState, WorkflowRulesState } from 'src/app/state/store';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WorkflowRulesEditorComponent {
-  rulesForm: FormArray;
+  rulesForm: FormArray<FormControl<IWorkflowRule>>;
 
   searchedRules = signal<FormControl[]>([]);
 
@@ -40,20 +42,25 @@ export class WorkflowRulesEditorComponent {
 
   search$ = new BehaviorSubject<string>('');
 
-  constructor(private store: Store, private commonService: CommonService) {
-    this.rulesForm = new FormArray([]);
+  constructor(
+    private store: Store,
+    private commonService: CommonService,
+    private formBuild: FormBuilder,
+    private cdr: ChangeDetectorRef
+  ) {
+    this.rulesForm = this.formBuild.array([]);
     this.commonService.currentEnvironment$
       .pipe(
         switchMap((env) => this.store.select(WorkflowRulesState.GetRulesState(env))),
         tap((rules) => this.rulesState.set(rules)),
-        filter((rules) => !rules.loading),
-        filter((rules) => !!rules.original.json),
+        filter((rules) => !rules?.loading),
+        filter((rules) => !!rules?.original?.json),
         takeUntilDestroyed()
       )
       .subscribe((rules) => {
         this.rulesForm.clear();
         for (const rule of rules.original.json) {
-          this.rulesForm.push(new FormControl(rule));
+          this.rulesForm.push(this.formBuild.control(rule));
         }
       });
 
@@ -78,6 +85,16 @@ export class WorkflowRulesEditorComponent {
         takeUntilDestroyed()
       )
       .subscribe((controls) => this.searchedRules.set(controls));
+    this.rulesForm.valueChanges
+      .pipe(
+        //
+        pairwise()
+      )
+      .subscribe(([previousValues, currentValues]) => {
+        if (previousValues.length === currentValues.length) {
+          this.rulesChanged.set(true);
+        }
+      });
   }
 
   changeOpenState(index: number, event: boolean) {

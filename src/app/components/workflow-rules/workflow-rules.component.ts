@@ -26,10 +26,7 @@ export class WorkflowRulesComponent implements OnInit {
   ngOnInit() {
     runInInjectionContext(this.injector, () => {
       this.commonService.currentEnvironment$
-        .pipe(
-          //
-          takeUntilDestroyed()
-        )
+        .pipe(takeUntilDestroyed())
         .subscribe((env) => this.store.dispatch(new WorkflowRulesActions.GetRules(env)));
     });
   }

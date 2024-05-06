@@ -10,7 +10,7 @@ import {
   StateContext,
   Store
 } from '@ngxs/store';
-import { Servers } from 'src/app/config';
+import { ApisConfig, Servers } from 'src/app/config';
 import { LoginActions, SettingsActions } from '../actions';
 import { ISettingsState } from '../interfaces';
 
@@ -65,6 +65,15 @@ export class SettingsState implements NgxsOnChanges, NgxsOnInit {
   static GetCurrentEnvironmentServer(ctx: ISettingsState) {
     if (typeof ctx.selected_environment === 'string') {
       return ctx.selected_environment.split('|')[0] as Servers;
+    }
+    return null;
+  }
+
+  @Selector()
+  static GetCurrentEnvironmentServerName(ctx: ISettingsState) {
+    if (typeof ctx.selected_environment === 'string') {
+      const server = ctx.selected_environment.split('|')[0] as Servers;
+      return ApisConfig.find((s) => s.id === server).name;
     }
     return null;
   }

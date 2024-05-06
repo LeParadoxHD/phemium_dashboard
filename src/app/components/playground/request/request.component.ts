@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, SimpleChanges } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { IViewRequest } from 'src/app/interfaces';
-import { LayoutService, MonacoEditorOptions } from 'src/app/services/layout.service';
+import { EditorService, MonacoEditorOptions } from 'src/app/services/editor.service';
 
 @Component({
   selector: 'app-request',
@@ -14,8 +14,8 @@ export class RequestComponent {
 
   editorOptions$: Observable<MonacoEditorOptions>;
 
-  constructor(private layoutService: LayoutService) {
-    this.editorOptions$ = this.layoutService.getEditorOptions();
+  constructor(private editorService: EditorService) {
+    this.editorOptions$ = this.editorService.getEditorOptions();
   }
 
   code$ = new BehaviorSubject<string>('');

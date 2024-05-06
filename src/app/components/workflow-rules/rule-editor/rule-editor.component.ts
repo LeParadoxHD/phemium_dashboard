@@ -1,20 +1,16 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  ControlValueAccessor,
-  FormBuilder,
-  FormGroup,
-  NG_VALUE_ACCESSOR,
-  Validators
-} from '@angular/forms';
+import { ControlValueAccessor, FormBuilder, FormGroup, NG_VALUE_ACCESSOR, Validators } from '@angular/forms';
 import { asapScheduler } from 'rxjs';
 import { IWorkflowRule, Typed } from 'src/app/state/interfaces';
+import { ErrorAnimation } from './utils/animations';
 
 @Component({
   selector: 'app-rule-editor',
   templateUrl: './rule-editor.component.html',
   styleUrl: './rule-editor.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [ErrorAnimation],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -28,10 +24,14 @@ export class RuleEditorComponent implements ControlValueAccessor {
 
   _internalValue: IWorkflowRule;
 
+  @HostListener('document:keydown.f', ['$event']) onKeydownHandler(event: KeyboardEvent) {
+    console.log(this.ruleForm);
+  }
+
   constructor(private formBuild: FormBuilder) {
     // Create form with default values
     this.ruleForm = this.formBuild.group<Typed<IWorkflowRule>>({
-      description: this.formBuild.control('', Validators.minLength(10)),
+      description: this.formBuild.control('', Validators.compose([Validators.required, Validators.minLength(10)])),
       action: this.formBuild.control('', Validators.required),
       do: this.formBuild.control([]),
       load: this.formBuild.control({}),
@@ -39,9 +39,7 @@ export class RuleEditorComponent implements ControlValueAccessor {
       where: this.formBuild.control({})
     });
     // Subcribe to UI form and update internal value
-    this.ruleForm.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((rule) => this.onUiChange(rule));
+    this.ruleForm.valueChanges.pipe(takeUntilDestroyed()).subscribe((rule) => this.onUiChange(rule));
   }
 
   writeValue(rule: IWorkflowRule) {

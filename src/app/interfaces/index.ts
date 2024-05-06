@@ -58,7 +58,7 @@ export interface IApiEntity {
 
 export interface IApiEntityProperty {
   name: string;
-  type: 'integer' | 'string' | 'boolean';
+  type: 'integer' | 'string' | 'boolean' | 'int' | 'boolean' | any;
   default_value: any;
 }
 

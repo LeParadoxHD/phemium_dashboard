@@ -8,7 +8,6 @@ import {
   SimpleChanges,
   forwardRef
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -21,10 +20,12 @@ import {
   Validator,
   Validators
 } from '@angular/forms';
-import { Observable, distinctUntilChanged, map, pairwise, tap } from 'rxjs';
+import { Observable, asapScheduler, distinctUntilChanged, map, pairwise, tap } from 'rxjs';
 import { IApiMethodGroup } from 'src/app/interfaces';
 import { CommonService } from 'src/app/services/common.service';
 import { Typed } from 'src/app/state/interfaces';
+import { ErrorAnimation } from '../utils/animations';
+import { SubSinkAdapter } from 'src/app/utilities';
 
 interface ITrigger {
   api: string;
@@ -37,6 +38,7 @@ interface ITrigger {
   templateUrl: './select-method.component.html',
   styleUrl: './select-method.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [ErrorAnimation],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -50,7 +52,7 @@ interface ITrigger {
     }
   ]
 })
-export class SelectMethodComponent implements ControlValueAccessor, Validator, OnChanges {
+export class SelectMethodComponent extends SubSinkAdapter implements ControlValueAccessor, Validator, OnChanges {
   @Input() composeAsString = true;
   @Input() name?: FormControl<string>;
   @Input() @HostBinding('class.parameters-mode') enableParameters = false;
@@ -59,23 +61,26 @@ export class SelectMethodComponent implements ControlValueAccessor, Validator, O
 
   apis$: Observable<IApiMethodGroup[]> = this.commonService.currentApiItems$;
 
-  constructor(
-    private formBuild: FormBuilder,
-    private commonService: CommonService,
-    private cdr: ChangeDetectorRef
-  ) {
+  constructor(private formBuild: FormBuilder, private commonService: CommonService, private cdr: ChangeDetectorRef) {
+    super();
     // Create form with default values
     this.triggerForm = this.formBuild.group<Typed<ITrigger>>({
       api: this.formBuild.control('', Validators.required),
       method: this.formBuild.control('', Validators.required)
     });
+  }
+
+  reactToChanges() {
     // Subcribe to UI form and update internal value
-    this.triggerForm.valueChanges
+    this.sink = this.triggerForm.valueChanges
       .pipe(
-        takeUntilDestroyed(),
         tap((values) => {
-          const method = `${values.api}__${values.method}`;
-          this.onUiChange(method);
+          if (this.enableParameters) {
+            this.onUiChange(values as ITrigger);
+          } else {
+            const method = `${values.api}__${values.method}`;
+            this.onUiChange(method);
+          }
         }),
         map((values) => values.api),
         distinctUntilChanged(),
@@ -96,15 +101,16 @@ export class SelectMethodComponent implements ControlValueAccessor, Validator, O
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['enableParameters'].currentValue) {
       if (this.enableParameters) {
-        this.triggerForm.addControl('parameters', this.formBuild.control([]));
+        this.triggerForm.addControl('parameters', this.formBuild.control([]), { emitEvent: false });
       } else {
-        this.triggerForm.removeControl('parameters');
+        this.triggerForm.removeControl('parameters', { emitEvent: false });
       }
     }
   }
 
   writeValue(_method: string | ITrigger) {
     if (_method) {
+      this.unsubscribe();
       let api: string = null;
       let method: string = null;
       let parameters: any[] = [];
@@ -118,18 +124,21 @@ export class SelectMethodComponent implements ControlValueAccessor, Validator, O
         }
       }
       if (api && method) {
-        this.triggerForm.patchValue({ api, method }, { emitEvent: false });
+        this.triggerForm.patchValue({ api, method }, { emitEvent: false, onlySelf: true });
         if (this.enableParameters) {
           this.triggerForm.patchValue({ parameters }, { emitEvent: false });
         }
         this.triggerForm.updateValueAndValidity();
         this.cdr.markForCheck();
       }
+      asapScheduler.schedule(() => {
+        this.reactToChanges();
+      });
     }
   }
 
   // Use this method to update internal value from changes from UI
-  onUiChange = (method: string) => {};
+  onUiChange = (method: string | ITrigger) => {};
 
   onUiTouched = () => {};
 
@@ -150,7 +159,7 @@ export class SelectMethodComponent implements ControlValueAccessor, Validator, O
   }
 
   validate(control: AbstractControl): ValidationErrors | null {
-    if (this.triggerForm.get('api').invalid || this.triggerForm.get('method').invalid) {
+    if (this.triggerForm.invalid) {
       return { invalid: true };
     }
     return null;

@@ -122,6 +122,25 @@ code {
   letter-spacing: 0.5px;
 }
 
+@keyframes blurIn {
+  from {
+    backdrop-filter: blur(0);
+  }
+  to {
+    backdrop-filter: blur(5px);
+  }
+}
+
+nz-modal-container {
+  animation: blurIn 0.2s forwards;
+}
+
+.ant-pagination-item,
+.ant-pagination-next button,
+.ant-pagination-prev button {
+  border-radius: 8px !important;
+}
+
 button.round,
 input.round {
   border-radius: 5px;
@@ -214,4 +233,34 @@ input.code {
 .no-items {
   color: rgba(black, 0.4);
   font-size: 13px;
+}
+
+.ant-modal-content {
+  border-radius: 8px;
+  .ant-modal-header {
+    border-radius: 8px 8px 0 0;
+  }
+  .ant-modal-body {
+    padding: 0;
+  }
+  .ant-modal-footer {
+    .flex {
+      display: flex;
+      align-items: center;
+    }
+    .justify-space-between {
+      justify-content: space-between;
+    }
+    .errors {
+      color: darkred;
+      .anticon {
+        margin-right: 10px;
+        position: relative;
+        bottom: 1px;
+      }
+    }
+    button {
+      border-radius: 8px;
+    }
+  }
 }

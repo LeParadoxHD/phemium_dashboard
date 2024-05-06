@@ -4,7 +4,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Store } from '@ngxs/store';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { IApiMethod, CustomHttpResponse } from 'src/app/interfaces';
-import { LayoutService, MonacoEditorOptions } from 'src/app/services/layout.service';
+import { EditorService, MonacoEditorOptions } from 'src/app/services/editor.service';
 import { ViewState } from 'src/app/state/store';
 
 @Component({
@@ -25,8 +25,8 @@ export class ResponseComponent implements OnChanges, OnInit {
 
   html$ = new BehaviorSubject<SafeHtml>('');
 
-  constructor(private _store: Store, private layout: LayoutService, private _sanitizer: DomSanitizer) {
-    this.editorOptions$ = this.layout.getEditorOptions();
+  constructor(private _store: Store, private editorService: EditorService, private _sanitizer: DomSanitizer) {
+    this.editorOptions$ = this.editorService.getEditorOptions();
   }
 
   ngOnChanges(changes: SimpleChanges) {

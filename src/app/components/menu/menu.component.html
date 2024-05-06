@@ -26,7 +26,7 @@
     }
   </nz-select>
   <ng-template #defaultTemplate let-selected>
-    Environment:
+    {{ selectedServer$ | async }}:
     {{ selected.nzLabel }}
   </ng-template>
   <ng-template #renderTemplate>

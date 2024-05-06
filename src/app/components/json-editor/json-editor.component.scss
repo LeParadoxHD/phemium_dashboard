@@ -1,0 +1,40 @@
+:host::ng-deep {
+  display: block;
+  height: 100%;
+  ngx-monaco-editor {
+    height: 100%;
+  }
+}
+
+.left {
+  flex: 1;
+  margin-right: 25px;
+}
+
+.intellisense {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  margin-right: 60px;
+  color: rgba(black, 0.65);
+  font-size: 14px;
+  .label {
+    display: flex;
+    align-items: center;
+  }
+  .flag {
+    display: block;
+    height: 12px;
+    width: 12px;
+    background-color: rgba(205, 36, 0, 0.7);
+    margin-left: 10px;
+    border-radius: 50%;
+    &.enabled {
+      background-color: #35da00;
+    }
+  }
+  .model-name {
+    color: rgba(black, 0.5);
+    font-size: 13px;
+  }
+}

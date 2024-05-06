@@ -1,5 +1,6 @@
 import { Servers } from 'src/app/config';
 import { IApiEntity, IApiMethodGroup } from 'src/app/interfaces';
+import { EntitySchema } from 'src/app/services/editor.service';
 
 export type IApiState = {
   [server in Servers]?: IApi;
@@ -11,6 +12,7 @@ export interface IApi {
   loading?: boolean;
   lastUpdate: number;
   entities?: IApiEntity[];
+  jsonSchemas?: EntitySchema[];
   apis?: IApiMethodGroup[];
   server: Servers;
 }

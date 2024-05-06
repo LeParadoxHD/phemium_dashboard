@@ -1,38 +1,38 @@
 <ng-container [formGroup]="triggerForm">
   <div class="select-method-container">
     @if (name) {
-    <nz-input-group nzAddOnBefore="Key">
-      <input
-        type="text"
-        class="code"
-        nz-input
-        [formControl]="name"
-        spellcheck="false"
-        autocomplete="off"
-      />
-    </nz-input-group>
+    <div>
+      <nz-input-group nzAddOnBefore="Key">
+        <input type="text" class="code" nz-input [formControl]="name" spellcheck="false" autocomplete="off" />
+      </nz-input-group>
+      <div class="error-message" [@error] *ngIf="name.invalid">Please enter a key name</div>
+    </div>
     }
     <ng-template #selectedApiTemplate let-selected>
       <span nz-icon class="api-icon" nzType="folder"></span>
       {{ selected.nzLabel }}
     </ng-template>
-    <nz-select
-      [nzDropdownClassName]="['select-with-icons', 'colors', 'rules-editor']"
-      [nzCustomTemplate]="selectedApiTemplate"
-      [nzBackdrop]="true"
-      class="api"
-      [nzOptionHeightPx]="40"
-      formControlName="api"
-      nzShowSearch
-      nzPlaceHolder="Select API"
-    >
-      @for (api of apis$ | async; track api.name) {
-      <nz-option nzCustomContent [nzValue]="api.name" [nzLabel]="api.normalized">
-        <span nz-icon nzType="folder"></span>
-        {{ api.normalized }}
-      </nz-option>
-      }
-    </nz-select>
+    <div>
+      <nz-select
+        [nzDropdownClassName]="['select-with-icons', 'colors', 'rules-editor']"
+        [nzCustomTemplate]="selectedApiTemplate"
+        [nzBackdrop]="true"
+        class="api"
+        style="width: 100%"
+        [nzOptionHeightPx]="40"
+        formControlName="api"
+        nzShowSearch
+        nzPlaceHolder="Select API"
+      >
+        @for (api of apis$ | async; track api.name) {
+        <nz-option nzCustomContent [nzValue]="api.name" [nzLabel]="api.normalized">
+          <span nz-icon nzType="folder"></span>
+          {{ api.normalized }}
+        </nz-option>
+        }
+      </nz-select>
+      <div class="error-message" [@error] *ngIf="triggerForm.get('api').invalid">Please select an API</div>
+    </div>
 
     <ng-template #selectedMethodTemplate let-selected>
       <span
@@ -43,30 +43,33 @@
       ></span>
       {{ selected.nzLabel }}
     </ng-template>
-    <nz-select
-      [nzDropdownClassName]="['select-with-icons', 'rules-editor']"
-      [nzCustomTemplate]="selectedMethodTemplate"
-      [nzBackdrop]="true"
-      [nzOptionHeightPx]="40"
-      formControlName="method"
-      nzShowSearch
-      class="method-selector"
-      nzPlaceHolder="Select method"
-    >
-      @for (method of triggerForm.get('api').value | methodsByApi | async; track method.name) {
-      <nz-option nzCustomContent [nzValue]="method.name" [nzLabel]="method.normalized">
-        <span class="method-icon" nz-icon [nzType]="method.icon" nzTheme="outline"></span>
-        {{ method.normalized }}
-      </nz-option>
-      }
-    </nz-select>
+    <div>
+      <nz-select
+        [nzDropdownClassName]="['select-with-icons', 'rules-editor']"
+        [nzCustomTemplate]="selectedMethodTemplate"
+        [nzBackdrop]="true"
+        [nzOptionHeightPx]="40"
+        style="width: 100%"
+        formControlName="method"
+        nzShowSearch
+        class="method-selector"
+        nzPlaceHolder="Select method"
+      >
+        @for (method of triggerForm.get('api').value | methodsByApi | async; track method.name) {
+        <nz-option nzCustomContent [nzValue]="method.name" [nzLabel]="method.normalized">
+          <span class="method-icon" nz-icon [nzType]="method.icon" nzTheme="outline"></span>
+          {{ method.normalized }}
+        </nz-option>
+        }
+      </nz-select>
+      <div class="error-message" [@error] *ngIf="triggerForm.get('method').invalid">Please select a method</div>
+    </div>
   </div>
   @if (enableParameters) {
-  <app-edit-parameters
-    [params]="
-      (triggerForm.get('api').value | getMethod : triggerForm.get('method').value | async)?.params
-    "
-    formControlName="parameters"
-  ></app-edit-parameters>
-  }
+  <!---->
+  @if ((triggerForm.get('api').value | getMethod : triggerForm.get('method').value | async)?.params; as params) {
+  <!---->
+  @if (params.length > 0) {
+  <app-edit-parameters [params]="params" formControlName="parameters"></app-edit-parameters>
+  } } }
 </ng-container>

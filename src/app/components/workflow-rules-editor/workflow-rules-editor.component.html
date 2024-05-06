@@ -1,13 +1,7 @@
 <div class="header">
   <div class="actions">
-    <input
-      nz-input
-      (input)="updateList($event)"
-      placeholder="Search"
-      spellcheck="false"
-      autocomplete="off"
-    />
-    <button nzType="primary" [disabled]="rulesState().loading" nz-button (click)="submit()">
+    <input nz-input (input)="updateList($event)" placeholder="Search" spellcheck="false" autocomplete="off" />
+    <button nzType="primary" [disabled]="rulesState()?.loading" nz-button (click)="submit()">
       <span nz-icon>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
           <path
@@ -17,7 +11,7 @@
       </span>
       Import
     </button>
-    <button nzType="primary" [disabled]="rulesState().loading" nz-button (click)="submit()">
+    <button nzType="primary" [disabled]="rulesState()?.loading" nz-button (click)="submit()">
       <span nz-icon>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
           <path
@@ -30,19 +24,19 @@
     <button
       nzType="primary"
       [disabled]="!rulesChanged()"
-      [nzLoading]="rulesState().saving"
+      [nzLoading]="rulesState()?.saving"
       nz-button
       (click)="submit()"
     >
       <span nz-icon nzType="save"></span>
-      @if (rulesState().saving) { Saving } @else { Save }
+      @if (rulesState()?.saving) { Saving } @else { Save }
     </button>
   </div>
-  @if (!rulesState().loading && searchedRules().length > 0) {
+  @if (!rulesState()?.loading && searchedRules().length > 0) {
   <div class="data">{{ searchedRules().length }} rules</div>
   }
 </div>
-@if (rulesState().loading) { Loading... } @else {
+@if (rulesState()?.loading) { Loading... } @else {
 <!---->
 @if (searchedRules().length > 0) {
 <nz-collapse nzExpandIconPosition="right">
@@ -59,12 +53,7 @@
     <app-rule-editor [formControl]="rule"></app-rule-editor>
     } @placeholder { Loading... }
     <ng-template #expandedIcon let-active>
-      <span
-        nz-icon
-        nzType="caret-right"
-        class="ant-collapse-arrow"
-        [nzRotate]="panel.nzActive ? -90 : 90"
-      ></span>
+      <span nz-icon nzType="caret-right" class="ant-collapse-arrow" [nzRotate]="panel.nzActive ? -90 : 90"></span>
     </ng-template>
     <ng-template #headerTemplate>
       <div class="name">{{ rule.value.description }}</div>

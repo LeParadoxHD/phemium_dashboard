@@ -37,17 +37,16 @@
   }
 }
 
-.method-selector {
-  margin-bottom: 20px;
-}
-
 :host::ng-deep .ant-input-wrapper.ant-input-group {
   span {
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
+    font-weight: 500;
+  }
+  span:first-child {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
   }
   input {
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
   }
 }

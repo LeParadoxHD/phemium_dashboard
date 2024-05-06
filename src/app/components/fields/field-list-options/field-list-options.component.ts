@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Optional,
-  Self
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Optional, Self } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ControlValueAccessor, FormArray, FormBuilder, FormGroup, NgControl } from '@angular/forms';
 import { ListOptionsOperators } from 'src/app/config';
@@ -36,11 +30,7 @@ export class FieldListOptionsComponent implements ControlValueAccessor {
     this.onTouch(value);
   }
 
-  constructor(
-    @Optional() @Self() public ngControl: NgControl,
-    private _fb: FormBuilder,
-    private _cdr: ChangeDetectorRef
-  ) {
+  constructor(@Optional() @Self() public ngControl: NgControl, private _fb: FormBuilder, private _cdr: ChangeDetectorRef) {
     // Setting the value accessor directly (instead of using
     // the providers) to avoid running into a circular import.
     this.ngControl.valueAccessor = this;
@@ -61,7 +51,10 @@ export class FieldListOptionsComponent implements ControlValueAccessor {
       .subscribe((values) => (this.value = values));
     this.form
       .get('sort_column')
-      .valueChanges.pipe(takeUntilDestroyed())
+      .valueChanges.pipe(
+        //
+        takeUntilDestroyed()
+      )
       .subscribe((val) => {
         if (val) {
           this.form.get('sort_type').enable();

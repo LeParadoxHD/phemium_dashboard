@@ -9,8 +9,39 @@
   box-sizing: border-box;
 }
 
-:host::ng-deep app-select-method.trigger .api .ant-select-arrow {
-  margin-top: -15px;
+:host::ng-deep {
+  input.ng-dirty.ng-invalid,
+  input.ng-dirty.ant-input-status-error,
+  textarea.ng-dirty.ng-invalid {
+    background-color: rgba(#cd2400, 0.03) !important;
+    border-color: #cd2400 !important;
+    color: #cd2400 !important;
+    caret-color: #cd2400;
+    &::-webkit-input-placeholder {
+      color: rgba(#cd2400, 0.4);
+    }
+    &:-moz-placeholder {
+      color: rgba(#cd2400, 0.4);
+    }
+  }
+  .ant-select.ng-invalid .ant-select-selector {
+    background-color: rgba(#cd2400, 0.03) !important;
+    border-color: #cd2400 !important;
+    color: #cd2400 !important;
+    .ant-select-selection-placeholder {
+      color: rgba(#cd2400, 0.4);
+    }
+  }
+  input:focus,
+  textarea:focus {
+    background-color: aliceblue;
+  }
+}
+
+:host::ng-deep div.error-message {
+  color: rgba(#cd2400, 0.7);
+  font-size: 12px;
+  margin-top: 6px;
 }
 
 :host::ng-deep .ant-tabs-tab-btn {

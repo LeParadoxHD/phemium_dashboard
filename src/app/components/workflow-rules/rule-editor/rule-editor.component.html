@@ -10,6 +10,9 @@
           spellcheck="false"
           autocomplete="off"
         ></textarea>
+        <div *ngIf="ruleForm.get('description').invalid" [@error] class="error-message">
+          Provide a description with a minimum length of 10 characters
+        </div>
       </ng-template>
     </nz-tab>
     <nz-tab nzTitle="TRIGGER">
@@ -21,8 +24,7 @@
     <nz-tab nzTitle="LOAD">
       <ng-template nz-tab>
         <div class="intro">
-          Run operations before the actions list are executed, assigning them to a variable name and
-          accessible later.
+          Run operations before the actions list are executed, assigning them to a variable name and accessible later.
         </div>
         <app-edit-load formControlName="load"></app-edit-load>
       </ng-template>
@@ -36,17 +38,15 @@
     <nz-tab nzTitle="WHERE">
       <ng-template nz-tab>
         <div class="intro">
-          Filter if the current Workflow Rule should be executed or not based on request data,
-          response data, or variables declared previously.
+          Filter if the current Workflow Rule should be executed or not based on request data, response data, or
+          variables declared previously.
         </div>
         <app-edit-object formControlName="where"></app-edit-object>
       </ng-template>
     </nz-tab>
     <nz-tab nzTitle="ACTIONS">
       <ng-template nz-tab>
-        <div class="intro">
-          Run actions after the request and response have been processed and filtered.
-        </div>
+        <div class="intro">Run actions after the request and response have been processed and filtered.</div>
         <app-edit-actions formControlName="do"></app-edit-actions>
       </ng-template>
     </nz-tab>

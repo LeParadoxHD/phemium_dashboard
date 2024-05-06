@@ -19,6 +19,7 @@ import { LoginsState, SettingsState } from 'src/app/state/store';
 })
 export class MenuComponent implements OnInit {
   selectedEnvironment$: Observable<string>;
+  selectedServer$: Observable<string>;
   methods$: Observable<IApiMethodGroup[]>;
 
   openMap: { [name: string]: boolean } = {};
@@ -33,6 +34,7 @@ export class MenuComponent implements OnInit {
 
   constructor(private _store: Store, private commonService: CommonService) {
     this.selectedEnvironment$ = this.commonService.currentEnvironment$;
+    this.selectedServer$ = this.commonService.currentServerName$;
     this.methods$ = this.commonService.currentApiItems$;
     this.environments = toSignal(this.commonService.environments$);
   }
@@ -55,9 +57,7 @@ export class MenuComponent implements OnInit {
 
   ngOnInit() {
     this._store.dispatch(new MethodActions.GetMethods('prerelease'));
-    const currentEnvironment = this._store.selectSnapshot(
-      SettingsState.GetProperty('selected_environment')
-    );
+    const currentEnvironment = this._store.selectSnapshot(SettingsState.GetProperty('selected_environment'));
     if (currentEnvironment) {
       this.envControl.setValue(currentEnvironment);
     }

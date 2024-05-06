@@ -1,24 +1,70 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+
+const isFunction = (fn: any) => typeof fn === 'function';
+export type Nullable<T> = T | null | undefined;
+
+export interface SubscriptionLike {
+  unsubscribe(): void;
+}
 
 /**
- * A class that automatically unsubscribes all observables when
- * the object gets destroyed
+ * Subscription sink that holds Observable subscriptions
+ * until you call unsubscribe on it in ngOnDestroy.
  */
 @Injectable()
 export class SubSinkAdapter implements OnDestroy {
-  /**The subscription sink object that stores all subscriptions */
-  private subs = new Subscription();
+  protected _subs: Nullable<SubscriptionLike>[] = [];
 
-  set sink(sub: Subscription) {
-    this.subs.add(sub);
+  /**
+   * Subscription sink that holds Observable subscriptions
+   * until you call unsubscribe on it in ngOnDestroy.
+   *
+   * @example
+   * In Angular:
+   * ```
+   *   private subs = new SubSink();
+   *   ...
+   *   this.subs.sink = observable$.subscribe(...)
+   *   this.subs.add(observable$.subscribe(...));
+   *   ...
+   *   ngOnDestroy() {
+   *     this.subs.unsubscribe();
+   *   }
+   * ```
+   */
+  constructor() {}
+
+  /**
+   * Add subscriptions to the tracked subscriptions
+   * @example
+   *  this.subs.add(observable$.subscribe(...));
+   */
+  addSink(...subscriptions: Nullable<SubscriptionLike>[]) {
+    this._subs = this._subs.concat(subscriptions);
   }
 
   /**
-   * The lifecycle hook that unsubscribes all subscriptions
-   * when the component / object gets destroyed
+   * Assign subscription to this sink to add it to the tracked subscriptions
+   * @example
+   *  this.subs.sink = observable$.subscribe(...);
    */
-  ngOnDestroy(): void {
-    this.subs.unsubscribe();
+  set sink(subscription: Nullable<SubscriptionLike>) {
+    this._subs.push(subscription);
+  }
+
+  /**
+   * Unsubscribe to all subscriptions in ngOnDestroy()
+   * @example
+   *   ngOnDestroy() {
+   *     this.subs.unsubscribe();
+   *   }
+   */
+  unsubscribe() {
+    this._subs.forEach((sub) => sub && isFunction(sub.unsubscribe) && sub.unsubscribe());
+    this._subs = [];
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe();
   }
 }

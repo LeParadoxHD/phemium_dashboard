@@ -160,7 +160,6 @@ export class ViewState implements NgxsOnInit {
             )
           })
         );
-        // TODO: Also push it to the DEBUG menu log
       })
     );
   }

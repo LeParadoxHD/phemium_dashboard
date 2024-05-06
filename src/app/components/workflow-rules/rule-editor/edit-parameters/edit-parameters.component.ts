@@ -5,19 +5,30 @@ import {
   Input,
   OnChanges,
   SimpleChanges,
+  ViewContainerRef,
   forwardRef
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
+  AbstractControl,
   ControlValueAccessor,
   FormArray,
   FormBuilder,
   FormGroup,
-  NG_VALUE_ACCESSOR
+  NG_VALIDATORS,
+  NG_VALUE_ACCESSOR,
+  ValidationErrors,
+  Validator
 } from '@angular/forms';
+import { NzModalService } from 'ng-zorro-antd/modal';
 import { asyncScheduler } from 'rxjs';
+import { JsonEditorComponent, JsonEditorPayload } from 'src/app/components/json-editor/json-editor.component';
 import { IApiMethodParams } from 'src/app/interfaces';
 import { Typed } from 'src/app/state/interfaces';
+import { ErrorAnimation } from '../utils/animations';
+import { SubSinkAdapter } from 'src/app/utilities';
+import { ParameterValidator } from '../utils/validators';
+import { parseParameter } from '../utils/parsers';
+import { updateControlState } from '../utils/automations';
 
 export interface IParam {
   value: any;
@@ -31,7 +42,13 @@ export interface IParam {
   templateUrl: './edit-parameters.component.html',
   styleUrl: './edit-parameters.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [ErrorAnimation],
   providers: [
+    {
+      provide: NG_VALIDATORS,
+      multi: true,
+      useExisting: forwardRef(() => EditParametersComponent)
+    },
     {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
@@ -39,39 +56,20 @@ export interface IParam {
     }
   ]
 })
-export class EditParametersComponent implements ControlValueAccessor, OnChanges {
+export class EditParametersComponent extends SubSinkAdapter implements ControlValueAccessor, OnChanges, Validator {
   @Input() params: IApiMethodParams[] = [];
 
   parametersForm: FormArray<FormGroup>;
 
-  constructor(private formBuild: FormBuilder, private cdr: ChangeDetectorRef) {
+  constructor(
+    private formBuild: FormBuilder,
+    private cdr: ChangeDetectorRef,
+    private modal: NzModalService,
+    private viewContainerRef: ViewContainerRef
+  ) {
+    super();
     this.parametersForm = this.formBuild.array<FormGroup>([]);
-    this.parametersForm.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((parameters: IParam[]) => {
-        const values = parameters
-          .filter((param) => !param.undefined)
-          .map((param) => {
-            if (param.null) {
-              return null;
-            }
-            switch (param.type) {
-              case 'integer':
-              case 'int':
-              case 'number':
-                return parseInt(param.value, 10);
-              case 'string':
-                return typeof param.value === 'string' ? param.value : param.value.toString();
-              case 'boolean':
-              case 'bool':
-                return typeof param.value === 'boolean' ? param.value : param.value === 'true';
-              default:
-                console.warn('unknown type:', param.type);
-                return JSON.stringify(param.value);
-            }
-          });
-        this.onUiChange(values);
-      });
+    this.resubscribeParametersForm();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -79,18 +77,29 @@ export class EditParametersComponent implements ControlValueAccessor, OnChanges 
       const controls: FormGroup<Typed<IParam>>[] = [];
       for (let i = 0; i < this.params.length; i++) {
         controls.push(
-          this.formBuild.group<IParam>({
-            value: '',
-            type: this.params[i].type[0],
-            null: false,
-            undefined: false
-          })
+          this.formBuild.group<IParam>(
+            {
+              value: this.formBuild.control(''),
+              type: this.params[i].type[0],
+              null: false,
+              undefined: false
+            },
+            { validators: ParameterValidator() }
+          )
         );
       }
       this.parametersForm = this.formBuild.array(controls);
       this.parametersForm.updateValueAndValidity();
+      this.resubscribeParametersForm();
       this.cdr.markForCheck();
     }
+  }
+
+  resubscribeParametersForm() {
+    this.sink = this.parametersForm.valueChanges.subscribe((parameters: IParam[]) => {
+      const values = parameters.filter((param) => !param.undefined).map(parseParameter);
+      this.onUiChange(values);
+    });
   }
 
   registerOnChange(fn: any) {
@@ -119,28 +128,7 @@ export class EditParametersComponent implements ControlValueAccessor, OnChanges 
 
   updateControl(index: number, value: any) {
     const control = this.parametersForm.at(index);
-    if (value === null) {
-      control.get('null').setValue(true, { emitEvent: false });
-      control.get('undefined').disable({ emitEvent: false });
-      control.get('type').disable({ emitEvent: false });
-      control.get('value').disable({ emitEvent: false });
-      control.get('null').enable({ emitEvent: false });
-    } else if (value === undefined) {
-      control.get('undefined').setValue(true, { emitEvent: false });
-      control.get('undefined').enable({ emitEvent: false });
-      control.get('type').disable({ emitEvent: false });
-      control.get('value').disable({ emitEvent: false });
-      control.get('null').disable({ emitEvent: false });
-    } else {
-      if (typeof value === 'object') {
-        value = JSON.stringify(value);
-      }
-      control.get('value').setValue(value, { emitEvent: false });
-      control.get('undefined').enable({ emitEvent: false });
-      control.get('value').enable({ emitEvent: false });
-      control.get('null').enable({ emitEvent: false });
-      control.get('type').enable({ emitEvent: false });
-    }
+    updateControlState(control, value);
     control.updateValueAndValidity();
   }
 
@@ -160,9 +148,17 @@ export class EditParametersComponent implements ControlValueAccessor, OnChanges 
   onUndefinedChange(checked: boolean, index: number) {
     const control = this.parametersForm.at(index);
     if (checked) {
-      control.get('value').disable();
-      control.get('null').disable();
-      control.get('type').disable();
+      // TODO: Fix entering blocked state when checking null checkbox and then any undefined checkbox above
+      if (!control.get('value').disabled) control.get('value').disable();
+      if (!control.get('null').disabled) control.get('null').disable();
+      if (!control.get('type').disabled) control.get('type').disable();
+      if (this.parametersForm.at(index + 1)) {
+        this.parametersForm
+          .at(index + 1)
+          .get('undefined')
+          .setValue(true, { emitEvent: true });
+        this.onUndefinedChange(true, index + 1);
+      }
     } else {
       control.get('value').enable();
       control.get('null').enable();
@@ -180,5 +176,37 @@ export class EditParametersComponent implements ControlValueAccessor, OnChanges 
     } else {
       this.parametersForm.enable();
     }
+  }
+
+  openJsonEditor(event: MouseEvent, index: number) {
+    event.preventDefault();
+    event.stopPropagation();
+    const paramType = this.parametersForm.at(index)?.get('type')?.value;
+    const primitiveTypes = ['bool', 'boolean', 'number', 'string', 'int', 'integer', 'float'];
+    if (!primitiveTypes.includes(paramType)) {
+      const modal = this.modal.create<JsonEditorComponent, JsonEditorPayload>({
+        nzTitle: 'Edit JSON',
+        nzContent: JsonEditorComponent,
+        nzViewContainerRef: this.viewContainerRef,
+        nzData: {
+          code: this.parametersForm.at(index).get('value').value,
+          model: this.parametersForm.at(index).get('type').value
+        },
+        nzWidth: window.innerWidth > 800 ? '800px' : '90%',
+        nzBodyStyle: {
+          minHeight: '400px',
+          height: '20vh'
+        }
+      });
+      modal.afterClose.subscribe((result) => {
+        if (result !== undefined) {
+          this.parametersForm.at(index).get('value').setValue(JSON.stringify(result));
+        }
+      });
+    }
+  }
+
+  validate(control: AbstractControl): ValidationErrors | null {
+    return this.parametersForm.valid ? null : { invalid: true };
   }
 }

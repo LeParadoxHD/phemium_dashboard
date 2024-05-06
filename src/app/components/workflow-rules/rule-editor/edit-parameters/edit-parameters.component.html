@@ -1,9 +1,28 @@
 @for (parameter of parametersForm.controls; let i = $index; track i) {
 <div class="parameter" [formGroup]="parameter">
   @if (params?.[i]) {
-  <nz-input-group [nzAddOnBefore]="params[i].name" [nzAddOnAfter]="addOnAfterTemplate">
-    <input type="text" nz-input formControlName="value" spellcheck="false" autocomplete="off" />
-  </nz-input-group>
+  <div>
+    <nz-input-group [nzAddOnBefore]="params[i].name" [nzAddOnAfter]="addOnAfterTemplate">
+      <input
+        type="text"
+        (click)="openJsonEditor($event, i)"
+        [nzStatus]="parameter.touched && parameter.invalid ? 'error' : null"
+        nz-input
+        formControlName="value"
+        spellcheck="false"
+        autocomplete="off"
+      />
+    </nz-input-group>
+    <div *ngIf="parameter.touched || parameter.dirty">
+      <div class="error-message" [@error] *ngIf="parameter.hasError('invalid')">Please provide a value</div>
+      <div class="error-message" [@error] *ngIf="parameter.hasError('notNumber')">Invalid number</div>
+      <div class="error-message" [@error] *ngIf="parameter.hasError('notBoolean')">Invalid boolean</div>
+      <div class="error-message" [@error] *ngIf="parameter.hasError('notString')">Invalid string</div>
+      <div class="error-message" [@error] *ngIf="parameter.hasError('invalidComputedValue')">
+        Invalid computed value
+      </div>
+    </div>
+  </div>
   <ng-template #addOnAfterTemplate>
     @if (params[i].type.length > 1) {
     <nz-select formControlName="type">

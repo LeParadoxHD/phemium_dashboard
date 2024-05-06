@@ -1,0 +1,38 @@
+@if (model) {
+<app-code-editor
+  [options]="options"
+  [formControl]="code"
+  language="json"
+  [model]="model"
+  (intellisenseEnabled)="enableIntelliSense()"
+></app-code-editor>
+}
+<div *nzModalFooter>
+  <div class="flex justify-space-between">
+    <div class="left flex justify-space-between">
+      @if (nzModalData.model) {
+      <div class="intellisense">
+        <div class="label">
+          Phemium IntelliSense
+          <i class="flag" [class.enabled]="intelliSense()"></i>
+        </div>
+        <div class="model-name">{{ modelPretty }}</div>
+      </div>
+      }
+      <div class="errors flex justify-space-between">
+        <ng-container *ngIf="code.invalid && !code.hasError('jsonInvalid')">
+          <span class="right" nz-icon nzType="warning" nzTheme="outline"></span>
+          Empty JSON
+        </ng-container>
+        <ng-container *ngIf="code.hasError('jsonInvalid')">
+          <span class="right" nz-icon nzType="warning" nzTheme="outline"></span>
+          Invalid JSON
+        </ng-container>
+      </div>
+    </div>
+    <div>
+      <button nz-button nzType="default" (click)="handleCancel()">Cancel</button>
+      <button [disabled]="code.invalid" nz-button nzType="primary" (click)="destroyModal()">Save</button>
+    </div>
+  </div>
+</div>

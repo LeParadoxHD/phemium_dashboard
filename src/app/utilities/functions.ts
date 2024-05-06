@@ -1,5 +1,5 @@
 import { HttpHeaders } from '@angular/common/http';
-import { IApiMethodGroup, IApiMethodParams, IViewResponse } from '../interfaces';
+import { IApiMethodGroup, IApiMethodParams } from '../interfaces';
 import { Servers } from '../config';
 
 export function NormalizeMethodGroupName(name: string) {
@@ -113,10 +113,7 @@ export function GetMethodIcon(name: string) {
   return 'api';
 }
 
-export function TransformApiMethodGroups(
-  methodGroups: IApiMethodGroup[],
-  server: Servers
-): IApiMethodGroup[] {
+export function TransformApiMethodGroups(methodGroups: IApiMethodGroup[], server: Servers): IApiMethodGroup[] {
   return [...methodGroups]
     .filter((group) => {
       if (group.name === 'consultants' && group.methods.length < 5) {
@@ -182,4 +179,40 @@ export function HttpHeaderToRecord(headers: HttpHeaders) {
     headersMap[key] = headers.get(key);
   }
   return headersMap;
+}
+
+/**
+ * Simple object check.
+ * @param item
+ * @returns {boolean}
+ */
+export function isObject(item): boolean {
+  return item && typeof item === 'object' && !Array.isArray(item);
+}
+
+/**
+ * Deep merge two objects.
+ * @param target
+ * @param ...sources
+ */
+export function mergeDeep<T = any>(target, ...sources): T {
+  if (!sources.length) return target;
+  const source = sources.shift();
+
+  if (isObject(target) && isObject(source)) {
+    for (const key in source) {
+      if (isObject(source[key])) {
+        if (!target[key]) Object.assign(target, { [key]: {} });
+        mergeDeep(target[key], source[key]);
+      } else {
+        Object.assign(target, { [key]: source[key] });
+      }
+    }
+  }
+
+  return mergeDeep(target, ...sources);
+}
+
+export function stripUnderscores(str: string) {
+  return str.replace(/_/g, ' ');
 }

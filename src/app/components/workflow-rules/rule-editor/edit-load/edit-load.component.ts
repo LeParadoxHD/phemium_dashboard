@@ -13,7 +13,9 @@ import {
   Validator,
   Validators
 } from '@angular/forms';
+import { map } from 'rxjs';
 import { Typed } from 'src/app/state/interfaces';
+import { SubSinkAdapter } from 'src/app/utilities';
 
 interface ArrayItem {
   key: FormControl<string>;
@@ -43,18 +45,20 @@ interface Item {
     }
   ]
 })
-export class EditLoadComponent implements ControlValueAccessor, Validator {
+export class EditLoadComponent extends SubSinkAdapter implements ControlValueAccessor, Validator {
   loadForm: FormArray<FormGroup<ArrayItem>>;
 
   constructor(private formBuild: FormBuilder, private cdr: ChangeDetectorRef) {
+    super();
     this.loadForm = this.formBuild.array<FormGroup<ArrayItem>>([]);
-    this.loadForm.valueChanges.pipe(takeUntilDestroyed()).subscribe((values: Item[]) => {
-      const obj = values.reduce((r, a) => {
-        r[a.key] = a.value;
-        return r;
-      }, {});
-      this.onUiChange(obj);
-    });
+    this.resubscribeLoadForm();
+  }
+
+  transform(items: Item[]): Record<string, any> {
+    return items.reduce((r, a) => {
+      r[a.key] = a.value;
+      return r;
+    }, {});
   }
 
   writeValue(load: Typed<Record<string, any>>) {
@@ -62,14 +66,24 @@ export class EditLoadComponent implements ControlValueAccessor, Validator {
     for (const key in load) {
       controls.push(
         this.formBuild.group<ArrayItem>({
-          key: this.formBuild.control(key),
+          key: this.formBuild.control(key, Validators.required),
           value: this.formBuild.control(load[key])
         })
       );
     }
     this.loadForm = this.formBuild.array(controls);
     this.loadForm.updateValueAndValidity();
+    this.resubscribeLoadForm();
     this.cdr.markForCheck();
+  }
+
+  resubscribeLoadForm() {
+    this.sink = this.loadForm.valueChanges
+      .pipe(
+        //
+        map(this.transform)
+      )
+      .subscribe((values) => this.onUiChange(values));
   }
 
   onUiChange = (load: Typed<Record<string, any>>) => {};
@@ -95,7 +109,7 @@ export class EditLoadComponent implements ControlValueAccessor, Validator {
   add() {
     this.loadForm.push(
       this.formBuild.group({
-        key: this.formBuild.control(''),
+        key: this.formBuild.control('', Validators.required),
         value: this.formBuild.control({})
       })
     );
@@ -106,6 +120,6 @@ export class EditLoadComponent implements ControlValueAccessor, Validator {
   }
 
   validate(control: AbstractControl): ValidationErrors | null {
-    return this.loadForm.valid ? null : { valid: false };
+    return this.loadForm.valid ? null : { invalid: true };
   }
 }

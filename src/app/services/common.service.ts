@@ -1,26 +1,21 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { ApisState, EnvironmentsState, LoginsState, SettingsState } from '../state/store';
-import {
-  Observable,
-  distinctUntilChanged,
-  distinctUntilKeyChanged,
-  filter,
-  map,
-  shareReplay,
-  switchMap
-} from 'rxjs';
+import { Observable, distinctUntilChanged, distinctUntilKeyChanged, filter, map, shareReplay, switchMap } from 'rxjs';
 import { Servers } from '../config';
 import { IApi, IEnvironmentsState } from '../state/interfaces';
 import { IApiMethod, IApiMethodGroup } from '../interfaces';
 import memo from 'memo-decorator';
+import { EntitySchema } from './editor.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CommonService {
   currentServer$: Observable<Servers>;
+  currentServerName$: Observable<string>;
   currentEnvironment$: Observable<string>;
+  isEnvironmentSelected$: Observable<boolean>;
   currentToken$: Observable<string>;
   environments$: Observable<IEnvironmentsState>;
   environmentsCount$: Observable<number>;
@@ -31,21 +26,23 @@ export class CommonService {
     // Current logged server: prerelease, live, aws, etc
     this.currentServer$ = this.store
       .select(SettingsState.GetCurrentEnvironmentServer)
-      .pipe(
-        filter(Boolean),
-        distinctUntilChanged(),
-        shareReplay({ bufferSize: 1, refCount: true })
-      );
+      .pipe(filter(Boolean), distinctUntilChanged(), shareReplay({ bufferSize: 1, refCount: true }));
+
+    // Current logged server name: Prerelease, Live, AWS, etc
+    this.currentServerName$ = this.store
+      .select(SettingsState.GetCurrentEnvironmentServerName)
+      .pipe(filter(Boolean), distinctUntilChanged(), shareReplay({ bufferSize: 1, refCount: true }));
 
     // Current selected environment within server, example: prerelease|cofares-pro
     this.currentEnvironment$ = this.store
       .select(SettingsState.GetProperty('selected_environment'))
-      .pipe(
-        //
-        filter(Boolean),
-        distinctUntilChanged(),
-        shareReplay({ bufferSize: 1, refCount: true })
-      );
+      .pipe(filter(Boolean), distinctUntilChanged(), shareReplay({ bufferSize: 1, refCount: true }));
+
+    this.isEnvironmentSelected$ = this.store.select(SettingsState.GetProperty('selected_environment')).pipe(
+      distinctUntilChanged(),
+      map((env) => !!env),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
 
     this.currentToken$ = this.store.select(LoginsState.GetCurrentToken()).pipe(
       map((token) => token?.token),
@@ -84,8 +81,7 @@ export class CommonService {
   }
 
   @memo({
-    resolver: (apiGroupList: IApiMethodGroup[], name: IApiMethodGroup['name']) =>
-      apiGroupList?.[0].server + name
+    resolver: (apiGroupList: IApiMethodGroup[], name: IApiMethodGroup['name']) => apiGroupList?.[0].server + name
   })
   /**
    * Find a specific API group within the list of groups defined in the current API.
@@ -98,10 +94,7 @@ export class CommonService {
     return apiGroupList.find((group) => group.name === name);
   }
 
-  private _getApiGroupWithinSelectedApi_cache = new Map<
-    IApiMethodGroup['name'],
-    Observable<IApiMethodGroup>
-  >();
+  private _getApiGroupWithinSelectedApi_cache = new Map<IApiMethodGroup['name'], Observable<IApiMethodGroup>>();
 
   /**
    * Get the API group within the current API list.

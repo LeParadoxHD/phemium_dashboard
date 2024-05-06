@@ -33,6 +33,7 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 import { MenuComponent } from './components/menu/menu.component';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { NgxsModule } from '@ngxs/store';
@@ -84,6 +85,8 @@ import { MethodsByApiPipe } from './pipes/methods-by-api.pipe';
 import { GetMethodPipe } from './pipes/get-method.pipe';
 import { EditObjectComponent } from './components/workflow-rules/rule-editor/edit-object/edit-object.component';
 import { EditActionsComponent } from './components/workflow-rules/rule-editor/edit-actions/edit-actions.component';
+import { JsonEditorComponent } from './components/json-editor/json-editor.component';
+import { CodeEditorComponent } from './components/code-editor/code-editor.component';
 
 registerLocaleData(es);
 
@@ -123,7 +126,9 @@ registerLocaleData(es);
     MethodsByApiPipe,
     GetMethodPipe,
     EditObjectComponent,
-    EditActionsComponent
+    EditActionsComponent,
+    JsonEditorComponent,
+    CodeEditorComponent
   ],
   imports: [
     BrowserModule,
@@ -153,25 +158,23 @@ registerLocaleData(es);
     NzCollapseModule,
     NzPaginationModule,
     NzToolTipModule,
+    NzModalModule,
     MonacoEditorModule.forRoot(),
     ScrollingModule,
     NgxsModule.forRoot(
-      [
-        ApisState,
-        EnvironmentsState,
-        SettingsState,
-        ConfigState,
-        ViewState,
-        LoginsState,
-        LogsState,
-        WorkflowRulesState
-      ],
+      [ApisState, EnvironmentsState, SettingsState, ConfigState, ViewState, LoginsState, LogsState, WorkflowRulesState],
       {
         developmentMode: !environment.production
       }
     ),
     NgxsStoragePluginModule.forRoot({
-      key: [ApisState, EnvironmentsState, SettingsState, ViewState, LoginsState]
+      key: [
+        // ApisState,
+        EnvironmentsState,
+        SettingsState,
+        ViewState,
+        LoginsState
+      ]
     }),
     HttpClientModule,
     BrowserAnimationsModule,

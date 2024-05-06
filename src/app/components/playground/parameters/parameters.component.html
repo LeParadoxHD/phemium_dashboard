@@ -14,9 +14,7 @@
       </nz-select>
     </nz-form-control>
     <nz-form-control *ngLet="multipleTypes.get(api.params[i].name).value as type" [nzSpan]="24">
-      <ng-container
-        *ngTemplateOutlet="field; context: { $implicit: control, type, def: api.params[i] }"
-      ></ng-container>
+      <ng-container *ngTemplateOutlet="field; context: { $implicit: control, type, def: api.params[i] }"></ng-container>
     </nz-form-control>
     } @else {
     <nz-form-control [nzSpan]="24">
@@ -35,13 +33,7 @@
   </nz-form-item>
   }
 
-  <button
-    [disabled]="form.invalid"
-    nzType="primary"
-    [nzLoading]="loading$ | async"
-    nz-button
-    (click)="send()"
-  >
+  <button [disabled]="form.invalid" nzType="primary" [nzLoading]="loading$ | async" nz-button (click)="send()">
     <span nz-icon nzType="send"></span>Send
   </button>
 </form>
@@ -66,13 +58,7 @@
     </ng-container>
     <!-- String field -->
     <ng-container *ngSwitchCase="'string'">
-      <input
-        nz-input
-        [formControl]="control"
-        spellcheck="false"
-        autocomplete="off"
-        name="successValid"
-      />
+      <input nz-input [formControl]="control" spellcheck="false" autocomplete="off" name="successValid" />
     </ng-container>
     <!-- Boolean field -->
     <ng-container *ngSwitchCase="type === 'boolean' || type === 'bool' ? type : ''">

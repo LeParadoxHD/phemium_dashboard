@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
-import { editor } from 'monaco-editor';
-import { Store } from '@ngxs/store';
 import { BehaviorSubject, combineLatest, fromEvent, map, Observable, shareReplay, startWith } from 'rxjs';
-import { SettingsState } from '../state/store';
-
-export type MonacoEditorOptions = editor.IEditorOptions;
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +14,7 @@ export class LayoutService {
 
   responsePanelMinWidth: 100;
 
-  constructor(private _store: Store) {
+  constructor() {
     const sizes = {
       height: window.innerHeight,
       width: window.innerWidth
@@ -37,30 +32,6 @@ export class LayoutService {
     ]).pipe(
       map(([menuPanelWidth, sizes]) => sizes.width - menuPanelWidth - this.responsePanelMinWidth),
       shareReplay({ bufferSize: 1, refCount: true })
-    );
-  }
-
-  getEditorOptions(options: MonacoEditorOptions = {}): Observable<MonacoEditorOptions> {
-    return this._store.select<boolean>(SettingsState.GetProperty('dark_theme')).pipe(
-      map((darkTheme) => {
-        return {
-          theme: darkTheme ? 'vs-dark' : 'vs-light',
-          language: 'json',
-          lineNumbers: 'off',
-          readOnly: true,
-          cursorBlinking: 'smooth',
-          renderWhitespace: 'none',
-          fontFamily: 'Roboto Mono',
-          fontWeight: 500,
-          minimap: {
-            enabled: false
-          },
-          guides: {
-            indentation: true
-          },
-          ...options
-        } as MonacoEditorOptions;
-      })
     );
   }
 }

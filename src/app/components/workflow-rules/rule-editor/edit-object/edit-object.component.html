@@ -1,7 +1,21 @@
 @for (control of setForm.controls; let i = $index; track i) {
 <div class="set-item" [formGroup]="control">
-  <input nz-input class="round" placeholder="Key" formControlName="key" />
-  <input nz-input class="round" placeholder="Value" formControlName="value" />
+  <input
+    nz-input
+    class="round"
+    autocomplete="off"
+    spellcheck="false"
+    placeholder="Key"
+    formControlName="key"
+  />
+  <input
+    nz-input
+    class="round"
+    autocomplete="off"
+    spellcheck="false"
+    placeholder="Value"
+    formControlName="value"
+  />
   <button
     nz-button
     nzType="default"

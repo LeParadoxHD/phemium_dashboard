@@ -1,5 +1,5 @@
+import { KeyValue } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -13,6 +13,8 @@ import {
   Validator,
   Validators
 } from '@angular/forms';
+import { map } from 'rxjs';
+import { SubSinkAdapter } from 'src/app/utilities';
 
 @Component({
   selector: 'app-edit-object',
@@ -32,20 +34,31 @@ import {
     }
   ]
 })
-export class EditObjectComponent implements ControlValueAccessor, Validator {
+export class EditObjectComponent extends SubSinkAdapter implements ControlValueAccessor, Validator {
   setForm: FormArray<FormGroup<Record<string, FormControl<string>>>>;
 
   constructor(private formBuild: FormBuilder, private cdr: ChangeDetectorRef) {
+    super();
     this.setForm = this.formBuild.array<FormGroup>([]);
-    this.setForm.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((values: Record<string, string>[]) => {
-        const obj = values.reduce((r, a) => {
-          r[a[0]] = a[1];
-          return r;
-        }, {});
-        this.onUiChange(obj);
+    this.reactToFormChanges();
+  }
+
+  reactToFormChanges() {
+    this.sink = this.setForm.valueChanges
+      .pipe(
+        //
+        map(this.transform)
+      )
+      .subscribe((values: Record<string, string>) => {
+        this.onUiChange(values);
       });
+  }
+
+  transform(values: any[]): Record<string, string> {
+    return values.reduce((r, a) => {
+      r[a.key] = a.value;
+      return r;
+    }, {});
   }
 
   deleteItem(i: number) {
@@ -65,6 +78,7 @@ export class EditObjectComponent implements ControlValueAccessor, Validator {
     }
     this.setForm = this.formBuild.array(controls);
     this.setForm.updateValueAndValidity();
+    this.reactToFormChanges();
     this.cdr.markForCheck();
   }
 
