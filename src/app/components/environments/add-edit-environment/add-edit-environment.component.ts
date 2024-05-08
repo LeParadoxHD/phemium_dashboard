@@ -36,19 +36,14 @@ export class AddEditEnvironmentComponent implements OnChanges {
     this.form = this._fb.group(
       {
         server: ['', Validators.required],
-        name: [
-          '',
-          Validators.compose([Validators.required, Validators.pattern(/^[a-zA-Z0-9_-\s]+$/)])
-        ],
+        name: ['', Validators.compose([Validators.required, Validators.pattern(/^[a-zA-Z0-9_-\s]+$/)])],
         token_expiration: [0, Validators.required],
         login_user: ['', Validators.required],
         login_password: ['', Validators.required]
       },
       { validators: this.environmentValidator() }
     );
-    this.form.valueChanges
-      .pipe(takeUntilDestroyed())
-      .subscribe((_) => this.connectionTest$.next(null));
+    this.form.valueChanges.pipe(takeUntilDestroyed()).subscribe((_) => this.connectionTest$.next(null));
   }
 
   environmentValidator(): ValidatorFn {
@@ -57,23 +52,15 @@ export class AddEditEnvironmentComponent implements OnChanges {
       const login_user = (group.get('login_user').value as string).toLowerCase();
       const server = group.get('server').value;
       if ((name || login_user) && server) {
-        const environments = this._store.selectSnapshot(EnvironmentsState)[
-          server
-        ] as IEnvironment[];
+        const environments = this._store.selectSnapshot(EnvironmentsState)[server] as IEnvironment[];
         if (Array.isArray(environments)) {
-          if (
-            name &&
-            environments.find((env) => env.name.toLowerCase() === name && this.mode === 'add')
-          ) {
+          if (name && environments.find((env) => env.name.toLowerCase() === name && this.mode === 'add')) {
             group.get('name').setErrors({ name: true });
           } else {
             group.get('name').setErrors(null);
           }
           const env = environments.find((env) => env.login_user.toLowerCase() === login_user);
-          if (
-            env &&
-            (this.mode === 'add' || (this.mode === 'edit' && env.name !== this.data.name))
-          ) {
+          if (env && (this.mode === 'add' || (this.mode === 'edit' && env.name !== this.data.name))) {
             group.get('login_user').setErrors({ login_user: true });
           } else {
             group.get('login_user').setErrors(null);
@@ -125,25 +112,33 @@ export class AddEditEnvironmentComponent implements OnChanges {
 
     if (test) {
       this._api
-        .request(
-          'login',
-          'login_customer',
-          [login_user, login_password, token_expiration],
-          values.server
-        )
-        .subscribe((response) => {
-          if (response.ok && response.body) {
-            if (typeof response.body === 'string') {
-              // Token retrieved
-              this.connectionTest$.next({ success: true });
-            } else if (typeof response.body === 'object') {
+        .request('login', 'login_customer', [login_user, login_password, token_expiration], values.server)
+        .subscribe({
+          next: (response) => {
+            console.log(response);
+            if (response.ok) {
+              if (response.ok && response.body) {
+                if (typeof response.body === 'string') {
+                  // Token retrieved
+                  this.connectionTest$.next({ success: true });
+                } else if (typeof response.body === 'object') {
+                  const json = response.body as any;
+                  if (json.error) {
+                    this.connectionTest$.next({ success: false, error: json.message });
+                  }
+                }
+              }
+            } else {
               const json = response.body as any;
               if (json.error) {
                 this.connectionTest$.next({ success: false, error: json.message });
               }
             }
+          },
+          error: (err) => {},
+          complete: () => {
+            this.connectionTestLoading$.next(false);
           }
-          this.connectionTestLoading$.next(false);
         });
     } else {
       this._store.dispatch(new EnvironmentActions.AddEnvironment(values));

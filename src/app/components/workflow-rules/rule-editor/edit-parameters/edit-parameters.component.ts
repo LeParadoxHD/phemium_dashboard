@@ -185,7 +185,7 @@ export class EditParametersComponent extends SubSinkAdapter implements ControlVa
     const primitiveTypes = ['bool', 'boolean', 'number', 'string', 'int', 'integer', 'float'];
     if (!primitiveTypes.includes(paramType)) {
       const modal = this.modal.create<JsonEditorComponent, JsonEditorPayload>({
-        nzTitle: 'Edit JSON',
+        nzTitle: 'Edit parameter ' + this.params[index].name,
         nzContent: JsonEditorComponent,
         nzViewContainerRef: this.viewContainerRef,
         nzData: {

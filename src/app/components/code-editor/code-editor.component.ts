@@ -5,23 +5,48 @@ import {
   EventEmitter,
   HostListener,
   Input,
+  input,
+  OnInit,
   Output,
   forwardRef,
-  signal
+  computed,
+  NgZone
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import {
   AbstractControl,
   ControlValueAccessor,
   FormControl,
-  NG_ASYNC_VALIDATORS,
+  NG_VALIDATORS,
   NG_VALUE_ACCESSOR,
   ValidationErrors,
   Validator
 } from '@angular/forms';
 import { NgxEditorModel } from 'ngx-monaco-editor-v2';
-import { BehaviorSubject, Observable, Subject, asyncScheduler, combineLatest, map, take } from 'rxjs';
-import { EditorService, MonacoEditorOptions, getSchemaName } from 'src/app/services/editor.service';
+import {
+  BehaviorSubject,
+  Observable,
+  asyncScheduler,
+  bindCallback,
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  startWith,
+  tap
+} from 'rxjs';
+import {
+  EditorService,
+  InferSchemaSource,
+  MonacoEditor,
+  MonacoEditorOptions,
+  MonacoModelError,
+  SchemaSource,
+  SetMonacoModelOptions,
+  getSchemaName
+} from 'src/app/services/editor.service';
+import { SubSinkAdapter } from 'src/app/utilities';
 
 @Component({
   selector: 'app-code-editor',
@@ -35,49 +60,38 @@ import { EditorService, MonacoEditorOptions, getSchemaName } from 'src/app/servi
       useExisting: forwardRef(() => CodeEditorComponent)
     },
     {
-      provide: NG_ASYNC_VALIDATORS,
+      provide: NG_VALIDATORS,
       multi: true,
       useExisting: forwardRef(() => CodeEditorComponent)
     }
   ]
 })
-export class CodeEditorComponent implements ControlValueAccessor, Validator {
+export class CodeEditorComponent extends SubSinkAdapter implements ControlValueAccessor, Validator, OnInit {
   editorOptions$: Observable<MonacoEditorOptions>;
 
   instanceOptions$ = new BehaviorSubject<MonacoEditorOptions>({});
 
-  codeEditorInitialized$ = new Subject<void>();
-
   code = new FormControl('');
-  modelCode = new FormControl('');
+  modelCode = new FormControl(undefined);
 
-  options$ = new BehaviorSubject<MonacoEditorOptions>({});
-  _options: MonacoEditorOptions = {};
-  @Input() set options(options: MonacoEditorOptions) {
-    this._options = options;
-    this.options$.next(options);
-  }
+  options = input<MonacoEditorOptions>();
+  model = input<string>();
 
-  language$ = new BehaviorSubject<string>('');
-  _language: string = '';
-  @Input({ required: true }) set language(language: string) {
-    this._language = language;
-    this.language$.next(language);
-  }
+  modelUri = computed(() => {
+    const monaco = this.editorService.getMonaco();
+    const inferredSchema = InferSchemaSource(this.model());
+    return monaco.Uri.parse(getSchemaName(inferredSchema.source, inferredSchema.name));
+  });
 
-  model$ = new BehaviorSubject<string>('');
-  _model: string = '';
-  @Input({ required: true }) set model(model: string) {
-    this._model = model;
-    this.model$.next(model);
-  }
+  @Input({ required: true }) language: string;
 
-  schema = signal<NgxEditorModel | null>(null);
+  schema$ = new BehaviorSubject<NgxEditorModel | null>(null);
 
-  constructor(private editorService: EditorService, private cdr: ChangeDetectorRef) {
+  constructor(private editorService: EditorService, private cdr: ChangeDetectorRef, private ngZone: NgZone) {
+    super();
     this.editorOptions$ = combineLatest([
       this.editorService.getEditorOptions(),
-      this.options$,
+      toObservable(this.options),
       this.instanceOptions$
     ]).pipe(
       map(([editorOptions, customOptions, instanceOptions]) => ({
@@ -87,22 +101,13 @@ export class CodeEditorComponent implements ControlValueAccessor, Validator {
       }))
     );
     this.code.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => this.onChange(value));
-    this.modelCode.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
-      this.schema.set({
-        value,
-        language: this._language,
-        uri: getSchemaName(this._model)
-      });
-    });
   }
 
   @HostListener('document:keydown.alt.z') toggleSoftWrap() {
-    if ((window as any).monaco) {
-      if (this.instanceOptions$.getValue().wordWrap === 'bounded') {
-        this.instanceOptions$.next({ ...this.instanceOptions$.getValue(), wordWrap: 'off' });
-      } else {
-        this.instanceOptions$.next({ ...this.instanceOptions$.getValue(), wordWrap: 'bounded' });
-      }
+    if (this.instanceOptions$.getValue().wordWrap === 'bounded') {
+      this.instanceOptions$.next({ ...this.instanceOptions$.getValue(), wordWrap: 'off' });
+    } else {
+      this.instanceOptions$.next({ ...this.instanceOptions$.getValue(), wordWrap: 'bounded' });
     }
   }
 
@@ -147,36 +152,95 @@ export class CodeEditorComponent implements ControlValueAccessor, Validator {
     this.code.updateValueAndValidity();
   }
 
-  validate(control: AbstractControl): Observable<ValidationErrors | null> {
-    return this.language$.pipe(take(1)).pipe(
-      map((language) => {
-        switch (language) {
-          case 'json':
-            try {
-              JSON.parse(this.code.value);
-              return null;
-            } catch (err) {
-              return { invalid: true };
-            }
+  validate(control: AbstractControl): ValidationErrors | null {
+    switch (this.language) {
+      case 'json':
+        try {
+          JSON.parse(this.code.value);
+          return null;
+        } catch (err) {
+          return { invalid: true };
         }
-        return null;
-      })
-    );
+    }
+    return null;
   }
 
-  onInitDone = false;
-
+  @Output() onValidated = new EventEmitter<ValidationResult>();
   @Output() intellisenseEnabled = new EventEmitter<boolean>();
 
-  editor: any;
-  onInit(editor) {
-    if (!this.onInitDone) {
-      this.onInitDone = true;
-      if (this._model) {
-        this.editorService.setMonacoEditorSchemas(this._model).then(() => {
-          this.intellisenseEnabled.emit(true);
-        });
+  async ngOnInit() {
+    let diagnosticsOptions: SetMonacoModelOptions | null = null;
+    const schemaSource = InferSchemaSource(this.model());
+    switch (schemaSource.source) {
+      case SchemaSource.ApiEntity:
+        diagnosticsOptions = {
+          source: SchemaSource.ApiEntity,
+          name: schemaSource.name
+        };
+        break;
+      case SchemaSource.External:
+        const name = this.model().replace('external:', '');
+        diagnosticsOptions = {
+          source: SchemaSource.External,
+          name: schemaSource.name,
+          uri: `${location.protocol}//${location.host}/assets/schemas/json/${name}.json`
+        };
+        break;
+      case SchemaSource.Static:
+        throw new Error('Not implemented');
+    }
+    if (diagnosticsOptions) {
+      try {
+        await this.editorService.setMonacoEditorSchemas(diagnosticsOptions);
+        this.intellisenseEnabled.emit(true);
+      } catch (err) {
+        this.intellisenseEnabled.emit(false);
       }
     }
+    this.sink = this.modelCode.valueChanges
+      .pipe(
+        startWith(this.modelCode.value),
+        filter((value) => value !== undefined && value !== null),
+        distinctUntilChanged(),
+        map((value) => {
+          const monaco = this.editorService.getMonaco();
+          const schema: NgxEditorModel = {
+            value,
+            language: this.language,
+            uri: monaco.Uri.parse(getSchemaName(schemaSource.source, schemaSource.name))
+          };
+          return schema;
+        })
+      )
+      .subscribe((schema) => this.schema$.next(schema));
   }
+
+  onEditorInit(editor: MonacoEditor) {
+    this.sink = new Observable((observer) => {
+      const modelUri = this.modelUri();
+      const monaco = this.editorService.getMonaco();
+      monaco.editor.onDidChangeMarkers((e) => {
+        const instanceMarkers = e.filter((e) => e.toString() === modelUri.toString());
+        if (instanceMarkers.length > 0) {
+          observer.next(e);
+        } else if (e.length === 0) {
+          observer.next();
+        }
+      });
+    }).subscribe(() => this.checkModelMarkers());
+  }
+
+  checkModelMarkers() {
+    const monaco = this.editorService.getMonaco();
+    const markers = monaco.editor.getModelMarkers({
+      resource: this.modelUri()
+    });
+    console.log(markers);
+    this.onValidated.emit({ valid: markers.length === 0, errors: markers });
+  }
+}
+
+export interface ValidationResult {
+  valid: boolean;
+  errors?: MonacoModelError[];
 }

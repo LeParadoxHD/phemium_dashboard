@@ -1,6 +1,6 @@
 {
   "name": "dashboard",
-  "version": "0.2.18-7",
+  "version": "0.2.19-4",
   "scripts": {
     "ng": "ng",
     "start": "npm --no-git-tag-version version prerelease && ng serve",
@@ -26,6 +26,7 @@
     "byte-size": "^8.1.1",
     "date-fns": "^3.6.0",
     "memo-decorator": "^2.0.1",
+    "monaco-editor": "^0.48.0",
     "ng-zorro-antd": "^17.3.0",
     "ngx-monaco-editor-v2": "^17.0.1",
     "rxjs": "~7.8.1",

@@ -1,7 +1,25 @@
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   height: 100%;
   width: 100%;
+}
+
+.content {
+  flex: 1;
+}
+
+.footer {
+  flex: initial;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.errors-wrapper {
+  display: flex;
+  align-items: center;
 }
 
 :host::ng-deep ngx-monaco-editor {

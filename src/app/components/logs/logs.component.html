@@ -1,16 +1,19 @@
-@for (log of logs$ | async; track log.datetime) {
-<div class="log" [ngClass]="log | responseStatus">
-  <div class="status"></div>
-  <div class="status-code" *ngIf="log.statusCode">{{ log.statusCode || 0 }}</div>
-  <div class="method" *ngIf="log.method">{{ log.method }}</div>
-  <div class="url" *ngIf="log.url">
-    <a [href]="log.url" target="_blank">{{ log.url }}</a>
-  </div>
-  <div class="entity" *ngIf="log.entity">{{ log.entity }}</div>
-  <div class="action" *ngIf="log.action">{{ log.action }}</div>
-  <div class="size">{{ log.responseSize || 0 | bytesize }}</div>
-  <div class="time">{{ log.responseTime || 0 }}ms</div>
-  <div class="time-ago" *ngIf="log.datetime | timeAgo | async as time">{{ time }}</div>
-</div>
-
-}
+<table>
+  @for (log of logs$ | async; track log.datetime) {
+  <tr class="log" [ngClass]="log | responseStatus">
+    <td width="30">
+      <div class="status"></div>
+    </td>
+    <td width="40" class="status-code">{{ log.statusCode || 0 }}</td>
+    <td class="method">{{ log.method }}</td>
+    <td class="url">
+      <a [href]="log.url" target="_blank">{{ log.url }}</a>
+    </td>
+    <td class="entity">{{ log.entity }}</td>
+    <td class="action">{{ log.action }}</td>
+    <td class="size">{{ log.responseSize || 0 | bytesize }}</td>
+    <td class="time">{{ log.responseTime || 0 }}ms</td>
+    <td class="time-ago">{{ log.datetime | timeAgo | async }}</td>
+  </tr>
+  }
+</table>

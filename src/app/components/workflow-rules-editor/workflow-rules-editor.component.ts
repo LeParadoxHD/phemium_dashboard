@@ -2,21 +2,10 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, signal } from '@
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormArray, FormBuilder, FormControl } from '@angular/forms';
 import { Store } from '@ngxs/store';
-import {
-  BehaviorSubject,
-  combineLatest,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  map,
-  pairwise,
-  startWith,
-  switchMap,
-  tap
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, map, pairwise, startWith, switchMap, tap } from 'rxjs';
 import { CommonService } from 'src/app/services/common.service';
 import { IWorkflowRule, IWorkflowRules } from 'src/app/state/interfaces';
-import { SettingsState, WorkflowRulesState } from 'src/app/state/store';
+import { WorkflowRulesState } from 'src/app/state/store';
 
 @Component({
   selector: 'app-workflow-rules-editor',

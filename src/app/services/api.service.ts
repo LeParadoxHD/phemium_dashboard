@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ApisConfig, Servers } from '../config';
 import { IApi, IEnvironment, IEnvironmentsState } from '../state/interfaces';
@@ -6,7 +6,7 @@ import { Actions, ofActionSuccessful, Store } from '@ngxs/store';
 import { EnvironmentsState, LoginsState, SettingsState } from '../state/store';
 import { EMPTY, NEVER, Observable, catchError, filter, of, switchMap, take } from 'rxjs';
 import { LoginActions } from '../state/actions';
-import { HttpHeaderToRecord } from '../utilities';
+import { HttpHeaderToRecord, INTERNAL_REQUEST } from '../utilities';
 import { CustomHttpResponse } from '../interfaces';
 
 @Injectable({
@@ -34,13 +34,16 @@ export class ApiService {
   }
 
   retrieveMethods(server: Servers) {
-    return this._http.get<IApi>(`${this.getDomainUrl(server)}/api.json`);
+    return this._http.get<IApi>(`${this.getDomainUrl(server)}/api.json`, {
+      context: new HttpContext().set(INTERNAL_REQUEST, true)
+    });
   }
 
   request(
     entity: string,
     method: string,
     parameters: any[] = [],
+    internal: boolean = false,
     server?: Servers,
     retry: number = 0
   ): Observable<CustomHttpResponse> {
@@ -63,9 +66,11 @@ export class ApiService {
     const _parameters = this.constructParameters(parameters);
     formData.append('arguments', _parameters);
     const start = new Date().getTime();
+    const context = internal ? new HttpContext().set(INTERNAL_REQUEST, true) : new HttpContext();
     return this._http
       .post(this.getApiUrl(server), formData, {
-        observe: 'response'
+        observe: 'response',
+        context
       })
       .pipe(
         catchError((error) => of(error)),
@@ -85,7 +90,7 @@ export class ApiService {
                 switchMap(() => this._store.select(LoginsState.GetCurrentToken())),
                 filter((login) => login.token !== null),
                 take(1),
-                switchMap(() => this.request(entity, method, parameters, server, retry + 1))
+                switchMap(() => this.request(entity, method, parameters, false, server, retry + 1))
               );
             }
           }
@@ -118,7 +123,7 @@ export class ApiService {
     const environmentsDict = this._store.selectSnapshot(EnvironmentsState) as IEnvironmentsState;
     if (Array.isArray(environmentsDict[envType]) && environmentsDict[envType].length > 0) {
       const env = environmentsDict[envType].find((e) => e.slug === environment) as IEnvironment;
-      return this.request('login', 'login_customer', [env.login_user, env.login_password, env.token_expiration]);
+      return this.request('login', 'login_customer', [env.login_user, env.login_password, env.token_expiration], true);
     }
     return EMPTY;
   }

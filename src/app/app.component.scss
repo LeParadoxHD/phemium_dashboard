@@ -130,7 +130,7 @@ nz-content.space-between {
   top: initial;
 }
 
-:host::ng-deep .footer {
+:host::ng-deep .ant-layout > .footer {
   height: var(--debug-panel-height) !important;
 }
 

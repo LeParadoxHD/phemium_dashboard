@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "description": {
+        "type": "string"
+      },
+      "action": {
+        "type": "string",
+        "pattern": "^((\\w+)__(\\w+)|[a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)+)$",
+        "errorMessage": "Incorrect action format, must be 'api__method' or business.* event"
+      },
+      "load": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "api": {
+              "type": "string"
+            },
+            "method": {
+              "type": "string"
+            },
+            "parameters": {
+              "type": "array",
+              "items": {
+                "type": ["boolean", "integer", "string", "object", "array", "null"]
+              }
+            }
+          },
+          "required": ["api", "method"]
+        }
+      },
+      "set": {
+        "type": "object",
+        "additionalProperties": {
+          "type": ["string", "integer", "boolean"]
+        }
+      },
+      "where": {
+        "type": "object",
+        "additionalProperties": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": ["integer", "string", "boolean"]
+              }
+            },
+            {
+              "type": "object",
+              "properties": {
+                "not": {
+                  "type": ["string", "integer", "boolean", "null"]
+                },
+                "greater": {
+                  "type": "integer"
+                },
+                "less": {
+                  "type": "integer"
+                },
+                "is": {
+                  "type": ["string", "integer", "boolean", "null"]
+                }
+              }
+            }
+          ]
+        }
+      },
+      "do": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "api": {
+              "type": "string"
+            },
+            "method": {
+              "type": "string"
+            },
+            "parameters": {
+              "type": "array",
+              "items": {
+                "type": ["boolean", "integer", "string", "object", "array", "null"]
+              }
+            }
+          },
+          "required": ["api", "method"],
+          "additionalItems": false
+        }
+      }
+    },
+    "required": ["action"],
+    "additionalProperties": false
+  }
+}

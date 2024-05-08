@@ -1,6 +1,6 @@
 export interface JsonSchema {
   /** Type of data */
-  type: 'string' | 'integer' | 'boolean' | 'array' | 'object' | 'null';
+  type?: Type[] | Type;
   /** Maximum number of items in Array */
   maxItems?: number;
   /** Minimum number of items in Array */
@@ -33,4 +33,11 @@ export interface JsonSchema {
   uniqueItems?: boolean;
   /** Regex pattern of string types */
   pattern?: string;
+  /** Whether or not object must have additional properties */
+  additionalProperties?: boolean | any;
+  /** Reference to schema */
+  $ref?: string;
+  errorMessage?: string;
 }
+
+type Type = 'string' | 'integer' | 'number' | 'boolean' | 'array' | 'object' | 'null';

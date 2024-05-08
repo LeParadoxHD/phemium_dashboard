@@ -1,4 +1,4 @@
-import { NgModule, isDevMode } from '@angular/core';
+import { APP_INITIALIZER, NgModule, inject, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -55,7 +55,7 @@ import { BannerComponent } from './components/banner/banner.component';
 import { AddEditEnvironmentComponent } from './components/environments/add-edit-environment/add-edit-environment.component';
 import { NgxsStoragePluginModule } from '@ngxs/storage-plugin';
 import { ParametersComponent } from './components/playground/parameters/parameters.component';
-import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
+import { MonacoEditorModule, NGX_MONACO_EDITOR_CONFIG } from 'ngx-monaco-editor-v2';
 import { FieldListOptionsComponent } from './components/fields/field-list-options/field-list-options.component';
 import { IsArrayParamPipe } from './pipes/is-array-param.pipe';
 import { TrimArrayParamPipe } from './pipes/trim-array-param.pipe';
@@ -87,6 +87,7 @@ import { EditObjectComponent } from './components/workflow-rules/rule-editor/edi
 import { EditActionsComponent } from './components/workflow-rules/rule-editor/edit-actions/edit-actions.component';
 import { JsonEditorComponent } from './components/json-editor/json-editor.component';
 import { CodeEditorComponent } from './components/code-editor/code-editor.component';
+import { monacoInitializer } from './utilities';
 
 registerLocaleData(es);
 
@@ -194,6 +195,15 @@ registerLocaleData(es);
       provide: HTTP_INTERCEPTORS,
       useClass: NetworkInterceptor,
       multi: true
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: () => {
+        const config = inject(NGX_MONACO_EDITOR_CONFIG);
+        return monacoInitializer(config);
+      },
+      multi: true,
+      deps: []
     }
   ],
   bootstrap: [AppComponent]
