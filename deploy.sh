@@ -10,4 +10,4 @@ if [ ! -d dist/dashboard/ ]; then
 fi
 
 echo "Copying files to server..."
-scp -P 7183 -r dist/dashboard/* Alex@192.168.1.134:$destiny
+scp -P $port -r dist/dashboard/* Alex@192.168.1.134:$destiny

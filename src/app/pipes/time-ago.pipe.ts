@@ -25,8 +25,12 @@ export class TimeAgoPipe implements PipeTransform {
   }
 
   calculateTicker(datetime: number) {
-    const difference = Date.now() - datetime;
+    const now = Date.now();
+    const difference = Math.trunc((Date.now() - datetime) / 1000);
     let tick = 1000;
+    if (difference < 5) {
+      return tick;
+    }
     if (difference < 60) {
       tick = 1000 * 3;
     } else if (difference < 60 * 60) {

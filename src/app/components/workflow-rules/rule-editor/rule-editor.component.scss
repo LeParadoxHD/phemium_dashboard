@@ -40,7 +40,7 @@
 
 :host::ng-deep div.error-message {
   color: rgba(#cd2400, 0.7);
-  font-size: 12px;
+  font-size: 0.85rem;
   margin-top: 6px;
 }
 
@@ -75,7 +75,7 @@ textarea {
 }
 
 .intro {
-  color: rgba(black, 0.6);
+  color: rgba(black, 0.5);
   margin-top: 5px;
   margin-bottom: 25px;
 }
@@ -85,7 +85,7 @@ textarea {
   color: white;
   font-family: "Roboto Mono";
   cursor: pointer;
-  font-size: 12px;
+  font-size: 0.85rem;
   font-weight: 500;
   padding: 1px 5px;
   border-radius: 5px;

@@ -1,3 +1,28 @@
-@if (code$ | async; as code) {
-<ngx-monaco-editor [options]="editorOptions$ | async" [ngModel]="code"></ngx-monaco-editor>
-}
+<div class="content">
+  @if (!loading()) {
+  <app-code-editor
+    [options]="options"
+    [formControl]="code"
+    language="json"
+    model="external:workflow-rules"
+    (onValidated)="updateValidationState($event)"
+  ></app-code-editor>
+  } @else { Loading... }
+</div>
+<div class="footer">
+  <div class="errors-wrapper">
+    <div class="errors" *ngIf="errors().length > 0">
+      <span nz-icon nzType="danger" nzTheme="outline"></span>
+      {{ errors().length }}
+
+      Errors
+    </div>
+    <div class="warning" *ngIf="warnings().length > 0">
+      <span nz-icon nzType="warning" nzTheme="outline"></span>
+      {{ warnings().length }}
+
+      Warnings
+    </div>
+  </div>
+  <button nz-button nzType="primary" [disabled]="loading() || code.invalid || !valid()" (click)="save()">Save</button>
+</div>

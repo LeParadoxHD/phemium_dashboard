@@ -1,18 +1,18 @@
-@if (model$ | async) {
+@if (model) {
 <!---->
-@if (schema(); as schema) {
+@if (schema$ | async; as schema) {
 <ngx-monaco-editor
   [options]="editorOptions$ | async"
   [ngModel]="schema.value"
   [model]="schema"
   (ngModelChange)="updateValueFromModel($event)"
-  (onInit)="onInit($event)"
+  (onInit)="onEditorInit($event)"
 ></ngx-monaco-editor>
 }
 <!---->
 } @else {
 <ngx-monaco-editor
-  [options]="options$ | async"
+  [options]="editorOptions$ | async"
   [formControl]="code"
   (ngModelChange)="updateValidity()"
 ></ngx-monaco-editor>

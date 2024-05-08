@@ -6,8 +6,19 @@ import { SettingsState } from '../state/store';
 import { IApiEntity, IApiEntityProperty } from '../interfaces';
 import { JsonSchema } from '../interfaces/json.schema';
 import { CommonService } from './common.service';
+import { HttpClient } from '@angular/common/http';
+import monaco from 'monaco-editor';
+
+export type MonacoEditor = ReturnType<typeof editor.create>;
+export type MonacoModelError = editor.IMarker;
 
 export type MonacoEditorOptions = editor.IEditorOptions;
+
+export enum SchemaSource {
+  Static = 'static',
+  ApiEntity = 'api_entity',
+  External = 'external'
+}
 
 interface EditorType {
   type: 'string' | 'integer' | 'number' | 'boolean' | 'array' | 'object' | 'null' | string;
@@ -20,11 +31,22 @@ export interface EntitySchema {
   schema: JsonSchema;
 }
 
+export interface SetMonacoModelOptions {
+  source: SchemaSource;
+  name: string;
+  uri?: string;
+  staticSchema?: JsonSchema;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class EditorService {
-  constructor(private _store: Store, private commonService: CommonService) {}
+  constructor(private _store: Store, private commonService: CommonService, private http: HttpClient) {}
+
+  getMonaco() {
+    return (<any>window).monaco as typeof monaco;
+  }
 
   getEditorOptions(options: MonacoEditorOptions = {}): Observable<MonacoEditorOptions> {
     return this._store.select<boolean>(SettingsState.GetProperty('dark_theme')).pipe(
@@ -50,36 +72,71 @@ export class EditorService {
     );
   }
 
-  async setMonacoEditorSchemas(name: string) {
-    const monaco = (window as any).monaco;
+  async setMonacoEditorSchemas(options: SetMonacoModelOptions) {
+    if (!options.source) {
+      throw new Error('Source is required');
+    }
+    if (!options.name) {
+      throw new Error('Name is required');
+    }
+    const monaco = this.getMonaco();
     if (monaco) {
-      const jsonSchemas = await lastValueFrom(
-        this.commonService.currentApi$.pipe(
-          take(1),
-          map((api) => api.jsonSchemas)
-        )
-      );
-      const schemas = [...jsonSchemas];
-      const schemaName = getSchemaName(name);
-      const modelUri = monaco.Uri.parse(schemaName);
-      const mainSchemaIndex = schemas.findIndex((schema) => schema.name === name);
-      const mainSchema = schemas[mainSchemaIndex];
-      schemas.splice(mainSchemaIndex, 1);
-      const jsonDiagnostics = {
-        validate: true,
-        schemas: [
-          {
-            uri: getSchemaName(mainSchema.name),
-            fileMatch: [modelUri.toString()],
-            schema: mainSchema.schema
-          },
-          ...schemas.map((schema) => ({
-            uri: getSchemaName(schema.name),
-            schema: schema.schema
-          }))
-        ]
-      };
-      monaco.languages.json.jsonDefaults.setDiagnosticsOptions(jsonDiagnostics);
+      let schema = null;
+      switch (options.source) {
+        case SchemaSource.Static:
+          throw new Error('Not implemented');
+          break;
+        case SchemaSource.ApiEntity:
+          const jsonSchemas = await lastValueFrom(
+            this.commonService.currentApi$.pipe(
+              take(1),
+              map((api) => api.jsonSchemas)
+            )
+          );
+          const schemas = [...jsonSchemas];
+          const schemaName = getSchemaName(options.source, options.name);
+          const modelUri = monaco.Uri.parse(schemaName);
+          const mainSchemaIndex = schemas.findIndex((schema) => schema.name === options.name);
+          const mainSchema = schemas[mainSchemaIndex];
+          schemas.splice(mainSchemaIndex, 1);
+          schema = {
+            validate: true,
+            schemas: [
+              {
+                uri: getSchemaName(options.source, mainSchema.name),
+                fileMatch: [modelUri.toString()],
+                schema: mainSchema.schema
+              },
+              ...getUnknownSchemas(options.source),
+              ...schemas.map((schema) => ({
+                uri: getSchemaName(options.source, schema.name),
+                schema: schema.schema
+              }))
+            ]
+          };
+          break;
+        case SchemaSource.External:
+          if (!options.uri) {
+            throw new Error('Schema URI is required');
+          }
+          const jsonSchema = await lastValueFrom(this.http.get<JsonSchema>(options.uri));
+          const uriParse = monaco.Uri.parse(getSchemaName(options.source, options.name));
+          schema = {
+            validate: true,
+            schemas: [
+              {
+                uri: options.uri,
+                fileMatch: [uriParse.toString()],
+                schema: jsonSchema
+              }
+            ]
+          };
+          break;
+      }
+
+      if (schema) {
+        monaco.languages.json.jsonDefaults.setDiagnosticsOptions(schema);
+      }
     } else {
       throw new Error('Monaco not loaded');
     }
@@ -107,7 +164,8 @@ export class EditorService {
         name: entity.name,
         schema: {
           type: 'object',
-          properties: propertiesMap
+          properties: propertiesMap,
+          additionalProperties: false
         }
       } as EntitySchema;
     });
@@ -156,22 +214,44 @@ function convertType(type: string): EditorType['type'] {
   }
 }
 
-function typeToEditor(type: EditorType) {
+function typeToEditor(type: EditorType): JsonSchema {
   if (type.isArray) {
     return {
       type: 'array',
       items: {
-        type: type.type
+        type: type.type as JsonSchema['type']
       }
     };
   } else if (type.isReference) {
     return {
-      $ref: getSchemaName(type.type)
+      $ref: getSchemaName(SchemaSource.ApiEntity, type.type)
     };
   } else {
-    return {
-      type: type.type
-    };
+    if (type.type === 'object') {
+      return {
+        type: type.type,
+        additionalProperties: false
+      };
+    }
+    // Primitives accept variables as string
+    if (['integer', 'int', 'number', 'boolean', 'bool'].includes(type.type)) {
+      return {
+        oneOf: [
+          {
+            type: type.type as JsonSchema['type']
+          },
+          {
+            type: 'string',
+            pattern: `^{.+}$`,
+            errorMessage: 'Invalid variable format'
+          }
+        ]
+      };
+    } else {
+      return {
+        type: type.type as JsonSchema['type']
+      };
+    }
   }
 }
 
@@ -179,6 +259,92 @@ function typesToEditor(types: EditorType[]) {
   return types.map((type) => typeToEditor(type));
 }
 
-export function getSchemaName(name: string) {
-  return `internal://api_entities/${name}`;
+export function getSchemaName(schemaSource: SchemaSource, name: string) {
+  switch (schemaSource) {
+    case SchemaSource.ApiEntity:
+      return `internal://api_entities/${name}`;
+    case SchemaSource.External:
+      return `external://${name}`;
+    case SchemaSource.Static:
+      return `internal://static/${name}`;
+  }
+}
+
+export function InferSchemaSource(model: any): { source: SchemaSource; name: string } {
+  switch (typeof model) {
+    case 'string':
+      if (model.startsWith('api_entity:') || model.split(':').length === 1) {
+        return {
+          source: SchemaSource.ApiEntity,
+          name: model.replace('api_entity:', '')
+        };
+      }
+      if (model.startsWith('external:')) {
+        return {
+          source: SchemaSource.External,
+          name: model.replace('external:', '')
+        };
+      }
+      break;
+    case 'object':
+      return {
+        source: SchemaSource.Static,
+        name: model
+      };
+    default:
+      throw new Error('Cannot infer schema source for model: ' + model.toString());
+  }
+}
+
+function getUnknownSchemas(source: SchemaSource): any[] {
+  const forObjects = [
+    'stdClass',
+    'card_library_field_close_form_on_save',
+    'card_library_field_medication',
+    'consultation_item_card_changes_interpreted_result[int]'
+  ];
+  return [
+    {
+      uri: getSchemaName(source, 'mixed'),
+      schema: {
+        type: ['string', 'integer']
+      } as JsonSchema
+    },
+    {
+      uri: getSchemaName(source, 'array'),
+      schema: {
+        type: 'array'
+      } as JsonSchema
+    },
+    {
+      uri: getSchemaName(source, 'float'),
+      schema: {
+        type: 'number'
+      } as JsonSchema
+    },
+    {
+      uri: getSchemaName(source, 'boolean[int]'),
+      schema: {
+        type: 'boolean'
+      } as JsonSchema
+    },
+    {
+      uri: getSchemaName(source, 'card_library_field_enduser_can_view_historic'),
+      schema: {
+        type: 'boolean'
+      } as JsonSchema
+    },
+    {
+      uri: getSchemaName(source, 'consultation_item_card_changes_title[int]'),
+      schema: {
+        type: 'string'
+      } as JsonSchema
+    },
+    ...forObjects.map((name) => ({
+      uri: getSchemaName(source, name),
+      schema: {
+        type: 'object'
+      } as JsonSchema
+    }))
+  ];
 }

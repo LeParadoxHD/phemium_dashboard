@@ -52,12 +52,12 @@ export class LogsState implements NgxsOnChanges, NgxsOnInit {
 
   @Selector()
   static GetLogs(state: ILogsState) {
-    return state.logs;
+    return [...state.logs].reverse();
   }
 
   @Selector()
   static GetLogPanelMinHeight(state: ILogsState) {
-    const rowHeight = 35;
+    const rowHeight = 25;
     if (state.logs.length <= 3) {
       return rowHeight * state.logs.length;
     }

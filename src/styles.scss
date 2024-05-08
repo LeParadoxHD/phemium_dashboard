@@ -30,11 +30,12 @@ body {
   overflow: hidden;
   font-family: "Product Sans";
   font-weight: 500;
+  font-size: 14px;
 }
 
 :root {
   --debug-panel-height: 0px;
-  --log-row-height: 35px;
+  --log-row-height: 25px;
   --menu-panel-width: 300px;
   --primary-color: #1890ff;
   --text-color: rgba(0, 0, 0, 0.7);
@@ -81,7 +82,7 @@ nz-layout {
 .ant-form-item-with-help .ant-form-item-explain {
   position: relative;
   top: 5px;
-  font-size: 13px;
+  font-size: 0.9rem;
 }
 
 html:not(.dark) {
@@ -109,17 +110,6 @@ html.dark {
 
 .editor-container {
   height: 100% !important;
-}
-
-code {
-  background-color: rgba(black, 0.05);
-  font-family: "Roboto Mono";
-  font-size: 12px;
-  font-weight: 500;
-  padding: 2px 5px;
-  border-radius: 5px;
-  display: inline-block;
-  letter-spacing: 0.5px;
 }
 
 @keyframes blurIn {
@@ -228,11 +218,6 @@ input.code {
   &.anticon-export {
     color: #00838f;
   }
-}
-
-.no-items {
-  color: rgba(black, 0.4);
-  font-size: 13px;
 }
 
 .ant-modal-content {
