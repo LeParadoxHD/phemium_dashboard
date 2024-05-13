@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormArray, FormBuilder, FormControl } from '@angular/forms';
 import { Store } from '@ngxs/store';
@@ -31,12 +31,7 @@ export class WorkflowRulesEditorComponent {
 
   search$ = new BehaviorSubject<string>('');
 
-  constructor(
-    private store: Store,
-    private commonService: CommonService,
-    private formBuild: FormBuilder,
-    private cdr: ChangeDetectorRef
-  ) {
+  constructor(private store: Store, private commonService: CommonService, private formBuild: FormBuilder) {
     this.rulesForm = this.formBuild.array([]);
     this.commonService.currentEnvironment$
       .pipe(

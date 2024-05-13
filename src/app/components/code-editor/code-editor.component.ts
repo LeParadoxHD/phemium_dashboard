@@ -27,14 +27,11 @@ import {
   BehaviorSubject,
   Observable,
   asyncScheduler,
-  bindCallback,
   combineLatest,
-  debounceTime,
   distinctUntilChanged,
   filter,
   map,
-  startWith,
-  tap
+  startWith
 } from 'rxjs';
 import {
   EditorService,
@@ -120,18 +117,20 @@ export class CodeEditorComponent extends SubSinkAdapter implements ControlValueA
   registerOnTouched(fn: any): void {}
 
   writeValue(value: any): void {
-    let code = value;
-    switch (typeof value) {
-      case 'string':
-        try {
-          code = JSON.parse(value);
-          code = JSON.stringify(code, null, 2);
-        } catch (err) {}
-        break;
-      case 'object':
-        code = JSON.stringify(value, null, 2);
-        break;
-      default:
+    let code = value === 'null' ? '' : value;
+    if (code) {
+      switch (typeof value) {
+        case 'string':
+          try {
+            code = JSON.parse(value);
+            code = JSON.stringify(code, null, 2);
+          } catch (err) {}
+          break;
+        case 'object':
+          code = JSON.stringify(value, null, 2);
+          break;
+        default:
+      }
     }
     asyncScheduler.schedule(() => {
       this.code.setValue(code, { emitEvent: false });
@@ -170,49 +169,52 @@ export class CodeEditorComponent extends SubSinkAdapter implements ControlValueA
 
   async ngOnInit() {
     let diagnosticsOptions: SetMonacoModelOptions | null = null;
-    const schemaSource = InferSchemaSource(this.model());
-    switch (schemaSource.source) {
-      case SchemaSource.ApiEntity:
-        diagnosticsOptions = {
-          source: SchemaSource.ApiEntity,
-          name: schemaSource.name
-        };
-        break;
-      case SchemaSource.External:
-        const name = this.model().replace('external:', '');
-        diagnosticsOptions = {
-          source: SchemaSource.External,
-          name: schemaSource.name,
-          uri: `${location.protocol}//${location.host}/assets/schemas/json/${name}.json`
-        };
-        break;
-      case SchemaSource.Static:
-        throw new Error('Not implemented');
-    }
-    if (diagnosticsOptions) {
-      try {
-        await this.editorService.setMonacoEditorSchemas(diagnosticsOptions);
-        this.intellisenseEnabled.emit(true);
-      } catch (err) {
-        this.intellisenseEnabled.emit(false);
-      }
-    }
-    this.sink = this.modelCode.valueChanges
-      .pipe(
-        startWith(this.modelCode.value),
-        filter((value) => value !== undefined && value !== null),
-        distinctUntilChanged(),
-        map((value) => {
-          const monaco = this.editorService.getMonaco();
-          const schema: NgxEditorModel = {
-            value,
-            language: this.language,
-            uri: monaco.Uri.parse(getSchemaName(schemaSource.source, schemaSource.name))
+    if (this.model()) {
+      const schemaSource = InferSchemaSource(this.model());
+      switch (schemaSource.source) {
+        case SchemaSource.ApiEntity:
+          diagnosticsOptions = {
+            source: SchemaSource.ApiEntity,
+            name: schemaSource.name
           };
-          return schema;
-        })
-      )
-      .subscribe((schema) => this.schema$.next(schema));
+          break;
+        case SchemaSource.External:
+          const name = this.model().replace('external:', '');
+          diagnosticsOptions = {
+            source: SchemaSource.External,
+            name: schemaSource.name,
+            uri: `${location.protocol}//${location.host}/assets/schemas/json/${name}.json`
+          };
+          break;
+        case SchemaSource.Static:
+          throw new Error('Not implemented');
+      }
+      if (diagnosticsOptions) {
+        await this.editorService
+          .setMonacoEditorSchemas(diagnosticsOptions)
+          .then(() => this.intellisenseEnabled.emit(true))
+          .catch((err) => {
+            console.error(err);
+            this.intellisenseEnabled.emit(false);
+          });
+      }
+      this.sink = this.modelCode.valueChanges
+        .pipe(
+          startWith(this.modelCode.value),
+          filter((value) => value !== undefined && value !== null),
+          distinctUntilChanged(),
+          map((value) => {
+            const monaco = this.editorService.getMonaco();
+            const schema: NgxEditorModel = {
+              value,
+              language: this.language,
+              uri: monaco.Uri.parse(getSchemaName(schemaSource.source, schemaSource.name))
+            };
+            return schema;
+          })
+        )
+        .subscribe((schema) => this.schema$.next(schema));
+    }
   }
 
   onEditorInit(editor: MonacoEditor) {
@@ -235,8 +237,9 @@ export class CodeEditorComponent extends SubSinkAdapter implements ControlValueA
     const markers = monaco.editor.getModelMarkers({
       resource: this.modelUri()
     });
-    console.log(markers);
-    this.onValidated.emit({ valid: markers.length === 0, errors: markers });
+    this.ngZone.run(() => {
+      this.onValidated.emit({ valid: markers.length === 0, errors: markers });
+    });
   }
 }
 

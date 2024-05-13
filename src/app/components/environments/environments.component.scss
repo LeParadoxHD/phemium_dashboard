@@ -1,3 +1,5 @@
+@import "src/app/styles/mixins";
+
 :host {
   display: block;
   width: 100%;
@@ -23,10 +25,19 @@ nz-content {
   flex-direction: column;
   height: 100%;
   width: 100%;
+  @include dark {
+    background-color: rgba(white, 0.02);
+  }
   .type {
     color: rgba(black, 0.75);
+    @include dark {
+      color: rgba(white, 0.8);
+    }
     &:not(:last-child) {
       border-bottom: 1px solid rgba(black, 0.05);
+      @include dark {
+        border-color: rgba(white, 0.1);
+      }
     }
     .title {
       display: flex;
@@ -37,6 +48,9 @@ nz-content {
     .list {
       .environment-item {
         border-top: 1px solid rgba(black, 0.05);
+        @include dark {
+          border-color: rgba(white, 0.1);
+        }
         cursor: pointer;
         padding: 12px 40px;
         line-height: 10px;
@@ -49,12 +63,21 @@ nz-content {
         }
         &:hover {
           background-color: rgba(black, 0.02);
+          @include dark {
+            background-color: rgba(white, 0.05);
+          }
           i {
             left: 5px;
           }
         }
       }
     }
+  }
+}
+
+.ant-btn-circle {
+  @include dark {
+    color: rgba(white, 0.75);
   }
 }
 

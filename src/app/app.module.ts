@@ -88,6 +88,7 @@ import { EditActionsComponent } from './components/workflow-rules/rule-editor/ed
 import { JsonEditorComponent } from './components/json-editor/json-editor.component';
 import { CodeEditorComponent } from './components/code-editor/code-editor.component';
 import { monacoInitializer } from './utilities';
+import { IsPrimitivePipe } from './pipes/is-primitive.pipe';
 
 registerLocaleData(es);
 
@@ -126,6 +127,7 @@ registerLocaleData(es);
     EditParametersComponent,
     MethodsByApiPipe,
     GetMethodPipe,
+    IsPrimitivePipe,
     EditObjectComponent,
     EditActionsComponent,
     JsonEditorComponent,

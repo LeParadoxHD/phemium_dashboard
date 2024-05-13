@@ -1,3 +1,5 @@
+@import "src/app/styles/mixins";
+
 :host {
   display: block;
   width: 100%;
@@ -59,7 +61,13 @@ nz-layout {
 .parameters-container {
   overflow: auto;
   padding: 20px;
+  box-sizing: border-box;
+  height: 100%;
   padding-bottom: 50px;
+  background-color: rgba(black, 0.02);
+  @include dark {
+    background-color: rgba(white, 0.02);
+  }
 }
 
 :host::ng-deep.request-panel {
@@ -76,4 +84,26 @@ nz-layout {
 
 .response {
   display: flex;
+}
+
+.select-method-intro {
+  display: flex;
+  flex-direction: column;
+  padding: 50px;
+  box-sizing: border-box;
+  @include dark {
+    color: rgba(white, 0.7);
+  }
+  svg {
+    transform: scaleX(-1);
+    margin-top: 30px;
+    height: 150px;
+    width: 150px;
+    path {
+      fill: rgba(black, 0.3);
+      @include dark {
+        fill: rgba(white, 0.3);
+      }
+    }
+  }
 }

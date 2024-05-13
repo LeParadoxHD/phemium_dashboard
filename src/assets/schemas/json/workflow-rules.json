@@ -30,6 +30,7 @@
               }
             }
           },
+          "additionalProperties": false,
           "required": ["api", "method"]
         }
       },
@@ -96,8 +97,8 @@
               }
             }
           },
-          "required": ["api", "method"],
-          "additionalItems": false
+          "additionalProperties": false,
+          "required": ["api", "method"]
         }
       }
     },

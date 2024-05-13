@@ -2,15 +2,49 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Dashboard</title>
+    <title>Phemium Dashboard</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="manifest" href="manifest.webmanifest" />
     <meta name="theme-color" content="#1976d2" />
+    <style>
+      .page-loader {
+        background-color: rgba(0, 0, 0, 0.05);
+        display: flex;
+        position: fixed;
+        height: 100vh;
+        width: 100vw;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: auto;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+    </style>
   </head>
   <body>
-    <app-root></app-root>
+    <app-root>
+      <div class="page-loader">
+        <img style="margin-bottom: 20px" width="200" src="assets/images/logo.png" />
+        <span>Loading...</span>
+      </div>
+    </app-root>
     <noscript>Please enable JavaScript to continue using this application.</noscript>
+    <script>
+      const settings = localStorage.getItem("settings");
+      try {
+        const settingsJson = JSON.parse(settings);
+        if ("dark_theme" in settingsJson) {
+          if (settingsJson.dark_theme) {
+            document.body.style.color = "white";
+            document.body.style.backgroundColor = "#1a1d20";
+          }
+        }
+      } catch (err) {}
+    </script>
   </body>
 </html>

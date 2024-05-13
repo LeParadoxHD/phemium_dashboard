@@ -1,3 +1,5 @@
+@import "src/app/styles/mixins";
+
 :host::ng-deep .ant-form-item .ant-form-item-label {
   min-width: 150px;
   max-width: 200px;
@@ -10,4 +12,115 @@
 
 .numeric-field {
   min-width: 150px;
+}
+
+.code-parameter {
+  border: 1px solid rgba(black, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.params {
+  display: flex;
+  flex-direction: column;
+  .row {
+    display: flex;
+    flex-direction: column;
+    &:not(.inline) {
+      .name {
+        margin-bottom: 15px;
+      }
+    }
+    @include dark {
+      background-color: transparent;
+      box-shadow: none;
+      border: 1px solid rgba(white, 0.1);
+    }
+    &.inline {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: center;
+      justify-content: space-between;
+      column-gap: 50px;
+      .value {
+        display: flex;
+        align-items: center;
+        flex: 1;
+        justify-content: flex-end;
+        column-gap: 20px;
+        .ant-input-number {
+          border-radius: 8px;
+          input {
+            font-weight: 500;
+          }
+        }
+        .ant-form-item-control input {
+          border-radius: 8px;
+          font-weight: 500;
+        }
+        .ant-input-number {
+          width: 100%;
+        }
+      }
+    }
+    justify-content: space-between;
+    border: 1px solid rgba(black, 0.08);
+    border-radius: 8px;
+    padding: 15px 20px;
+    box-sizing: border-box;
+    box-shadow: 0 1px 1px rgba(black, 0.2);
+    background-color: white;
+    .name {
+      flex: initial;
+      @include dark {
+        color: rgba(white, 0.8);
+      }
+    }
+    .value {
+      flex: initial;
+    }
+    &:not(:last-child) {
+      margin-bottom: 20px;
+    }
+  }
+}
+
+:host::ng-deep .ant-select-selector {
+  border-radius: 8px !important;
+  min-width: 80px;
+}
+
+.intellisense {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  margin-right: 60px;
+  color: rgba(black, 0.65);
+  font-size: 1rem;
+  margin-top: 10px;
+  font-weight: 500;
+  .label {
+    display: flex;
+    align-items: center;
+  }
+  .flag {
+    display: block;
+    height: 12px;
+    width: 12px;
+    background-color: rgba(205, 36, 0, 0.7);
+    margin-left: 10px;
+    border-radius: 50%;
+    &.enabled {
+      background-color: #35da00;
+    }
+  }
+  .model-name {
+    color: rgba(black, 0.5);
+    font-size: 0.85rem;
+  }
+}
+
+.ant-btn {
+  margin-top: 20px;
+  border-radius: 8px;
 }

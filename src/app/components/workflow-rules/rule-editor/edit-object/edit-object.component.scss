@@ -1,3 +1,5 @@
+@import "src/app/styles/mixins";
+
 .set-item {
   display: grid;
   grid-template-columns: repeat(2, 1fr) 32px;
@@ -7,4 +9,16 @@
 
 input {
   font-family: "Roboto Mono";
+  border-radius: 8px;
+  @include dark {
+    background-color: rgba(white, 0.1);
+    color: rgba(white, 0.8) !important;
+    border-color: rgba(white, 0.3);
+  }
+}
+
+.ant-btn-circle {
+  @include dark {
+    background-color: rgba(white, 0.1);
+  }
 }

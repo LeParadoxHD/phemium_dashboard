@@ -1,3 +1,5 @@
+@import "src/app/styles/mixins";
+
 :host {
   display: flex;
   flex-direction: column;
@@ -14,6 +16,9 @@
   .actions,
   .data {
     margin-bottom: 20px;
+    @include dark {
+      color: rgba(white, 0.7);
+    }
   }
   .actions {
     display: grid;

@@ -1,23 +1,25 @@
 @if (parametersForm; as form) {
-<form nz-form [formGroup]="form">
+<div class="params">
   @for (control of form.get('parameters')['controls']; let i = $index; track i) {
-  <nz-form-item formArraryName="parameters">
-    <nz-form-label [title]="api.params[i].normalized" [nzSpan]="3">
+  <div class="row" [class.inline]="api.params[i].type | isPrimitive" formArraryName="parameters">
+    <div class="name">
       {{ api.params[i].normalized }}
-    </nz-form-label>
+    </div>
     @if (api.params[i].type.length > 1) {
-    <nz-form-control class="type-selector" [nzSpan]="3">
+    <div class="value">
       <nz-select [formControl]="multipleTypes.controls?.[api.params[i].name]">
         @for (type of api.params[i].type; track type) {
         <nz-option [nzValue]="type" [nzLabel]="type | titlecase"></nz-option>
         }
       </nz-select>
-    </nz-form-control>
-    <nz-form-control *ngLet="multipleTypes.get(api.params[i].name).value as type" [nzSpan]="24">
-      <ng-container *ngTemplateOutlet="field; context: { $implicit: control, type, def: api.params[i] }"></ng-container>
-    </nz-form-control>
+      <nz-form-control *ngLet="multipleTypes.get(api.params[i].name).value as type" [nzSpan]="24">
+        <ng-container
+          *ngTemplateOutlet="field; context: { $implicit: control, type, def: api.params[i] }"
+        ></ng-container>
+      </nz-form-control>
+    </div>
     } @else {
-    <nz-form-control [nzSpan]="24">
+    <div class="value" [class.inline]="api.params[i].type[0] === 'boolean' || api.params[i].type[0] === 'bool'">
       <ng-container
         *ngTemplateOutlet="
           field;
@@ -28,15 +30,20 @@
           }
         "
       ></ng-container>
-    </nz-form-control>
+    </div>
     }
-  </nz-form-item>
+  </div>
   }
-
-  <button [disabled]="form.invalid" nzType="primary" [nzLoading]="loading$ | async" nz-button (click)="send()">
-    <span nz-icon nzType="send"></span>Send
-  </button>
-</form>
+</div>
+<button
+  [disabled]="form.invalid || isOneSchemaInvalid()"
+  nzType="primary"
+  [nzLoading]="loading$ | async"
+  nz-button
+  (click)="send()"
+>
+  <span nz-icon nzType="send"></span>Send
+</button>
 }
 <ng-template #field let-control let-type="type" let-def="def">
   <!-- TODO: Change to Control Flow when multiple cases are supported: https://github.com/angular/angular/issues/14659 -->
@@ -70,7 +77,23 @@
     </ng-container>
     <!-- Default field -->
     <ng-container *ngSwitchDefault>
-      <app-editor-field [formControl]="control"></app-editor-field>
+      <div class="code-parameter">
+        <app-code-editor
+          [options]="{ readOnly: false }"
+          [model]="'api_entity:' + def.type[0]"
+          [formControl]="control"
+          language="json"
+          (intellisenseEnabled)="setIntellisenseStatus(def.name, $event)"
+          (onValidated)="setSchemaErrors(def.name, $event)"
+        ></app-code-editor>
+      </div>
+      <div class="intellisense">
+        <div class="label">
+          Phemium IntelliSense
+          <i class="flag" [class.enabled]="intellisenseStatus()?.[def.name]"></i>
+        </div>
+        <div class="model-name">{{ def.normalized | titlecase }}</div>
+      </div>
     </ng-container>
   </ng-container>
 </ng-template>

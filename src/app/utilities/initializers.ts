@@ -18,6 +18,14 @@ export function monacoInitializer(config: NgxMonacoEditorConfig) {
           if (typeof config.onMonacoLoad === 'function') {
             config.onMonacoLoad();
           }
+          (<any>window).monaco.editor.defineTheme('dark', {
+            base: 'vs-dark',
+            inherit: true,
+            rules: [],
+            colors: {
+              'editor.background': '#212529'
+            }
+          });
           resolve();
         });
       };

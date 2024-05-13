@@ -4,6 +4,7 @@ import { NzContextMenuService, NzDropdownMenuComponent } from 'ng-zorro-antd/dro
 import { NzResizeEvent } from 'ng-zorro-antd/resizable';
 import { Observable } from 'rxjs';
 import { IView } from 'src/app/interfaces';
+import { CommonService } from 'src/app/services/common.service';
 import { LayoutService } from 'src/app/services/layout.service';
 import { ViewActions } from 'src/app/state/actions';
 import { ViewState } from 'src/app/state/store';
@@ -21,6 +22,8 @@ export class PlaygroundComponent {
   requestPanelId = -1;
   xhrHeight = 400;
 
+  currentEnvironment$: Observable<string>;
+
   @Select(ViewState.GetTabs) tabs$: Observable<IView[]>;
   @Select(ViewState.GetCurrentTabIndex) tabIndex$: Observable<number>;
 
@@ -28,8 +31,11 @@ export class PlaygroundComponent {
     private _cdr: ChangeDetectorRef,
     public layout: LayoutService,
     private _store: Store,
-    private nzContextMenuService: NzContextMenuService
-  ) {}
+    private nzContextMenuService: NzContextMenuService,
+    private commonService: CommonService
+  ) {
+    this.currentEnvironment$ = this.commonService.currentEnvironment$;
+  }
 
   contextMenu($event: MouseEvent, menu: NzDropdownMenuComponent): void {
     this.nzContextMenuService.create($event, menu);
