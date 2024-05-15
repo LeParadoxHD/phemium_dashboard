@@ -23,18 +23,33 @@
     text-align: center;
     color: rgba(black, 0.4);
     margin-top: 20px;
+    font-weight: 400;
     @include dark {
+      font-weight: 400;
       color: var(--text-color);
     }
   }
-  .logo {
-    display: block;
-    background-image: url(^assets/images/logo.png);
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    width: 100%;
-    height: 50px;
+  .logo-wrapper {
+    display: flex;
+    align-items: center;
+    .logo {
+      display: block;
+      flex: 0 103px;
+      background-image: url(^assets/images/logo.webp);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      width: 100%;
+      height: 50px;
+    }
+    span {
+      font-size: 2.5rem;
+      color: rgba(black, 0.6);
+      font-weight: 400;
+      @include dark {
+        color: rgba(white, 0.6);
+      }
+    }
   }
   .select-environment {
     width: 100%;

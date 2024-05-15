@@ -63,6 +63,7 @@ import { SubSinkAdapter } from 'src/app/utilities';
     }
   ]
 })
+// TODO: AutoSize Code Editor
 export class CodeEditorComponent extends SubSinkAdapter implements ControlValueAccessor, Validator, OnInit {
   editorOptions$: Observable<MonacoEditorOptions>;
 
@@ -97,7 +98,14 @@ export class CodeEditorComponent extends SubSinkAdapter implements ControlValueA
         ...instanceOptions
       }))
     );
-    this.code.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => this.onChange(value));
+    this.code.valueChanges.pipe(takeUntilDestroyed()).subscribe((value) => {
+      try {
+        const parsed = JSON.parse(value);
+        this.onChange(parsed);
+      } catch (err) {
+        this.onChange(value);
+      }
+    });
   }
 
   @HostListener('document:keydown.alt.z') toggleSoftWrap() {

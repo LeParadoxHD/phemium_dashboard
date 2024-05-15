@@ -1,0 +1,13 @@
+.ant-tabs-top > .ant-tabs-nav::before {
+  border-color: transparent !important;
+}
+.ant-tabs-tab {
+  background-color: rgba(white, 0.04) !important;
+  border-color: transparent !important;
+  &.ant-tabs-tab-active {
+    background-color: rgba(white, 0.08) !important;
+  }
+  button {
+    color: rgba(white, 0.7);
+  }
+}

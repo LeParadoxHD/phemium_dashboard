@@ -1,0 +1,36 @@
+body {
+  background-color: #1a1d20;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.filters {
+  .ant-btn {
+    background-color: rgba(white, 0.1) !important;
+    &:not(.ant-btn-dangerous) {
+      .anticon {
+        color: rgba(white, 0.8);
+      }
+    }
+  }
+}
+
+.intellisense {
+  color: rgba(white, 0.8);
+  .model-name {
+    color: rgba(white, 0.5) !important;
+  }
+}
+
+app-workflow-rules-editor {
+  color: rgba(white, 0.7);
+}
+.add-new-environment {
+  color: rgba(white, 0.8);
+}
+app-logs {
+  background-color: rgb(26, 29, 32);
+  color: rgba(white, 0.8);
+  td {
+    border-color: rgba(white, 0.05) !important;
+  }
+}

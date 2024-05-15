@@ -1,0 +1,7 @@
+.ant-switch {
+  background-color: rgba(white, 0.15);
+  background-image: none;
+  &.ant-switch-checked {
+    background-color: #1890ff;
+  }
+}

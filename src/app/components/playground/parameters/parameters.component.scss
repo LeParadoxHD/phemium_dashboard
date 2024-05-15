@@ -16,7 +16,7 @@
 
 .code-parameter {
   border: 1px solid rgba(black, 0.08);
-  border-radius: 8px;
+  border-radius: var(--input-border-radius, 8px);
   overflow: hidden;
 }
 
@@ -49,13 +49,13 @@
         justify-content: flex-end;
         column-gap: 20px;
         .ant-input-number {
-          border-radius: 8px;
+          border-radius: var(--input-border-radius, 8px);
           input {
             font-weight: 500;
           }
         }
         .ant-form-item-control input {
-          border-radius: 8px;
+          border-radius: var(--input-border-radius, 8px);
           font-weight: 500;
         }
         .ant-input-number {
@@ -65,7 +65,7 @@
     }
     justify-content: space-between;
     border: 1px solid rgba(black, 0.08);
-    border-radius: 8px;
+    border-radius: var(--input-border-radius, 8px);
     padding: 15px 20px;
     box-sizing: border-box;
     box-shadow: 0 1px 1px rgba(black, 0.2);
@@ -86,7 +86,7 @@
 }
 
 :host::ng-deep .ant-select-selector {
-  border-radius: 8px !important;
+  border-radius: var(--input-border-radius, 8px) !important;
   min-width: 80px;
 }
 
@@ -122,5 +122,4 @@
 
 .ant-btn {
   margin-top: 20px;
-  border-radius: 8px;
 }

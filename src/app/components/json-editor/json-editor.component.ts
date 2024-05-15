@@ -75,7 +75,6 @@ export class JsonEditorComponent implements OnInit {
   }
 
   destroyModal(): void {
-    const json = JSON.parse(this.code.value);
-    this.modal.destroy(json);
+    this.modal.destroy(this.code.value);
   }
 }

@@ -1,0 +1,20 @@
+.ant-pagination {
+  .ant-select-selection-item {
+    color: rgba(white, 0.7) !important;
+  }
+  li,
+  button {
+    background-color: rgba(white, 0.1);
+    color: rgba(white, 0.7) !important;
+    &.ant-pagination-item-active a,
+    &:hover a {
+      color: #1890ff !important;
+    }
+    &.ant-pagination-disabled {
+      opacity: 0.3;
+    }
+    a {
+      color: rgba(white, 0.7);
+    }
+  }
+}

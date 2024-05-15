@@ -9,7 +9,6 @@
 
 input {
   font-family: "Roboto Mono";
-  border-radius: 8px;
   @include dark {
     background-color: rgba(white, 0.1);
     color: rgba(white, 0.8) !important;

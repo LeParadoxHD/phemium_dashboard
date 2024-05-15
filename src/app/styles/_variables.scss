@@ -1,0 +1,12 @@
+:root {
+  --debug-panel-height: 0px;
+  --log-row-height: 25px;
+  --menu-panel-width: 300px;
+  --primary-color: #1890ff;
+  --text-color: #{rgba(black, 0.7)};
+  --request-panel-width: calc((100vw - var(--menu-panel-width)) / 2);
+  --input-background: white;
+  --input-border-color: rgb(217, 217, 217);
+  --input-border-radius: 8px;
+  --input-text-color: #{rgba(black, 0.7)};
+}

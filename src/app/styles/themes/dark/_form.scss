@@ -1,0 +1,29 @@
+.ant-form {
+  color: inherit;
+  .tip {
+    color: rgba(white, 0.5);
+  }
+  &.filters {
+    color: rgba(white, 0.8);
+    .ant-table-thead th {
+      color: rgba(white, 0.8);
+      background-color: rgba(white, 0.1);
+    }
+    .ant-table-tbody td {
+      color: rgba(white, 0.8);
+      background-color: rgba(white, 0.05);
+    }
+  }
+}
+
+.ant-form-item-control input {
+  background-color: rgba(white, 0.1);
+  color: rgba(white, 0.8) !important;
+  caret-color: white;
+  font-weight: 500;
+  border-color: rgba(white, 0.3);
+}
+
+.ant-form-item-label label {
+  color: rgba(white, 0.8) !important;
+}

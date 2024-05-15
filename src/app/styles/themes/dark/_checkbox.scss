@@ -1,0 +1,12 @@
+.ant-checkbox-wrapper {
+  color: rgba(white, 0.8);
+  .ant-checkbox:not(.ant-checkbox-checked) {
+    .ant-checkbox-inner {
+      background-color: transparent;
+      border-color: rgba(white, 0.5) !important;
+    }
+  }
+  .ant-checkbox-disabled + span {
+    color: rgba(white, 0.3);
+  }
+}

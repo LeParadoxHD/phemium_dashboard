@@ -1,4 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
+import chalk from 'chalk';
 
 const isFunction = (fn: any) => typeof fn === 'function';
 export type Nullable<T> = T | null | undefined;
@@ -66,5 +67,24 @@ export class SubSinkAdapter implements OnDestroy {
 
   ngOnDestroy() {
     this.unsubscribe();
+  }
+}
+
+export class Logging {
+  static Log(category: string, ...message: any[]) {
+    const customChalk = chalk.bgHex('#1890ff').hex('#fff').bold;
+    console.log(customChalk(` ${category} `), ...message);
+  }
+  static Success(category: string, ...message: any[]) {
+    const customChalk = chalk.bgHex('#00BF5D').hex('#fff').bold;
+    console.log(customChalk(` ${category} `), ...message);
+  }
+  static Warning(category: string, ...message: any[]) {
+    const customChalk = chalk.bgHex('#F1971D').hex('#fff').bold;
+    console.warn(customChalk(` ${category} `), ...message);
+  }
+  static Error(category: string, ...message: any[]) {
+    const customChalk = chalk.bgHex('#C60000').hex('#fff').bold;
+    console.error(customChalk(` ${category} `), ...message);
   }
 }

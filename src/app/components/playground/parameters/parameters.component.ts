@@ -19,6 +19,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ValidationResult } from '../../code-editor/code-editor.component';
 import { MonacoModelError } from 'src/app/services/editor.service';
 import { IsPrimitivePipe } from 'src/app/pipes/is-primitive.pipe';
+import { JsonValidator } from '../../workflow-rules/rule-editor/utils/validators';
 
 @Component({
   selector: 'app-parameters',
@@ -40,12 +41,12 @@ export class ParametersComponent implements OnInit {
   }
 
   schemasStatus = signal<Record<string, MonacoModelError[]>>({});
-  isOneSchemaInvalid = computed(() => {
+  isOneJsonInvalid = computed(() => {
     return Object.values(this.schemasStatus()).some((s) => s?.length > 0);
   });
   setSchemaErrors(key: string, result: ValidationResult) {
     if (result.errors?.length > 0) {
-      this.schemasStatus.update((state) => ({ ...state, [key]: result.errors }));
+      this.schemasStatus.update((state) => ({ ...state, [key]: result.errors.filter((e) => e.severity > 4) }));
     } else {
       this.schemasStatus.update((state) => ({ ...state, [key]: null }));
     }
@@ -74,6 +75,9 @@ export class ParametersComponent implements OnInit {
         const parameterControls = (this.parametersForm.get('parameters') as FormArray).controls;
         for (const [index, _] of parameterControls.entries()) {
           parameterControls.at(index).setValue(valuesState[index] || '');
+          if (!this.isPrimitive.transform(this.api.params[index].type[0])) {
+            parameterControls.at(index).addValidators(JsonValidator);
+          }
         }
       }
       this.loading$ = this._store.select(ViewState.GetTabLoadingStatus(this.api.id));

@@ -21,7 +21,7 @@
 :host {
   &.parameters-mode {
     display: grid;
-    grid-template-columns: minmax(0, 400px) 1fr;
+    grid-template-columns: minmax(0, 300px) 1fr;
     .select-method-container {
       display: grid;
       grid-template-columns: 1fr;

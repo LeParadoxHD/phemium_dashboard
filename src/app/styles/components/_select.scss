@@ -1,0 +1,12 @@
+.ant-select .ant-select-selector {
+  transition: none !important;
+  border-radius: var(--input-border-radius, 8px) !important;
+  box-shadow: none !important;
+  .ant-select-selection-item {
+    transition: none !important;
+  }
+}
+
+.ant-select-dropdown {
+  border-radius: var(--input-border-radius, 8px) !important;
+}

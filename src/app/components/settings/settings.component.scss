@@ -1,5 +1,27 @@
 :host {
-  display: block;
+  display: grid;
   height: 100%;
   width: 100%;
+  grid-template-columns: minmax(100px, 250px) 1fr;
+}
+
+:host::ng-deep .ant-menu-inline .ant-menu-submenu-title {
+  margin: 0 !important;
+  border-bottom: 1px solid rgba(black, 0.08);
+}
+
+:host::ng-deep .ant-menu-inline.ant-menu-root .ant-menu-item {
+  margin: 0 !important;
+  border-bottom: 1px solid rgba(black, 0.05);
+}
+
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  row-gap: 30px;
+  .list {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+  }
 }

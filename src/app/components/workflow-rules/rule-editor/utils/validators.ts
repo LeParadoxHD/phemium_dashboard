@@ -154,10 +154,17 @@ export function ParameterValidator(): ValidatorFn {
 
 export function JsonValidator(control: AbstractControl): ValidationErrors | null {
   if (control.value) {
-    try {
-      JSON.parse(control.value);
-    } catch (e) {
-      return { jsonInvalid: true };
+    switch (typeof control.value) {
+      case 'string':
+        try {
+          JSON.parse(control.value);
+        } catch (e) {
+          return { jsonInvalid: true };
+        }
+        break;
+      case 'object':
+      default:
+        return null;
     }
   }
   return null;

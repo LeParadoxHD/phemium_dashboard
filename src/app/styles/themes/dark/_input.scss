@@ -1,0 +1,44 @@
+.ant-input:not(.ant-select-selection-search-input) {
+  background-color: rgba(white, 0.1);
+  border-color: rgba(white, 0.3);
+  color: rgba(white, 0.8) !important;
+  caret-color: rgba(white, 0.9);
+}
+
+input,
+textarea,
+.ant-select,
+select {
+  color: var(--input-text-color) !important;
+  user-select: rgba(#1890ff, 0.5);
+}
+
+.ant-input-group-wrapper:focus-within {
+  .ant-input-group-addon {
+    background-color: rgba(#1890ff, 0.5) !important;
+    border-color: rgba(#1890ff, 0.5) !important;
+  }
+}
+
+.ant-select:focus-within {
+  background-color: rgba(#1890ff, 0.1) !important;
+  .ant-select-selector {
+    border-color: rgba(#1890ff, 0.5) !important;
+  }
+}
+
+.ant-input:focus,
+textarea:focus {
+  background-color: rgba(#1890ff, 0.1) !important;
+  border-color: rgba(#1890ff, 0.5) !important;
+}
+
+.ant-input-number {
+  background-color: transparent;
+  border-color: rgba(white, 0.3);
+  input {
+    background-color: rgba(white, 0.1) !important;
+    color: rgba(white, 0.8);
+    font-weight: 500;
+  }
+}

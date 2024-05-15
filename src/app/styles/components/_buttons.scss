@@ -1,0 +1,6 @@
+.ant-btn {
+  transition: none !important;
+  &:not(.ant-btn-circle) {
+    border-radius: var(--ant-button-border-radius, 8px) !important;
+  }
+}

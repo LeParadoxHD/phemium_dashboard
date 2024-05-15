@@ -5,13 +5,7 @@
       <span nz-icon nzType="code-sandbox" nzTheme="outline"></span>
       API
     </a>
-    <a
-      nz-menu-item
-      nzMatchRouter
-      routerLink="/workflow-rules"
-      nz-tooltip
-      nzTooltipTitle="Manage Workflow Rules"
-    >
+    <a nz-menu-item nzMatchRouter routerLink="/workflow-rules" nz-tooltip nzTooltipTitle="Manage Workflow Rules">
       <span nz-icon nzType="node-index" nzTheme="outline"></span>
       Workflow Rules
     </a>
@@ -25,24 +19,13 @@
     >
       <span nz-icon nzType="database" nzTheme="outline"></span>
       Environments
-      <nz-badge
-        nzShowZero
-        class="environment-count"
-        nzStandalone
-        [nzCount]="environmentsLength$ | async"
-      ></nz-badge>
+      <nz-badge nzShowZero class="environment-count" nzStandalone [nzCount]="environmentsLength$ | async"></nz-badge>
     </a>
-    <a
-      nz-menu-item
-      nzMatchRouter
-      routerLink="/settings"
-      nz-tooltip
-      nzTooltipTitle="Manage your preferences"
-    >
+    <a nz-menu-item nzMatchRouter routerLink="/settings" nz-tooltip nzTooltipTitle="Manage your preferences">
       <span nz-icon nzType="setting" nzTheme="outline"></span>
       Settings
     </a>
-    <a
+    <!--<a
       nz-menu-item
       nzMatchRouter
       routerLink="/about"
@@ -51,7 +34,7 @@
     >
       <span nz-icon nzType="info-circle" nzTheme="outline"></span>
       About
-    </a>
+    </a>-->
   </ul>
 </div>
 <div class="right">
