@@ -1,0 +1,59 @@
+.ant-collapse {
+  background-color: transparent;
+  .ant-collapse-extra .ant-btn-circle {
+    background-color: rgba(white, 0.05);
+  }
+  .ant-collapse-extra .ant-btn-circle:not(.ant-btn-dangerous) {
+    color: rgba(white, 0.6);
+    border-color: rgba(white, 0.6);
+  }
+  .anticon.ant-collapse-arrow {
+    color: rgba(white, 0.7);
+  }
+  .ant-collapse-content {
+    border-color: rgba(white, 0.2);
+  }
+  .ant-collapse-item {
+    border: 1px solid rgba(white, 0.2);
+    background-color: transparent;
+    color: rgba(white, 0.7);
+    .load-item {
+      border-color: rgba(white, 0.15);
+      app-edit-parameters {
+        border-color: rgba(white, 0.15);
+      }
+    }
+    .ant-input-wrapper {
+      .ant-input-group-addon {
+        background-color: rgba(white, 0.3);
+        color: rgba(white, 0.8);
+        border-color: rgba(white, 0.3);
+      }
+      input {
+        background-color: rgba(white, 0.15);
+        color: rgba(white, 0.8) !important;
+        border-color: rgba(white, 0.3);
+      }
+    }
+    &.ant-collapse-item-active .ant-collapse-header {
+      background-color: rgba(white, 0.1);
+    }
+    .ant-tabs-tab {
+      background-color: transparent !important;
+    }
+    .intro {
+      color: rgba(white, 0.5);
+    }
+    .ant-select-selection-item {
+      color: rgba(white, 0.6) !important;
+    }
+    textarea {
+      background-color: rgba(white, 0.1);
+      color: rgba(white, 0.8) !important;
+      border-color: rgba(white, 0.3);
+    }
+    .ant-collapse-header .name {
+      color: rgba(white, 0.7);
+    }
+  }
+}

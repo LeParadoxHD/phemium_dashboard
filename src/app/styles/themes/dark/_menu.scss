@@ -1,0 +1,38 @@
+.ant-menu-inline {
+  border-color: transparent !important;
+}
+.ant-menu-submenu-title,
+.ant-menu-submenu-arrow {
+  color: rgba(white, 0.8);
+}
+.ant-menu-item span {
+  color: rgba(white, 0.8);
+}
+.ant-menu-submenu-title:active {
+  background-color: rgba(white, 0.1);
+}
+.ant-menu-submenu,
+.ant-menu-item {
+  border-bottom-color: rgba(white, 0.05) !important;
+  &:hover {
+    background-color: rgba(white, 0.03) !important;
+  }
+  &.ant-menu-item-selected {
+    border-radius: 4px;
+    background-color: rgba(white, 0.05) !important;
+  }
+}
+
+.ant-menu-horizontal {
+  border-color: transparent !important;
+  & > .ant-menu-item::after {
+    left: 0;
+    right: 0;
+  }
+}
+.ant-menu {
+  background-color: transparent !important;
+  .ant-menu-item {
+    color: rgba(white, 0.8);
+  }
+}

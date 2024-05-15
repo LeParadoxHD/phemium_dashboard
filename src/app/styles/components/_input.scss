@@ -1,0 +1,17 @@
+input,
+textarea,
+.ant-input-group-addon {
+  transition: none !important;
+}
+
+textarea,
+*:not(.ant-input-group) > .ant-input {
+  border-radius: var(--input-border-radius, 8px) !important;
+}
+
+.ant-input-number {
+  border-radius: var(--input-border-radius, 8px) !important;
+  .ant-input-number-input {
+    border-radius: var(--input-border-radius, 8px) !important;
+  }
+}

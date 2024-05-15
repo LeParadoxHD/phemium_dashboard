@@ -89,6 +89,7 @@ import { JsonEditorComponent } from './components/json-editor/json-editor.compon
 import { CodeEditorComponent } from './components/code-editor/code-editor.component';
 import { monacoInitializer } from './utilities';
 import { IsPrimitivePipe } from './pipes/is-primitive.pipe';
+import { SettingComponent } from './components/settings/setting/setting.component';
 
 registerLocaleData(es);
 
@@ -131,7 +132,8 @@ registerLocaleData(es);
     EditObjectComponent,
     EditActionsComponent,
     JsonEditorComponent,
-    CodeEditorComponent
+    CodeEditorComponent,
+    SettingComponent
   ],
   imports: [
     BrowserModule,

@@ -8,7 +8,7 @@ import { JsonSchema } from '../interfaces/json.schema';
 import { CommonService } from './common.service';
 import { HttpClient, HttpContext } from '@angular/common/http';
 import monaco from 'monaco-editor';
-import { INTERNAL_REQUEST } from '../utilities';
+import { INTERNAL_REQUEST, Logging } from '../utilities';
 
 export type MonacoEditor = ReturnType<typeof editor.create>;
 export type MonacoModelError = editor.IMarker;
@@ -155,14 +155,15 @@ export class EditorService {
 
     if (schema) {
       monaco.languages.json.jsonDefaults.setDiagnosticsOptions(schema);
+      Logging.Log('MonacoEditor', `Using schema: ${options.name}`, schema.schemas[0].schema);
     }
   }
 
-  buildJsonSchemas(entities: IApiEntity[], server: string): EntitySchema[] {
+  buildJsonSchemas(entities: IApiEntity[]): EntitySchema[] {
     return entities.map((entity) => {
       const properties = entity.properties.map((prop) => ({
         key: prop.name,
-        types: extractTypes(prop.type)
+        types: extractTypes(prop.type, prop.name, true)
       }));
       const propertiesMap = properties.reduce((map, prop) => {
         if (prop.types.length > 0) {
@@ -188,9 +189,20 @@ export class EditorService {
   }
 }
 
-function extractTypes(type: IApiEntityProperty['type']): EditorType[] {
+function extractTypes(type: IApiEntityProperty['type'], propName: string, acceptsNull = false): EditorType[] {
   type = type.toString();
   const types = type.split('|') as string[];
+  if (propName.toLowerCase().endsWith('id')) {
+    if (!types.includes('string')) {
+      types.push('string');
+    }
+    if (!types.includes('integer')) {
+      types.push('integer');
+    }
+  }
+  if (acceptsNull && !types.includes('null')) {
+    types.push('null');
+  }
   return types.map((type) => {
     let isArray = false;
     let isReference = false;

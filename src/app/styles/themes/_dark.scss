@@ -1,0 +1,27 @@
+@use "sass:meta";
+
+html.dark {
+  @include meta.load-css("dark/custom");
+  @include meta.load-css("dark/content");
+  @include meta.load-css("dark/scrollbars");
+  @include meta.load-css("dark/resizable");
+  @include meta.load-css("dark/badge");
+  @include meta.load-css("dark/modal");
+  @include meta.load-css("dark/buttons");
+  @include meta.load-css("dark/form");
+  @include meta.load-css("dark/menu");
+  @include meta.load-css("dark/tabs");
+  @include meta.load-css("dark/checkbox");
+  @include meta.load-css("dark/table");
+  @include meta.load-css("dark/select");
+  @include meta.load-css("dark/input");
+  @include meta.load-css("dark/switch");
+  @include meta.load-css("dark/pagination");
+  @include meta.load-css("dark/collapse");
+  @include meta.load-css("dark/alert");
+  --text-color: #{rgba(white, 0.8)};
+  --input-background: #{rgba(white, 0.15)};
+  --input-border-color: #{rgba(white, 0.3)};
+  --input-border-radius: 8px;
+  --input-text-color: #{rgba(white, 0.8)};
+}

@@ -1,0 +1,12 @@
+.ant-tabs-tab,
+.ant-input-number {
+  transition: none !important;
+  .ant-tabs-tab-btn {
+    align-items: center;
+    transition: none !important;
+    .ant-tabs-tab-remove {
+      position: relative;
+      top: 1px;
+    }
+  }
+}

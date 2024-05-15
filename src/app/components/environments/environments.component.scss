@@ -36,7 +36,7 @@ nz-content {
     &:not(:last-child) {
       border-bottom: 1px solid rgba(black, 0.05);
       @include dark {
-        border-color: rgba(white, 0.1);
+        border-color: rgba(white, 0.05);
       }
     }
     .title {
@@ -49,7 +49,7 @@ nz-content {
       .environment-item {
         border-top: 1px solid rgba(black, 0.05);
         @include dark {
-          border-color: rgba(white, 0.1);
+          border-color: rgba(white, 0.05);
         }
         cursor: pointer;
         padding: 12px 40px;
@@ -59,7 +59,7 @@ nz-content {
           font-size: 0.85rem;
           position: relative;
           left: 0;
-          transition: all 0.15s ease-in-out;
+          transition: left 0.15s ease-in-out;
         }
         &:hover {
           background-color: rgba(black, 0.02);

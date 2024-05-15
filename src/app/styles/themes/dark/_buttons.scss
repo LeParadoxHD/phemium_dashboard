@@ -1,0 +1,18 @@
+.ant-btn-circle {
+  background-color: rgba(white, 0.05);
+}
+
+.ant-btn.add-filter {
+  background-color: rgba(white, 0.3);
+  color: rgba(white, 0.8);
+  border-color: rgba(white, 0.3);
+  .anticon {
+    color: rgba(white, 0.8);
+  }
+}
+
+.ant-btn[disabled] {
+  background-color: rgba(white, 0.2);
+  border-color: rgba(white, 0.3);
+  color: rgba(white, 0.3);
+}

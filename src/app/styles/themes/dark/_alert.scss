@@ -1,0 +1,16 @@
+.ant-alert {
+  background-color: rgba(white, 0.05);
+  &.ant-alert-success {
+    background-color: rgba(#b7eb8f, 0.1);
+  }
+  &.ant-alert-error {
+    background-color: rgba(#ff4d4f, 0.1);
+    border-color: #ff4d4f;
+  }
+  .ant-alert-message {
+    color: rgba(white, 0.8);
+  }
+  .ant-alert-description {
+    color: rgba(white, 0.6);
+  }
+}

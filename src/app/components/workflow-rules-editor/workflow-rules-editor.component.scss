@@ -26,7 +26,6 @@
     column-gap: 30px;
     .ant-input {
       height: 35px;
-      border-radius: 8px;
       box-shadow: none !important;
       font-weight: 500;
     }
@@ -39,10 +38,6 @@
     display: flex;
     color: rgba(black, 0.6);
   }
-}
-
-:host::ng-deep .ant-select-selector {
-  border-radius: 8px;
 }
 
 :host::ng-deep .ant-collapse {
@@ -128,9 +123,5 @@
   .ant-select-selection-item {
     color: rgba(black, 0.7) !important;
     font-weight: 500 !important;
-  }
-  .ant-select-selector {
-    border-radius: 8px !important;
-    box-shadow: none !important;
   }
 }

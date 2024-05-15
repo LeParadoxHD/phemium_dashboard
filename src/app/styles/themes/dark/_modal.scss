@@ -1,0 +1,25 @@
+.ant-modal-content {
+  background-color: transparent;
+  .ant-modal-close-x {
+    color: rgba(white, 0.8);
+  }
+  .ant-modal-header {
+    background-color: #212529;
+    border-color: transparent;
+    .ant-modal-title {
+      color: rgba(white, 0.8);
+    }
+  }
+  .ant-modal-footer {
+    background-color: #212529;
+    border-color: transparent;
+    .errors {
+      color: lighten(darkred, 40);
+    }
+    .ant-btn:not(.ant-btn-primary) {
+      background-color: transparent;
+      border-color: rgba(white, 0.2);
+      color: rgba(white, 0.8);
+    }
+  }
+}

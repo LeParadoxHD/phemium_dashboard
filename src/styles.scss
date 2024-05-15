@@ -6,6 +6,16 @@
 @import "./app/styles/fonts/ProductSans";
 @import "./app/styles/fonts/RobotoMono";
 
+// Components
+@import "./app/styles/components";
+
+// Variables
+@import "./app/styles/variables";
+
+// Themes
+@import "./app/styles/themes/dark";
+@import "./app/styles/themes/light";
+
 * {
   user-select: none;
   margin: 0;
@@ -31,15 +41,6 @@ body {
   font-family: "Product Sans";
   font-weight: 500;
   font-size: 14px;
-}
-
-:root {
-  --debug-panel-height: 0px;
-  --log-row-height: 25px;
-  --menu-panel-width: 300px;
-  --primary-color: #1890ff;
-  --text-color: rgba(0, 0, 0, 0.7);
-  --request-panel-width: calc((100vw - var(--menu-panel-width)) / 2);
 }
 
 ::-webkit-scrollbar {
@@ -85,368 +86,6 @@ nz-layout {
   font-size: 0.9rem;
 }
 
-html:not(.dark) {
-  body {
-    background-color: white;
-  }
-}
-
-html.dark {
-  --text-color: rgba(255, 255, 255, 0.8);
-  body {
-    background-color: #1a1d20;
-    color: rgba(255, 255, 255, 0.8);
-  }
-  ::-webkit-scrollbar {
-    height: 7px;
-    width: 7px;
-    background: transparent;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: rgba(white, 0.1);
-    &:hover {
-      background: rgba(white, 0.2);
-    }
-  }
-  .nz-resizable-handle .anticon.anticon-more {
-    background-color: #434851 !important;
-    border-color: transparent !important;
-    color: white;
-    border-radius: 4px;
-  }
-  .ant-badge {
-    background-color: transparent !important;
-    .ant-badge-count {
-      background-color: transparent !important;
-      color: rgba(white, 0.8);
-    }
-  }
-  .ant-alert {
-    background-color: rgba(white, 0.05);
-    &.ant-alert-success {
-      background-color: rgba(#b7eb8f, 0.1);
-    }
-    &.ant-alert-error {
-      background-color: rgba(#ff4d4f, 0.1);
-      border-color: #ff4d4f;
-    }
-    border-radius: 8px;
-    .ant-alert-message {
-      color: rgba(white, 0.8);
-    }
-    .ant-alert-description {
-      color: rgba(white, 0.6);
-    }
-  }
-  .ant-modal-content {
-    background-color: transparent;
-    border-radius: 8px;
-    .ant-modal-close-x {
-      color: rgba(white, 0.8);
-    }
-    .ant-modal-header {
-      background-color: #212529;
-      border-color: transparent;
-      .ant-modal-title {
-        color: rgba(white, 0.8);
-      }
-    }
-    .ant-modal-footer {
-      background-color: #212529;
-      border-color: transparent;
-      border-bottom-left-radius: 8px;
-      border-bottom-right-radius: 8px;
-      .errors {
-        color: lighten(darkred, 40);
-      }
-      .ant-btn:not(.ant-btn-primary) {
-        background-color: transparent;
-        border-color: rgba(white, 0.2);
-        color: rgba(white, 0.8);
-      }
-    }
-  }
-  .ant-btn:not(.ant-btn-circle) {
-    border-radius: 8px;
-  }
-  .ant-btn-circle {
-    background-color: rgba(white, 0.05);
-  }
-  .ant-form {
-    color: inherit;
-    .tip {
-      color: rgba(white, 0.5);
-    }
-  }
-  .ant-table {
-    background-color: transparent;
-    * {
-      border-color: rgba(white, 0.2) !important;
-    }
-  }
-  .filters {
-    .ant-btn {
-      background-color: rgba(white, 0.1) !important;
-      &:not(.ant-btn-dangerous) {
-        .anticon {
-          color: rgba(white, 0.8);
-        }
-      }
-    }
-  }
-  .ant-form-item-control input {
-    background-color: rgba(white, 0.1);
-    color: rgba(white, 0.8) !important;
-    caret-color: white;
-    font-weight: 500;
-    border-radius: 8px;
-    border-color: rgba(white, 0.3);
-  }
-  .ant-btn.add-filter {
-    background-color: rgba(white, 0.3);
-    color: rgba(white, 0.8);
-    border-color: rgba(white, 0.3);
-    border-radius: 8px;
-    .anticon {
-      color: rgba(white, 0.8);
-    }
-  }
-  .ant-form.filters {
-    color: rgba(white, 0.8);
-    .ant-table-thead th {
-      color: rgba(white, 0.8);
-      background-color: rgba(white, 0.1);
-    }
-    .ant-table-tbody td {
-      color: rgba(white, 0.8);
-      background-color: rgba(white, 0.05);
-    }
-  }
-  .ant-menu-inline {
-    border-color: transparent !important;
-  }
-  .ant-menu-submenu-title,
-  .ant-menu-submenu-arrow {
-    color: rgba(white, 0.8);
-  }
-  .ant-menu-item span {
-    color: rgba(white, 0.8);
-  }
-  .ant-menu-submenu-title:active {
-    background-color: rgba(white, 0.1);
-  }
-  .ant-menu-submenu,
-  .ant-menu-item {
-    border-bottom-color: rgba(white, 0.05) !important;
-    &:hover {
-      background-color: rgba(white, 0.03) !important;
-    }
-    &.ant-menu-item-selected {
-      background-color: rgba(white, 0.1) !important;
-    }
-  }
-  .ant-tabs-top > .ant-tabs-nav::before {
-    border-color: transparent !important;
-  }
-  .ant-tabs-tab {
-    background-color: rgba(white, 0.1) !important;
-    border-color: transparent !important;
-    &.ant-tabs-tab-active {
-      background-color: rgba(white, 0.2) !important;
-    }
-    button {
-      color: rgba(white, 0.7);
-    }
-  }
-  .intellisense {
-    color: rgba(white, 0.8);
-    .model-name {
-      color: rgba(white, 0.5) !important;
-    }
-  }
-  nz-sider,
-  .ant-layout,
-  nz-content {
-    background: transparent !important;
-  }
-  .ant-select {
-    .ant-select-selector {
-      background-color: rgba(white, 0.1) !important;
-      border: 1px solid rgba(white, 0.2) !important;
-      color: rgba(white, 0.8) !important;
-    }
-    .anticon {
-      color: rgba(white, 0.8) !important;
-    }
-  }
-  .ant-menu-horizontal {
-    border-color: transparent !important;
-  }
-  .ant-menu {
-    background-color: transparent !important;
-    .ant-menu-item {
-      color: rgba(white, 0.8);
-    }
-  }
-  .ant-btn[disabled] {
-    background-color: rgba(white, 0.2);
-    border-color: rgba(white, 0.3);
-    color: rgba(white, 0.3);
-  }
-  .ant-input {
-    background-color: rgba(white, 0.1);
-    border-color: rgba(white, 0.3);
-    color: rgba(white, 0.8) !important;
-    caret-color: rgba(white, 0.9);
-  }
-  .ant-checkbox-wrapper {
-    color: rgba(white, 0.8);
-    .ant-checkbox-inner {
-      background-color: transparent;
-      border-color: rgba(white, 0.5) !important;
-    }
-    .ant-checkbox-disabled + span {
-      color: rgba(white, 0.3);
-    }
-  }
-  app-workflow-rules-editor {
-    color: rgba(white, 0.7);
-  }
-  .ant-switch {
-    background-color: rgba(white, 0.15);
-    background-image: none;
-    &.ant-switch-checked {
-      background-color: #1890ff;
-    }
-  }
-  .ant-pagination {
-    .ant-select-selection-item {
-      color: rgba(white, 0.7) !important;
-    }
-    li,
-    button {
-      background-color: rgba(white, 0.1);
-      color: rgba(white, 0.7) !important;
-      border-radius: 8px;
-      &.ant-pagination-item-active a,
-      &:hover a {
-        color: #1890ff !important;
-      }
-      &.ant-pagination-disabled {
-        opacity: 0.3;
-      }
-      a {
-        color: rgba(white, 0.7);
-      }
-    }
-  }
-  .ant-collapse {
-    background-color: transparent;
-    .ant-collapse-extra .ant-btn-circle {
-      background-color: rgba(white, 0.05);
-    }
-    .ant-collapse-extra .ant-btn-circle:not(.ant-btn-dangerous) {
-      color: rgba(white, 0.6);
-      border-color: rgba(white, 0.6);
-    }
-    .anticon.ant-collapse-arrow {
-      color: rgba(white, 0.7);
-    }
-    .ant-collapse-content {
-      border-color: rgba(white, 0.2);
-    }
-    .ant-collapse-item {
-      border: 1px solid rgba(white, 0.2);
-      background-color: transparent;
-      color: rgba(white, 0.7);
-      .load-item {
-        border-color: rgba(white, 0.15);
-        app-edit-parameters {
-          border-color: rgba(white, 0.15);
-        }
-      }
-      .ant-input-wrapper {
-        .ant-input-group-addon {
-          background-color: rgba(white, 0.3);
-          color: rgba(white, 0.8);
-          border-color: rgba(white, 0.3);
-        }
-        input {
-          background-color: rgba(white, 0.15);
-          color: rgba(white, 0.8) !important;
-          border-color: rgba(white, 0.3);
-        }
-      }
-      &.ant-collapse-item-active .ant-collapse-header {
-        background-color: rgba(white, 0.1);
-      }
-      .ant-tabs-tab {
-        background-color: transparent !important;
-      }
-      .intro {
-        color: rgba(white, 0.5);
-      }
-      .ant-select-selection-item {
-        color: rgba(white, 0.6) !important;
-      }
-      textarea {
-        background-color: rgba(white, 0.1);
-        color: rgba(white, 0.8) !important;
-        border-color: rgba(white, 0.3);
-      }
-      .ant-collapse-header .name {
-        color: rgba(white, 0.7);
-      }
-    }
-  }
-  .ant-input-number {
-    background-color: transparent;
-    border-color: rgba(white, 0.3);
-    border-radius: 8px;
-    input {
-      background-color: rgba(white, 0.1) !important;
-      color: rgba(white, 0.8);
-      font-weight: 500;
-    }
-  }
-  .ant-form-item-label label {
-    color: rgba(white, 0.8) !important;
-  }
-  .add-new-environment {
-    color: rgba(white, 0.8);
-  }
-  app-logs {
-    background-color: rgb(26, 29, 32);
-    color: rgba(white, 0.8);
-    td {
-      border-color: rgba(white, 0.05) !important;
-    }
-  }
-  .ant-layout .footer {
-    border-color: rgb(26, 29, 32);
-  }
-  .ant-select-dropdown {
-    background-color: rgb(26, 29, 32) !important;
-    .ant-select-item {
-      background-color: rgba(white, 0.2) !important;
-      color: rgba(white, 0.8) !important;
-      &:not(:last-child) {
-        border-color: rgba(white, 0.1) !important;
-      }
-      .ant-select-item-option-content {
-        color: rgba(white, 0.8) !important;
-      }
-      &:hover {
-        background-color: rgba(white, 0.25) !important;
-      }
-      &.ant-select-item-option-selected {
-        background-color: rgba(white, 0.3) !important;
-      }
-    }
-  }
-}
-
 .ant-dropdown-menu .ant-dropdown-menu-item .anticon {
   margin-right: 10px;
 }
@@ -466,12 +105,6 @@ html.dark {
 
 nz-modal-container {
   animation: blurIn 0.2s forwards;
-}
-
-.ant-pagination-item,
-.ant-pagination-next button,
-.ant-pagination-prev button {
-  border-radius: 8px !important;
 }
 
 button.round,
@@ -502,7 +135,7 @@ input.code {
 }
 
 .rules-editor .ant-select-dropdown {
-  border-radius: 8px !important;
+  border-radius: var(--input-border-radius, 8px) !important;
   .ant-select-item {
     height: 40px;
     align-items: center;
@@ -564,9 +197,9 @@ input.code {
 }
 
 .ant-modal-content {
-  border-radius: 8px;
+  border-radius: var(--input-border-radius, 8px);
   .ant-modal-header {
-    border-radius: 8px 8px 0 0;
+    border-radius: var(--input-border-radius, 8px) var(--input-border-radius, 8px) 0 0;
   }
   .ant-modal-body {
     padding: 0;
@@ -588,7 +221,7 @@ input.code {
       }
     }
     button {
-      border-radius: 8px;
+      border-radius: var(--ant-button-border-radius, 8px);
     }
   }
 }

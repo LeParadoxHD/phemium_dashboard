@@ -1,0 +1,19 @@
+.ant-menu-submenu-title {
+  transition: none !important;
+}
+.ant-menu-submenu,
+.ant-menu-item {
+  transition: none !important;
+}
+
+.ant-menu,
+.ant-menu-title-content {
+  transition: none !important;
+}
+
+.ant-menu-submenu-arrow {
+  &::after,
+  &::before {
+    transition: transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), top 0.3s cubic-bezier(0.645, 0.045, 0.355, 1) !important;
+  }
+}

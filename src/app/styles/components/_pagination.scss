@@ -1,0 +1,11 @@
+.ant-pagination {
+  .ant-pagination-item,
+  .ant-pagination-options {
+    border-radius: var(--ant-pagination-border-radius, 8px) !important;
+  }
+}
+
+.ant-pagination-next button,
+.ant-pagination-prev button {
+  border-radius: var(--ant-pagination-border-radius, 8px) !important;
+}

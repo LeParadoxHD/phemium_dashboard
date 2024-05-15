@@ -1,6 +1,6 @@
 {
   "name": "dashboard",
-  "version": "0.2.21",
+  "version": "0.2.22-2",
   "scripts": {
     "ng": "ng",
     "start": "npm --no-git-tag-version version prerelease && ng serve",
@@ -24,6 +24,7 @@
     "@ngxs/storage-plugin": "^3.8.2",
     "@ngxs/store": "^3.8.2",
     "byte-size": "^8.1.1",
+    "chalk": "^5.3.0",
     "date-fns": "^3.6.0",
     "memo-decorator": "^2.0.1",
     "monaco-editor": "^0.48.0",

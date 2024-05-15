@@ -24,7 +24,7 @@ export class ApisState {
     }
     return this.apiService.retrieveMethods(server).pipe(
       tap((apis) => {
-        const editorSchemas = this.editorService.buildJsonSchemas(apis.entities, server);
+        const editorSchemas = this.editorService.buildJsonSchemas(apis.entities);
         const apiDef: IApi = {
           ...apis,
           lastUpdate: Math.trunc(Date.now() / 1000),
