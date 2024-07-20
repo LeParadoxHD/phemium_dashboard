@@ -43,6 +43,7 @@ import {
   EnvironmentsState,
   LoginsState,
   LogsState,
+  ReportsState,
   SettingsState,
   ViewState,
   WorkflowRulesState
@@ -90,6 +91,7 @@ import { CodeEditorComponent } from './components/code-editor/code-editor.compon
 import { monacoInitializer } from './utilities';
 import { IsPrimitivePipe } from './pipes/is-primitive.pipe';
 import { SettingComponent } from './components/settings/setting/setting.component';
+import { ReportsComponent } from './components/reports/reports.component';
 
 registerLocaleData(es);
 
@@ -133,7 +135,8 @@ registerLocaleData(es);
     EditActionsComponent,
     JsonEditorComponent,
     CodeEditorComponent,
-    SettingComponent
+    SettingComponent,
+    ReportsComponent
   ],
   imports: [
     BrowserModule,
@@ -167,7 +170,17 @@ registerLocaleData(es);
     MonacoEditorModule.forRoot(),
     ScrollingModule,
     NgxsModule.forRoot(
-      [ApisState, EnvironmentsState, SettingsState, ConfigState, ViewState, LoginsState, LogsState, WorkflowRulesState],
+      [
+        ApisState,
+        EnvironmentsState,
+        SettingsState,
+        ConfigState,
+        ViewState,
+        LoginsState,
+        LogsState,
+        WorkflowRulesState,
+        ReportsState
+      ],
       {
         developmentMode: !environment.production
       }

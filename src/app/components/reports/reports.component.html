@@ -1,0 +1,151 @@
+<div class="bar">
+  <ul nz-menu nzMode="inline">
+    <li nz-submenu [nzTitle]="reportsTpl" nzOpen>
+      <ng-template #reportsTpl>
+        <span nz-icon>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+            <path
+              d="M64 464l48 0 0 48-48 0c-35.3 0-64-28.7-64-64L0 64C0 28.7 28.7 0 64 0L229.5 0c17 0 33.3 6.7 45.3 18.7l90.5 90.5c12 12 18.7 28.3 18.7 45.3L384 304l-48 0 0-144-80 0c-17.7 0-32-14.3-32-32l0-80L64 48c-8.8 0-16 7.2-16 16l0 384c0 8.8 7.2 16 16 16zM176 352l32 0c30.9 0 56 25.1 56 56s-25.1 56-56 56l-16 0 0 32c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-48 0-80c0-8.8 7.2-16 16-16zm32 80c13.3 0 24-10.7 24-24s-10.7-24-24-24l-16 0 0 48 16 0zm96-80l32 0c26.5 0 48 21.5 48 48l0 64c0 26.5-21.5 48-48 48l-32 0c-8.8 0-16-7.2-16-16l0-128c0-8.8 7.2-16 16-16zm32 128c8.8 0 16-7.2 16-16l0-64c0-8.8-7.2-16-16-16l-16 0 0 96 16 0zm80-112c0-8.8 7.2-16 16-16l48 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-32 0 0 32 32 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-32 0 0 48c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-64 0-64z"
+            />
+          </svg>
+        </span>
+        <span>Reports</span>
+      </ng-template>
+      <ul>
+        {{
+          reportsService.documents$ | async | json
+        }}
+        @for (document of reportsService.documents$ | async; track document?.id) {
+        <li nz-menu-item (click)="selectDocument(document)">
+          <span>{{ document?.name }}</span>
+        </li>
+        }
+      </ul>
+    </li>
+    <li nz-submenu [nzTitle]="importsTpl">
+      <ng-template #importsTpl>
+        <span nz-icon>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+            <!--!Font Awesome Pro 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2024 Fonticons, Inc.-->
+            <path
+              d="M64 96c0-53 43-96 96-96l32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-32 0c-17.7 0-32 14.3-32 32l0 96 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-32 0 0 127.5c0 48.4-36.1 89.3-84.1 95.3l-7.9 1C18.4 481.9 2.4 469.5 .2 452s10.2-33.5 27.8-35.7l7.9-1c16-2 28-15.6 28-31.8L64 256l-32 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-96zm266.7 81.7C303.7 218.4 288 267.3 288 320s15.7 101.6 42.7 142.3c9.8 14.7 5.7 34.6-9 44.3s-34.6 5.7-44.3-9C243.6 446.7 224 385.6 224 320s19.6-126.7 53.3-177.7c9.8-14.7 29.6-18.8 44.3-9s18.8 29.6 9 44.3zm202.6 0c-9.8-14.7-5.7-34.6 9-44.3s34.6-5.7 44.3 9C620.4 193.3 640 254.4 640 320s-19.6 126.7-53.3 177.7c-9.8 14.7-29.6 18.8-44.3 9s-18.8-29.6-9-44.3c27-40.7 42.7-89.6 42.7-142.3s-15.7-101.6-42.7-142.3zM398.6 241.4L432 274.7l33.4-33.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3L477.3 320l33.4 33.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L432 365.3l-33.4 33.4c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L386.7 320l-33.4-33.4c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0z"
+            />
+          </svg>
+        </span>
+        <span>Imports</span>
+      </ng-template>
+      <ul>
+        <li nz-menu-item>
+          <span nz-icon>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+              <path
+                d="M14.1 463.3c-18.7-18.7-18.7-49.1 0-67.9L395.4 14.1c18.7-18.7 49.1-18.7 67.9 0l34.6 34.6c18.7 18.7 18.7 49.1 0 67.9L116.5 497.9c-18.7 18.7-49.1 18.7-67.9 0L14.1 463.3zM347.6 187.6l105-105L429.4 59.3l-105 105 23.3 23.3z"
+              />
+            </svg>
+          </span>
+          <span>Automations</span>
+        </li>
+        <li nz-menu-item>
+          <span nz-icon nzType="setting"></span>
+          <span>Settings</span>
+        </li>
+      </ul>
+    </li>
+  </ul>
+  <div class="preview-data">
+    <h3>Preview Data</h3>
+    <p>You must provide a Consultation ID to preview report content.</p>
+    <nz-input-number
+      class="numeric-field"
+      nz-input
+      nzPlaceHolder="Consultation ID"
+      [formControl]="consultationId"
+      [nzMin]="1"
+      [nzMax]="999999999999"
+      [nzStep]="1"
+    ></nz-input-number>
+    <nz-select [formControl]="enduserId" nzShowSearch nzAllowClear nzPlaceHolder="Select a person">
+      @for ( enduser of endusers(); track enduser.id) {
+      <nz-option [nzValue]="enduser.id" [nzLabel]="enduser.id + ' - ' + enduser.presentation_name"></nz-option>
+      }
+    </nz-select>
+    @if (enduserId.value && consultations(); as consultations) {
+    <nz-select
+      [ngModel]="consultationId.value"
+      (ngModelChange)="onConsultationChange($event)"
+      nzShowSearch
+      nzAllowClear
+      nzPlaceHolder="Select a consultation"
+    >
+      @for ( c of consultations; track c.id) {
+      <nz-option [nzValue]="c.id" [nzLabel]="c.id + ' - ' + c.service.value"></nz-option>
+      }
+    </nz-select>
+    }
+  </div>
+</div>
+<!--<nz-select
+  class="select-mode"
+  [formControl]="selectedDocument"
+  nzShowSearch
+  nzAllowClear
+  nzPlaceHolder="Select a report"
+>
+  @for (document of reportsService.documents$ | async; track document.id) {
+  <nz-option [nzValue]="document.id" [nzLabel]="document.name"></nz-option>
+  }
+</nz-select>-->
+@if (selectedDocument()) {
+<div class="editor">
+  <div class="banner">
+    <div class="left">
+      <button nz-button nzType="primary" (click)="restoreOriginalDocument()">
+        <span nz-icon nzType="rollback"></span>
+        Restore
+      </button>
+    </div>
+    <div class="right">
+      <button
+        [nzLoading]="loadingPreview()"
+        [disabled]="consultationId.invalid"
+        nz-button
+        nzType="primary"
+        (click)="previewDocument()"
+      >
+        <span nz-icon nzType="eye"></span>
+        Preview
+      </button>
+      <button nz-button nzType="primary" [nzLoading]="saving()" (click)="saveDocument()">
+        <span nz-icon nzType="save"></span>
+        Save
+      </button>
+    </div>
+  </div>
+  <div class="code">
+    <app-code-editor
+      (onValidated)="setPdfValidatedStatus($event)"
+      [options]="options"
+      [formControl]="documentCode"
+      language="php"
+    ></app-code-editor>
+  </div>
+  @if (previewUrl(); as preview) {
+  <div
+    nz-resizable
+    class="resizable-box preview"
+    [style.minHeight.px]="400"
+    [nzMinHeight]="400"
+    (nzResize)="onPreviewPanelResize($event, false)"
+    (nzResizeEnd)="onPreviewPanelResize($event, true)"
+  >
+    <nz-resize-handle nzDirection="top">
+      <div class="top-wrap resize-vertical">
+        <span class="top" nz-icon nzType="more" nzTheme="outline"></span>
+      </div>
+    </nz-resize-handle>
+    <iframe [src]="preview" style="width: 100%; height: 100%; border: none"></iframe>
+  </div>
+  }
+</div>
+}

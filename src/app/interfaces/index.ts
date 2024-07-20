@@ -103,7 +103,7 @@ export interface IViewRequest {
 
 export type AddEdit = 'add' | 'edit';
 
-export interface CustomHttpResponse extends Omit<HttpResponse<Object>, 'headers'> {
+export interface CustomHttpResponse<T = any> extends Omit<HttpResponse<T>, 'headers'> {
   headers: Record<string, string>;
   responseTime?: number;
 }

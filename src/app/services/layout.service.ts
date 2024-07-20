@@ -7,6 +7,7 @@ import { BehaviorSubject, combineLatest, fromEvent, map, Observable, shareReplay
 export class LayoutService {
   menuPanelWidth$ = new BehaviorSubject<number>(300);
   debugPanelHeight$ = new BehaviorSubject<number>(200);
+  previewReportPanelHeight$ = new BehaviorSubject<number>(0);
 
   environmentsPanelWidth$ = new BehaviorSubject<number>(300);
   requestPanelWidth$ = new BehaviorSubject<number>(null);

@@ -1,6 +1,6 @@
 {
   "name": "dashboard",
-  "version": "0.2.22-2",
+  "version": "0.2.25",
   "scripts": {
     "ng": "ng",
     "start": "npm --no-git-tag-version version prerelease && ng serve",

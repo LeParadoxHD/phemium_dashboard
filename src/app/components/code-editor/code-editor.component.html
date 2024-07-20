@@ -6,7 +6,7 @@
   [ngModel]="schema.value"
   [model]="schema"
   (ngModelChange)="updateValueFromModel($event)"
-  (onInit)="onEditorInit($event)"
+  (onInit)="onEditorInit($event, true)"
 ></ngx-monaco-editor>
 }
 <!---->
@@ -15,5 +15,6 @@
   [options]="editorOptions$ | async"
   [formControl]="code"
   (ngModelChange)="updateValidity()"
+  (onInit)="onEditorInit($event, false)"
 ></ngx-monaco-editor>
 }

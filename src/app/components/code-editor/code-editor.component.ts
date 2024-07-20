@@ -146,6 +146,9 @@ export class CodeEditorComponent extends SubSinkAdapter implements ControlValueA
       this.code.updateValueAndValidity();
       this.modelCode.updateValueAndValidity();
       this.cdr.markForCheck();
+      asyncScheduler.schedule(() => {
+        this.editorService.getMonaco().editor.remeasureFonts();
+      });
     });
   }
 
@@ -153,6 +156,9 @@ export class CodeEditorComponent extends SubSinkAdapter implements ControlValueA
     this.code.setValue(value);
     this.code.updateValueAndValidity();
     this.cdr.markForCheck();
+    asyncScheduler.schedule(() => {
+      this.editorService.getMonaco().editor.remeasureFonts();
+    });
   }
 
   updateValidity() {
@@ -225,19 +231,25 @@ export class CodeEditorComponent extends SubSinkAdapter implements ControlValueA
     }
   }
 
-  onEditorInit(editor: MonacoEditor) {
-    this.sink = new Observable((observer) => {
-      const modelUri = this.modelUri();
-      const monaco = this.editorService.getMonaco();
-      monaco.editor.onDidChangeMarkers((e) => {
-        const instanceMarkers = e.filter((e) => e.toString() === modelUri.toString());
-        if (instanceMarkers.length > 0) {
-          observer.next(e);
-        } else if (e.length === 0) {
-          observer.next();
-        }
-      });
-    }).subscribe(() => this.checkModelMarkers());
+  editorInstance: MonacoEditor;
+
+  onEditorInit(editor: MonacoEditor, withSchema: boolean) {
+    this.editorInstance = editor;
+    this.editorService.getMonaco().editor.remeasureFonts();
+    if (withSchema) {
+      this.sink = new Observable((observer) => {
+        const modelUri = this.modelUri();
+        const monaco = this.editorService.getMonaco();
+        monaco.editor.onDidChangeMarkers((e) => {
+          const instanceMarkers = e.filter((e) => e.toString() === modelUri.toString());
+          if (instanceMarkers.length > 0) {
+            observer.next(e);
+          } else if (e.length === 0) {
+            observer.next();
+          }
+        });
+      }).subscribe(() => this.checkModelMarkers());
+    }
   }
 
   checkModelMarkers() {

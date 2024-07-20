@@ -112,7 +112,13 @@ export class AddEditEnvironmentComponent implements OnChanges {
 
     if (test) {
       this._api
-        .request('login', 'login_customer', [login_user, login_password, token_expiration], true, values.server)
+        .request<string | Object>({
+          entity: 'login',
+          method: 'login_customer',
+          parameters: [login_user, login_password, token_expiration],
+          internal: true,
+          server: values.server
+        })
         .subscribe({
           next: (response) => {
             console.log(response);

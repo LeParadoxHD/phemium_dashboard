@@ -4,10 +4,35 @@ import { ApisConfig, Servers } from '../config';
 import { IApi, IEnvironment, IEnvironmentsState } from '../state/interfaces';
 import { Actions, ofActionSuccessful, Store } from '@ngxs/store';
 import { EnvironmentsState, LoginsState, SettingsState } from '../state/store';
-import { EMPTY, NEVER, Observable, catchError, filter, of, switchMap, take } from 'rxjs';
+import { EMPTY, NEVER, Observable, catchError, filter, lastValueFrom, map, of, pipe, switchMap, take } from 'rxjs';
 import { LoginActions } from '../state/actions';
 import { HttpHeaderToRecord, INTERNAL_REQUEST } from '../utilities';
 import { CustomHttpResponse } from '../interfaces';
+
+export interface RequestOptions {
+  entity: string;
+  method: string;
+  parameters?: any[];
+  internal?: boolean;
+  server?: Servers;
+  retry?: number;
+}
+
+/**
+ * Extracts the body of a CustomHttpResponse
+ * @param T Type of the body
+ * @returns
+ */
+export function body<T>() {
+  return pipe(
+    map((response: CustomHttpResponse<T>) => {
+      if ('body' in response) {
+        return response.body;
+      }
+      return null;
+    })
+  );
+}
 
 @Injectable({
   providedIn: 'root'
@@ -39,36 +64,36 @@ export class ApiService {
     });
   }
 
-  request(
-    entity: string,
-    method: string,
-    parameters: any[] = [],
-    internal: boolean = false,
-    server?: Servers,
-    retry: number = 0
-  ): Observable<CustomHttpResponse> {
-    if (retry > 3) {
+  requestPromise<T = any>(options: RequestOptions): Promise<CustomHttpResponse<T>> {
+    return lastValueFrom(this.request<T>(options));
+  }
+
+  request<T = any>(options: RequestOptions): Observable<CustomHttpResponse<T>> {
+    options.parameters ||= [];
+    options.internal ||= false;
+    options.retry ||= 0;
+    if (options.retry > 3) {
       alert('Unable to perform request');
       return NEVER;
     }
     let token: string = null;
-    server ||= this._store.selectSnapshot(SettingsState.GetCurrentEnvironmentServer);
+    options.server ||= this._store.selectSnapshot(SettingsState.GetCurrentEnvironmentServer);
     token = this._store.selectSnapshot(LoginsState.GetCurrentToken())?.token;
-    if (entity === 'login' && method.startsWith('login')) {
+    if (options.entity === 'login' && options.method.startsWith('login')) {
       token = null;
     }
     const formData = new FormData();
     formData.append('transaction_id', 'faye_' + new Date().getTime());
     if (token) formData.append('token', token);
-    formData.append('entity', entity);
-    formData.append('method', method);
+    formData.append('entity', options.entity);
+    formData.append('method', options.method);
     formData.append('format', 'json');
-    const _parameters = this.constructParameters(parameters);
+    const _parameters = this.constructParameters(options.parameters);
     formData.append('arguments', _parameters);
     const start = new Date().getTime();
-    const context = internal ? new HttpContext().set(INTERNAL_REQUEST, true) : new HttpContext();
+    const context = options.internal ? new HttpContext().set(INTERNAL_REQUEST, true) : new HttpContext();
     return this._http
-      .post(this.getApiUrl(server), formData, {
+      .post(this.getApiUrl(options.server), formData, {
         observe: 'response',
         context
       })
@@ -90,7 +115,12 @@ export class ApiService {
                 switchMap(() => this._store.select(LoginsState.GetCurrentToken())),
                 filter((login) => login.token !== null),
                 take(1),
-                switchMap(() => this.request(entity, method, parameters, false, server, retry + 1))
+                switchMap(() =>
+                  this.request({
+                    ...options,
+                    retry: options.retry + 1
+                  })
+                )
               );
             }
           }
@@ -100,7 +130,7 @@ export class ApiService {
             ok: response.ok && !(response.body as any)?.error,
             responseTime: end - start,
             headers: HttpHeaderToRecord(response.headers)
-          } as CustomHttpResponse);
+          } as CustomHttpResponse<T>);
         })
       );
   }
@@ -123,8 +153,26 @@ export class ApiService {
     const environmentsDict = this._store.selectSnapshot(EnvironmentsState) as IEnvironmentsState;
     if (Array.isArray(environmentsDict[envType]) && environmentsDict[envType].length > 0) {
       const env = environmentsDict[envType].find((e) => e.slug === environment) as IEnvironment;
-      return this.request('login', 'login_customer', [env.login_user, env.login_password, env.token_expiration], true);
+      return this.request({
+        entity: 'login',
+        method: 'login_customer',
+        parameters: [env.login_user, env.login_password, env.token_expiration],
+        internal: true
+      });
     }
     return EMPTY;
+  }
+
+  async getPdf(url: string) {
+    return lastValueFrom(
+      this._http.get(url, { responseType: 'blob', context: new HttpContext().set(INTERNAL_REQUEST, true) }).pipe(
+        map((blob) => {
+          if (blob instanceof Blob) {
+            return window.URL.createObjectURL(blob);
+          }
+          return null;
+        })
+      )
+    );
   }
 }

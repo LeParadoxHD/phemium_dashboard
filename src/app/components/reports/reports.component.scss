@@ -1,0 +1,83 @@
+:host {
+  display: flex;
+  width: calc(100vw - var(--menu-panel-width)) !important;
+  height: 100%;
+}
+
+.bar {
+  flex: 0 300px;
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  border-right: 1px solid rgba(black, 0.08);
+  .preview-data {
+    padding: 20px;
+    box-sizing: border-box;
+    margin-top: 20px;
+    p {
+      color: rgba(black, 0.5);
+    }
+  }
+}
+
+:host::ng-deep .numeric-field {
+  width: 100%;
+  input {
+    font-weight: 500;
+  }
+}
+
+:host::ng-deep .ant-select {
+  width: 100%;
+  margin-top: 15px;
+}
+
+:host::ng-deep .ant-menu-inline {
+  border-right: none;
+}
+
+:host::ng-deep .ant-menu-inline .ant-menu-submenu-title {
+  margin: 0 !important;
+  border-bottom: 1px solid rgba(black, 0.08);
+}
+
+:host::ng-deep .ant-menu-inline.ant-menu-root .ant-menu-item {
+  margin: 0 !important;
+  border-bottom: 1px solid rgba(black, 0.05);
+}
+
+.editor {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  .banner {
+    flex: initial;
+    padding: 15px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    .left,
+    .right {
+      display: flex;
+      gap: 15px;
+    }
+  }
+  .code {
+    flex: 1;
+    overflow-x: hidden;
+    app-code-editor {
+      height: 100%;
+      width: 100%;
+      display: block;
+    }
+    border-top: 1px solid rgba(black, 0.05);
+    border-bottom: 1px solid rgba(black, 0.05);
+  }
+  .preview {
+    flex: initial;
+    height: var(--preview-panel-height);
+  }
+}

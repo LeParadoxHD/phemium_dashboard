@@ -6,6 +6,7 @@ import { SettingsComponent } from './components/settings/settings.component';
 import { WorkflowRulesComponent } from './components/workflow-rules/workflow-rules.component';
 import { WorkflowRulesEditorComponent } from './components/workflow-rules-editor/workflow-rules-editor.component';
 import { WorkflowRulesOriginalComponent } from './components/workflow-rules-original/workflow-rules-original.component';
+import { ReportsComponent } from './components/reports/reports.component';
 
 const routes: Routes = [
   {
@@ -43,6 +44,10 @@ const routes: Routes = [
   {
     path: 'settings',
     component: SettingsComponent
+  },
+  {
+    path: 'reports',
+    component: ReportsComponent
   }
 ];
 

@@ -2,10 +2,9 @@ import { Injectable } from '@angular/core';
 import { Action, createSelector, State, StateContext, Store } from '@ngxs/store';
 import { patch } from '@ngxs/store/operators';
 import { map, switchMap, tap } from 'rxjs/operators';
-import { ApiService } from 'src/app/services/api.service';
+import { ApiService, body } from 'src/app/services/api.service';
 import { WorkflowRulesActions } from '../actions';
 import { IWorkflowRule, IWorkflowRules, IWorkflowRulesObject, IWorkflowRulesState } from '../interfaces';
-import { CustomHttpResponse } from 'src/app/interfaces';
 import { NEVER } from 'rxjs';
 import { CommonService } from 'src/app/services/common.service';
 
@@ -36,27 +35,41 @@ export class WorkflowRulesState {
     );
     return this.commonService.currentToken$.pipe(
       switchMap((token) =>
-        this.apiService.request('login', 'get_user_data_by_token', [token], true).pipe(
-          switchMap(({ body }: CustomHttpResponse) => {
-            const customerId = body['customer_id'];
-            if (!customerId) {
-              return NEVER;
-            }
-            return this.apiService.request('customers', 'get_customer', [customerId], true).pipe(
-              map(({ body }: CustomHttpResponse) => {
-                const wfr = body['workflow_rules'];
-                return this.processWorkflowRules(wfr);
-              })
-            );
-          }),
-          tap((wfr) =>
-            setState(
-              patch<IWorkflowRulesState>({
-                [environment]: patch<IWorkflowRules>(wfr)
-              })
+        this.apiService
+          .request<{ customer_id: number }>({
+            entity: 'login',
+            method: 'get_user_data_by_token',
+            parameters: [token],
+            internal: true
+          })
+          .pipe(
+            body(),
+            switchMap(({ customer_id }) => {
+              if (!customer_id) {
+                return NEVER;
+              }
+              return this.apiService
+                .request<{ workflow_rules: string }>({
+                  entity: 'customers',
+                  method: 'get_customer',
+                  parameters: [customer_id],
+                  internal: true
+                })
+                .pipe(
+                  body(),
+                  map(({ workflow_rules }) => {
+                    return this.processWorkflowRules(workflow_rules);
+                  })
+                );
+            }),
+            tap((wfr) =>
+              setState(
+                patch<IWorkflowRulesState>({
+                  [environment]: patch<IWorkflowRules>(wfr)
+                })
+              )
             )
           )
-        )
       )
     );
   }

@@ -63,6 +63,7 @@ export class EditorService {
           renderWhitespace: 'none',
           fontFamily: 'Roboto Mono',
           fontWeight: 500,
+          lineHeight: 25,
           minimap: {
             enabled: false
           },

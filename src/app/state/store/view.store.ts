@@ -3,7 +3,7 @@ import { Action, createSelector, NgxsOnInit, Selector, State, StateContext } fro
 import { ViewActions } from '../actions';
 import { IViewState } from '../interfaces';
 import { append, removeItem, updateItem } from '@ngxs/store/operators';
-import { IView, IViewRequest, IViewResult } from 'src/app/interfaces';
+import { IView, IViewRequest, IViewResponse, IViewResult } from 'src/app/interfaces';
 import { ApiService } from 'src/app/services/api.service';
 import { tap } from 'rxjs';
 import { patch } from 'src/app/utilities';
@@ -145,23 +145,29 @@ export class ViewState implements NgxsOnInit {
         )
       })
     );
-    return this._api.request(entity, method, parameters).pipe(
-      tap((response) => {
-        setState(
-          patch<IViewState>({
-            tabs: updateItem<IView>(
-              myTabIndex,
-              patch<IView>({
-                loading: false,
-                result: patch<IViewResult>({
-                  response
-                })
-              })
-            )
-          })
-        );
+    return this._api
+      .request<IViewResponse>({
+        entity,
+        method,
+        parameters
       })
-    );
+      .pipe(
+        tap((response) => {
+          setState(
+            patch<IViewState>({
+              tabs: updateItem<IView>(
+                myTabIndex,
+                patch<IView>({
+                  loading: false,
+                  result: patch<IViewResult>({
+                    response
+                  })
+                })
+              )
+            })
+          );
+        })
+      );
   }
 
   @Selector()
